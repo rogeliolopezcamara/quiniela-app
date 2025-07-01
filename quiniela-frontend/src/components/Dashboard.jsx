@@ -1,0 +1,58 @@
+// src/components/Dashboard.jsx
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
+
+function Dashboard() {
+  const { userId, logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  return (
+    <div className="flex">
+      <Sidebar />
+      <div className="ml-64 mt-20 w-full text-center">
+        <h1 className="text-3xl font-bold mb-4">Bienvenido, usuario #{userId}</h1>
+
+        <div className="space-y-6">
+          <div className="space-x-4">
+            <button
+              onClick={() => navigate("/ranking")}
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              Ver Ranking
+            </button>
+
+            <button
+              onClick={() => navigate("/matches")}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Ver Partidos
+            </button>
+
+            <button
+              onClick={() => navigate("/my-predictions")}
+              className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+            >
+              Ver Mis Pronósticos
+            </button>
+          </div>
+
+          <div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Dashboard;

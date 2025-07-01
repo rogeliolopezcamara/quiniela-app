@@ -1,0 +1,281 @@
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from database import SessionLocal, engine, Base
+import models, schemas, utils, auth
+from fastapi.middleware.cors import CORSMiddleware
+
+
+app = FastAPI()
+
+# Configura los orígenes permitidos (tu frontend)
+origins = [
+    "http://localhost:5173",  # <--- importante
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # también puedes usar ["*"] temporalmente para pruebas
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+Base.metadata.create_all(bind=engine)
+
+# Dependency: cada vez que se hace un request, se abre una sesión de BD
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.post("/users/")
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Verifica si ya existe el correo
+    existing = db.query(models.User).filter(models.User.email == user.email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email ya registrado")
+
+    hashed_pw = utils.hash_password(user.password)
+    new_user = models.User(
+        name=user.name,
+        email=user.email,
+        password_hash=hashed_pw
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"id": new_user.id, "name": new_user.name, "email": new_user.email}
+
+from fastapi import status
+
+@app.post("/predictions/")
+def create_prediction(
+    pred: schemas.PredictionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    match = db.query(models.Match).filter(models.Match.id == pred.match_id).first()
+    if not match:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+
+    existing = db.query(models.Prediction).filter_by(
+        user_id=current_user.id,
+        match_id=pred.match_id
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Ya hiciste un pronóstico para este partido")
+
+    new_prediction = models.Prediction(
+        user_id=current_user.id,
+        match_id=pred.match_id,
+        pred_home=pred.pred_home,
+        pred_away=pred.pred_away,
+        points=0
+    )
+    db.add(new_prediction)
+    db.commit()
+    db.refresh(new_prediction)
+    return {
+        "prediction_id": new_prediction.id,
+        "match_id": new_prediction.match_id,
+        "pred_home": new_prediction.pred_home,
+        "pred_away": new_prediction.pred_away,
+        "points": new_prediction.points
+    }
+
+@app.put("/matches/{match_id}/result")
+def update_match_result(
+    match_id: int,
+    result: schemas.MatchResultUpdate,
+    db: Session = Depends(get_db)
+):
+    # Buscar el partido
+    match = db.query(models.Match).filter(models.Match.id == match_id).first()
+    if not match:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+
+    # Actualizar los resultados
+    match.score_home = result.score_home
+    match.score_away = result.score_away
+    db.commit()
+
+    # Obtener todos los pronósticos de ese partido
+    predictions = db.query(models.Prediction).filter_by(match_id=match_id).all()
+
+    # Regla para calcular puntos:
+    # - 3 puntos si acierta marcador exacto
+    # - 1 punto si acierta al ganador
+    # - 0 en otro caso
+    for pred in predictions:
+        points = 0
+        if pred.pred_home == match.score_home and pred.pred_away == match.score_away:
+            points = 3
+        elif (
+            (pred.pred_home > pred.pred_away and match.score_home > match.score_away) or
+            (pred.pred_home < pred.pred_away and match.score_home < match.score_away) or
+            (pred.pred_home == pred.pred_away and match.score_home == match.score_away)
+        ):
+            points = 1
+        pred.points = points
+
+    db.commit()
+
+    return {"message": f"Resultado actualizado y puntos recalculados para {len(predictions)} pronósticos"}
+
+from sqlalchemy import func
+
+@app.get("/ranking/", response_model=list[schemas.UserRanking])
+def get_ranking(db: Session = Depends(get_db)):
+    ranking = (
+        db.query(
+            models.User.id.label("user_id"),
+            models.User.name,
+            models.User.email,
+            func.coalesce(func.sum(models.Prediction.points), 0).label("total_points")
+        )
+        .outerjoin(models.Prediction, models.User.id == models.Prediction.user_id)
+        .group_by(models.User.id)
+        .order_by(func.coalesce(func.sum(models.Prediction.points), 0).desc())
+        .all()
+    )
+
+    return ranking
+
+from datetime import datetime
+from fastapi import Path
+
+@app.put("/predictions/{prediction_id}")
+def update_prediction(
+    prediction_id: int,
+    update: schemas.PredictionUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    prediction = db.query(models.Prediction).filter(models.Prediction.id == prediction_id).first()
+    if not prediction:
+        raise HTTPException(status_code=404, detail="Pronóstico no encontrado")
+
+    if prediction.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No puedes editar este pronóstico")
+
+    match = db.query(models.Match).filter(models.Match.id == prediction.match_id).first()
+    if not match:
+        raise HTTPException(status_code=404, detail="Partido no encontrado")
+
+    if match.match_date <= datetime.utcnow():
+        raise HTTPException(status_code=400, detail="El partido ya comenzó")
+
+    prediction.pred_home = update.pred_home
+    prediction.pred_away = update.pred_away
+    prediction.points = 0
+    db.commit()
+    db.refresh(prediction)
+
+    return {
+        "message": "Pronóstico actualizado",
+        "prediction": {
+            "id": prediction.id,
+            "match_id": prediction.match_id,
+            "pred_home": prediction.pred_home,
+            "pred_away": prediction.pred_away
+        }
+    }
+
+from sqlalchemy import and_
+
+@app.get("/available-matches/")
+def get_available_matches(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    now = datetime.utcnow()
+
+    subquery = (
+        db.query(models.Prediction.match_id)
+        .filter(models.Prediction.user_id == current_user.id)
+    )
+
+    matches = (
+        db.query(models.Match)
+        .filter(
+            and_(
+                models.Match.match_date > now,
+                ~models.Match.id.in_(subquery)
+            )
+        )
+        .order_by(models.Match.match_date.asc())
+        .all()
+    )
+
+    return [
+        {
+            "match_id": match.id,
+            "home_team": match.home_team,
+            "away_team": match.away_team,
+            "match_date": match.match_date
+        }
+        for match in matches
+    ]
+
+@app.get("/my-predictions/")
+def get_user_predictions(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    predictions = (
+        db.query(models.Prediction, models.Match)
+        .join(models.Match, models.Prediction.match_id == models.Match.id)
+        .filter(models.Prediction.user_id == current_user.id)
+        .order_by(models.Match.match_date)
+        .all()
+    )
+
+    result = []
+    for prediction, match in predictions:
+        result.append({
+            "prediction_id": prediction.id,
+            "match_id": match.id,
+            "home_team": match.home_team,
+            "away_team": match.away_team,
+            "match_date": match.match_date,
+            "pred_home": prediction.pred_home,
+            "pred_away": prediction.pred_away,
+            "score_home": match.score_home,
+            "score_away": match.score_away,
+            "points": prediction.points
+        })
+
+    return result
+
+from fastapi.security import OAuth2PasswordRequestForm
+import auth
+
+@app.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(auth.get_db)):
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=400, detail="Credenciales incorrectas")
+
+    access_token = auth.create_access_token(data={"sub": str(user.id)})
+    print("DEBUG - Generando token para user_id:", user.id)
+    return {"access_token": access_token, "token_type": "bearer","user_id": user.id}
+
+@app.get("/me")
+def get_my_profile(
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    total_points = (
+        db.query(func.coalesce(func.sum(models.Prediction.points), 0))
+        .filter(models.Prediction.user_id == current_user.id)
+        .scalar()
+    )
+
+    return {
+        "user_id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+        "created_at": current_user.created_at,
+        "total_points": total_points
+    }
