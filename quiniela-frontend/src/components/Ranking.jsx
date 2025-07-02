@@ -1,8 +1,10 @@
+// src/components/Ranking.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 
 const baseUrl = import.meta.env.VITE_API_URL;
+
 const Ranking = () => {
   const [rankingData, setRankingData] = useState([]);
 
@@ -22,8 +24,8 @@ const Ranking = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="ml-64 p-6 w-full max-w-4xl">
-        <h1 className="text-2xl font-bold mb-4">Ranking de Usuarios</h1>
+      <div className="p-6 w-full max-w-4xl mx-auto mt-20 px-4">
+        <h1 className="text-2xl font-bold mb-4 text-center">Ranking de Usuarios</h1>
         <table className="w-full table-auto border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-100">

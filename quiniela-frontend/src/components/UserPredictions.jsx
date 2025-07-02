@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const UserPredictions = () => {
-  const { authToken, userId } = useAuth();
+  const { authToken } = useAuth();
   const [predictions, setPredictions] = useState([]);
   const [editPredictionId, setEditPredictionId] = useState(null);
   const [editValues, setEditValues] = useState({ pred_home: '', pred_away: '' });
@@ -63,10 +63,10 @@ const UserPredictions = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="ml-64 p-4 w-full">
-        <h2 className="text-2xl font-bold mb-4">Tus pronósticos</h2>
+      <div className="p-6 w-full max-w-5xl mx-auto mt-20">
+        <h2 className="text-2xl font-bold mb-4 text-center">Tus pronósticos</h2>
         {predictions.length === 0 ? (
-          <p>No tienes pronósticos aún.</p>
+          <p className="text-center">No tienes pronósticos aún.</p>
         ) : (
           <table className="min-w-full bg-white border border-gray-300">
             <thead>

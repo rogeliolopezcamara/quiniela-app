@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
-const baseUrl = import.meta.env.VITE_API_URL;
 
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const AvailableMatches = () => {
   const [matches, setMatches] = useState([]);
-  const { authToken, userId } = useAuth();
+  const { authToken } = useAuth();
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -53,8 +53,8 @@ const AvailableMatches = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="ml-64 p-6 w-full">
-        <h1 className="text-2xl font-bold mb-4">Partidos Disponibles</h1>
+      <div className="p-6 w-full max-w-3xl mx-auto mt-20">
+        <h1 className="text-2xl font-bold mb-4 text-center">Partidos Disponibles</h1>
         {matches.map((match) => (
           <div key={match.match_id} className="bg-gray-100 p-4 mb-4 rounded">
             <p className="mb-2">
