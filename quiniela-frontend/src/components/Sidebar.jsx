@@ -18,7 +18,7 @@ function Sidebar() {
       {/* Botón hamburguesa flotante */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-2 bg-gray-200 rounded shadow-md md:hidden"
+        className="fixed top-4 left-4 z-50 p-2 bg-gray-200 rounded shadow-md"
       >
         <Menu />
       </button>
@@ -31,7 +31,7 @@ function Sidebar() {
       >
         <div className="flex flex-col justify-between h-full">
           <div>
-            <h2 className="text-2xl font-bold mb-6">Menú</h2>
+            <h2 className="text-2xl font-bold mb-6"></h2>
             <ul className="space-y-4">
               <li>
                 <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
