@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
 import models, schemas, utils, auth
@@ -284,3 +284,19 @@ def get_my_profile(
         "created_at": current_user.created_at,
         "total_points": total_points
     }
+
+@app.post("/update-matches")
+def run_update_script(request: Request):
+    secret = request.headers.get("X-Update-Token")
+    if secret != os.getenv("UPDATE_SECRET"):
+        raise HTTPException(status_code=403, detail="No autorizado")
+
+    try:
+        import update_matches
+        fixtures = update_matches.get_fixtures()
+        db = next(get_db())
+        update_matches.upsert_matches_to_db(fixtures, db)
+        return {"message": "Actualización completada"}
+    except Exception as e:
+        print("❌ Error durante la actualización:", e)
+        raise HTTPException(status_code=500, detail="Error interno")
