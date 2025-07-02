@@ -16,6 +16,12 @@ function Login() {
     e.preventDefault();
     setError(null);
 
+    if (!baseUrl) {
+      console.error("❌ VITE_API_URL no está definido");
+      setError("Error interno de configuración");
+      return;
+    }
+
     try {
       const formData = new URLSearchParams();
       formData.append("username", email);
@@ -28,12 +34,23 @@ function Login() {
       });
 
       const { access_token, user_id } = response.data;
+
+      if (!access_token) {
+        throw new Error("Token no recibido");
+      }
+
       login(access_token, user_id);
       console.log("Login exitoso:", access_token, user_id);
       navigate("/dashboard");
     } catch (err) {
       console.error("Error al hacer login:", err);
-      setError("Credenciales inválidas");
+      if (err.response?.status === 400) {
+        setError("Credenciales inválidas");
+      } else if (err.message === "Token no recibido") {
+        setError("Error al recibir token del servidor");
+      } else {
+        setError("Error de conexión con el servidor");
+      }
     }
   };
 
@@ -62,7 +79,7 @@ function Login() {
       </button>
 
       <p className="text-center mt-4 text-sm">
-        ¿No tienes cuenta? {" "}
+        ¿No tienes cuenta?{" "}
         <span
           className="text-blue-500 hover:underline cursor-pointer"
           onClick={() => navigate("/register")}
