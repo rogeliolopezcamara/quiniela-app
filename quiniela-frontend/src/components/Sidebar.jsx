@@ -25,7 +25,7 @@ function Sidebar() {
 
       {/* Menú lateral */}
       <div
-        className={`fixed top-0 left-0 h-screen w-64 bg-gray-100 p-4 shadow-md transform transition-transform duration-300 z-40
+        className={`fixed top-0 left-0 h-screen w-64 bg-gray-100 p-4 pt-16 shadow-md transform transition-transform duration-300 z-40
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
