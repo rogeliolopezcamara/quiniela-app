@@ -23,41 +23,32 @@ function Sidebar() {
         <Menu />
       </button>
 
-      {/* Menú lateral */}
+      {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 w-64 h-screen bg-gray-100 pt-16 px-4 shadow-md z-40 transform transition-transform duration-300
+        className={`fixed top-0 left-0 w-64 bg-gray-100 pt-16 px-4 shadow-md z-40 transition-transform duration-300
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
+        style={{ height: "100dvh" }} // <= Clave para móviles
       >
-        <div className="h-full flex flex-col justify-between">
-          {/* Menú scrollable */}
-          <div className="overflow-y-auto">
-            <ul className="space-y-4">
-              <li>
-                <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
-                  Dashboard
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
-                  Ranking
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate("/matches")} className="text-left w-full text-blue-600 hover:underline">
-                  Partidos
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate("/my-predictions")} className="text-left w-full text-blue-600 hover:underline">
-                  Mis Pronósticos
-                </button>
-              </li>
-            </ul>
+        <div className="flex flex-col h-full">
+          {/* Parte scrollable */}
+          <div className="flex-1 overflow-y-auto space-y-4">
+            <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
+              Dashboard
+            </button>
+            <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
+              Ranking
+            </button>
+            <button onClick={() => navigate("/matches")} className="text-left w-full text-blue-600 hover:underline">
+              Partidos
+            </button>
+            <button onClick={() => navigate("/my-predictions")} className="text-left w-full text-blue-600 hover:underline">
+              Mis Pronósticos
+            </button>
           </div>
 
-          {/* Botón de cerrar sesión fijo abajo */}
-          <div className="pt-4">
+          {/* Parte fija abajo */}
+          <div className="py-4 border-t border-gray-300">
             <button
               onClick={handleLogout}
               className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
