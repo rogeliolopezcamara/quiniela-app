@@ -13,7 +13,8 @@ def root():
 
 # Configura los orígenes permitidos (tu frontend)
 origins = [
-    "http://localhost:5173",  # <--- importante
+    "http://localhost:5173",
+    "https://quiniela-frontend.onrender.com"  # <--- importante
 ]
 
 app.add_middleware(
