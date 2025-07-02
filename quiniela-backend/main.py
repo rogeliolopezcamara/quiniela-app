@@ -7,6 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+@app.get("/")
+def root():
+    return {"message": "Bienvenido a la API de la quiniela"}
+
 # Configura los orígenes permitidos (tu frontend)
 origins = [
     "http://localhost:5173",  # <--- importante
