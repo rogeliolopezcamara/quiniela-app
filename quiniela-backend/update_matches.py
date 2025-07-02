@@ -9,7 +9,7 @@ from models import Match
 # Cargar claves y configuración
 load_dotenv()
 API_KEY = os.getenv("FOOTBALL_API_KEY")
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")  # Puedes definirlo en tu .env
+BACKEND_URL = os.getenv("BACKEND_URL", "https://quiniela-backend-2lc1.onrender.com")
 
 HEADERS = {
     "x-apisports-key": API_KEY
