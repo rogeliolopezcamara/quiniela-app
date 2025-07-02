@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
 import models, schemas, utils, auth
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 
 app = FastAPI()
