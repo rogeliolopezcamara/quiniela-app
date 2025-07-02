@@ -7,6 +7,7 @@ import AvailableMatches from "./components/AvailableMatches";
 import UserPredictions from "./components/UserPredictions";
 import { useAuth } from "./context/AuthContext";
 import Register from "./components/Register";
+import Changelog from "./components/Changelog";
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/ranking" element={<Ranking />} />
         <Route path="/matches" element={<AvailableMatches />} />
         <Route path="/my-predictions" element={<UserPredictions />} />
+        <Route path="/changelog" element={<Changelog />} />
       </Routes>
     </Router>
   );

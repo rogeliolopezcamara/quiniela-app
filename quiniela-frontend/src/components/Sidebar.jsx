@@ -45,6 +45,9 @@ function Sidebar() {
             <button onClick={() => navigate("/my-predictions")} className="text-left w-full text-blue-600 hover:underline">
               Mis Pronósticos
             </button>
+            <button onClick={() => navigate("/changelog")} className="text-left w-full text-blue-600 hover:underline">
+              Novedades
+            </button>
           </div>
 
           {/* Parte fija abajo */}
