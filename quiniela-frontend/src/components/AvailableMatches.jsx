@@ -13,7 +13,7 @@ const AvailableMatches = () => {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await axios.get("${baseUrl}/available-matches/", {
+        const response = await axios.get(`${baseUrl}/available-matches/`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
@@ -30,7 +30,7 @@ const AvailableMatches = () => {
   const handleSubmit = async (match_id, pred_home, pred_away) => {
     try {
       await axios.post(
-        "http://${baseUrl}/predictions/",
+        `${baseUrl}/predictions/`,
         {
           match_id,
           pred_home,

@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const baseUrl = import.meta.env.VITE_API_URL;
 function Register() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -15,7 +16,7 @@ function Register() {
     setError(null);
 
     try {
-      await axios.post("${baseUrl}/users/", {
+      await axios.post(`${baseUrl}/users/`, {
         name,
         email,
         password,

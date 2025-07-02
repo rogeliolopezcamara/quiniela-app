@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 
+const baseUrl = import.meta.env.VITE_API_URL;
 const Ranking = () => {
   const [rankingData, setRankingData] = useState([]);
 
   useEffect(() => {
     const fetchRanking = async () => {
       try {
-        const response = await axios.get("${baseUrl}/ranking/");
+        const response = await axios.get(`${baseUrl}/ranking/`);
         setRankingData(response.data);
       } catch (error) {
         console.error("Error al obtener el ranking:", error);

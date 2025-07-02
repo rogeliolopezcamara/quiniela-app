@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
 
+const baseUrl = import.meta.env.VITE_API_URL;
+
 const UserPredictions = () => {
   const { authToken, userId } = useAuth();
   const [predictions, setPredictions] = useState([]);
@@ -12,7 +14,7 @@ const UserPredictions = () => {
   useEffect(() => {
     const fetchPredictions = async () => {
       try {
-        const response = await axios.get("${baseUrl}/my-predictions/", {
+        const response = await axios.get(`${baseUrl}/my-predictions/`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },

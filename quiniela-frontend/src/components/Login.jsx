@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+const baseUrl = import.meta.env.VITE_API_URL;
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +21,7 @@ function Login() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const response = await axios.post("${baseUrl}/login", formData, {
+      const response = await axios.post(`${baseUrl}/login`, formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
