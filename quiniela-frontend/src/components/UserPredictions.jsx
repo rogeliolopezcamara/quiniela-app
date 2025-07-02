@@ -12,7 +12,7 @@ const UserPredictions = () => {
   useEffect(() => {
     const fetchPredictions = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/my-predictions/", {
+        const response = await axios.get("${baseUrl}/my-predictions/", {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
@@ -37,7 +37,7 @@ const UserPredictions = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://127.0.0.1:8000/predictions/${prediction_id}`,
+        `${baseUrl}/predictions/${prediction_id}`,
         editValues,
         {
           headers: {

@@ -15,7 +15,7 @@ function Register() {
     setError(null);
 
     try {
-      await axios.post("http://127.0.0.1:8000/users/", {
+      await axios.post("${baseUrl}/users/", {
         name,
         email,
         password,

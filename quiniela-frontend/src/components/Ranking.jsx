@@ -8,7 +8,7 @@ const Ranking = () => {
   useEffect(() => {
     const fetchRanking = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/ranking/");
+        const response = await axios.get("${baseUrl}/ranking/");
         setRankingData(response.data);
       } catch (error) {
         console.error("Error al obtener el ranking:", error);

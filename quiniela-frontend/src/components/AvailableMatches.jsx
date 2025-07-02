@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
+const baseUrl = import.meta.env.VITE_API_URL;
+
 
 const AvailableMatches = () => {
   const [matches, setMatches] = useState([]);
@@ -11,7 +13,7 @@ const AvailableMatches = () => {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/available-matches/", {
+        const response = await axios.get("${baseUrl}/available-matches/", {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
@@ -28,7 +30,7 @@ const AvailableMatches = () => {
   const handleSubmit = async (match_id, pred_home, pred_away) => {
     try {
       await axios.post(
-        "http://127.0.0.1:8000/predictions/",
+        "http://${baseUrl}/predictions/",
         {
           match_id,
           pred_home,
