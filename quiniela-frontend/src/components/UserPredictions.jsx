@@ -19,7 +19,10 @@ const UserPredictions = () => {
             Authorization: `Bearer ${authToken}`,
           },
         });
-        setPredictions(response.data);
+        const sorted = [...response.data].sort(
+          (a, b) => new Date(a.match_date) - new Date(b.match_date)
+        );
+        setPredictions(sorted);
       } catch (error) {
         console.error("Error al obtener pronósticos:", error);
       }
@@ -60,6 +63,16 @@ const UserPredictions = () => {
 
   const isEditable = (match_date) => new Date(match_date) > new Date();
 
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -82,7 +95,12 @@ const UserPredictions = () => {
               {predictions.map((pred) => (
                 <tr key={pred.prediction_id}>
                   <td className="py-2 px-4 border-b">
-                    {pred.home_team} vs {pred.away_team}
+                    <div>
+                      {pred.home_team} vs {pred.away_team}
+                      <div className="text-sm text-gray-500">
+                        {formatDate(pred.match_date)}
+                      </div>
+                    </div>
                   </td>
                   <td className="py-2 px-4 border-b">
                     {editPredictionId === pred.prediction_id ? (
