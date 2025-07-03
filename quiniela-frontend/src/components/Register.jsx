@@ -22,7 +22,7 @@ function Register() {
         password,
       });
       alert("Usuario registrado con éxito. Inicia sesión.");
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       console.error("Error en el registro:", err);
       setError(err.response?.data?.detail || "Error desconocido");
@@ -74,7 +74,7 @@ function Register() {
           Ya tienes cuenta?{' '}
           <span
             className="text-blue-500 hover:underline cursor-pointer"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
           >
             Inicia sesión
           </span>

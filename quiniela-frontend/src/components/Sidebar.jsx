@@ -29,53 +29,38 @@ function Sidebar() {
 
       {/* Menú lateral */}
       <div
-        className={`fixed top-0 left-0 min-h-screen w-64 bg-gray-100 p-4 pt-16 shadow-md transform transition-transform duration-300 z-40
+        className={`fixed top-0 left-0 min-h-screen w-64 bg-gray-100 shadow-md transform transition-transform duration-300 z-40
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        {/* Botones de navegación */}
-        <div className="flex flex-col h-full">
-          <div className="flex-grow">
-            <ul className="space-y-4">
-              <li>
-                <button onClick={() => navigate("/")} className="text-left w-full text-blue-600 hover:underline">
-                  Instrucciones
+        <div className="flex flex-col h-full p-4 pt-16">
+          <div className="flex-1 space-y-4">
+            <button onClick={() => navigate("/")} className="text-left w-full text-blue-600 hover:underline">
+              Instrucciones
+            </button>
+            <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
+              Ranking
+            </button>
+            {authToken && (
+              <>
+                <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
+                  Dashboard
                 </button>
-              </li>
-              <li>
-                <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
-                  Ranking
+                <button onClick={() => navigate("/matches")} className="text-left w-full text-blue-600 hover:underline">
+                  Partidos
                 </button>
-              </li>
-              {authToken && (
-                <>
-                  <li>
-                    <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
-                      Dashboard
-                    </button>
-                  </li>
-                  <li>
-                    <button onClick={() => navigate("/matches")} className="text-left w-full text-blue-600 hover:underline">
-                      Partidos
-                    </button>
-                  </li>
-                  <li>
-                    <button onClick={() => navigate("/my-predictions")} className="text-left w-full text-blue-600 hover:underline">
-                      Mis Pronósticos
-                    </button>
-                  </li>
-                </>
-              )}
-              <li>
-                <button onClick={() => navigate("/changelog")} className="text-left w-full text-blue-600 hover:underline">
-                  Novedades
+                <button onClick={() => navigate("/my-predictions")} className="text-left w-full text-blue-600 hover:underline">
+                  Mis Pronósticos
                 </button>
-              </li>
-            </ul>
+              </>
+            )}
+            <button onClick={() => navigate("/changelog")} className="text-left w-full text-blue-600 hover:underline">
+              Novedades
+            </button>
           </div>
 
-          {/* Botón inferior siempre visible al fondo */}
-          <div className="mt-6">
+          {/* Botón inferior */}
+          <div className="pt-4">
             {authToken ? (
               <button
                 onClick={handleLogout}
