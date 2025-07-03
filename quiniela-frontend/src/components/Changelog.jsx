@@ -2,6 +2,18 @@
 import Sidebar from "./Sidebar";
 
 const changelogEntries = [
+{
+date: "2025-06-27",
+items: [
+    "Se corrigió un error que impedía recargar las páginas correctamente.",
+    "Se creó la nueva página de Instrucciones y se colocó como página de inicio.",
+    "Se actualizó el Sidebar para mostrar el botón de iniciar sesión cuando no hay sesión activa.",
+    "Se cambió el formato de fecha a dd/mm/aaaa en el Dashboard y se estableció como el nuevo formato estándar.",
+    "La tabla de ranking ahora resalta en verde la fila del usuario autenticado.",
+    "Se eliminó la columna de correo en la tabla de ranking.",
+    "Ahora la información de los partidos se actualiza cada 30 minutos automáticamente.",
+],
+},
   {
     date: "2025-06-27",
     items: [
