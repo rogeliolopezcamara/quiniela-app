@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
-import { Menu } from "lucide-react"; // ícono del menú
+import { Menu } from "lucide-react";
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -33,12 +33,18 @@ function Sidebar() {
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="flex flex-col justify-between h-full">
-          <div>
+        {/* Botones de navegación */}
+        <div className="flex flex-col h-full">
+          <div className="flex-grow">
             <ul className="space-y-4">
               <li>
                 <button onClick={() => navigate("/")} className="text-left w-full text-blue-600 hover:underline">
                   Instrucciones
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
+                  Ranking
                 </button>
               </li>
               {authToken && (
@@ -46,11 +52,6 @@ function Sidebar() {
                   <li>
                     <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
                       Dashboard
-                    </button>
-                  </li>
-                  <li>
-                    <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
-                      Ranking
                     </button>
                   </li>
                   <li>
@@ -73,7 +74,8 @@ function Sidebar() {
             </ul>
           </div>
 
-          <div>
+          {/* Botón inferior siempre visible al fondo */}
+          <div className="mt-6">
             {authToken ? (
               <button
                 onClick={handleLogout}
