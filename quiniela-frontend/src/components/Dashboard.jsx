@@ -47,7 +47,7 @@ function Dashboard() {
         {userInfo && (
           <div className="mb-6 space-y-2">
             <p>Email: <span className="font-semibold">{userInfo.email}</span></p>
-            <p>Registrado desde: <span className="font-semibold">{new Date(userInfo.created_at).toLocaleDateString()}</span></p>
+            <p>Registrado desde: <span className="font-semibold">{new Date(userInfo.created_at).toLocaleDateString("es-ES")}</span></p>
             <p>Puntos totales: <span className="font-semibold">{userInfo.total_points}</span></p>
           </div>
         )}
