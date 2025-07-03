@@ -29,12 +29,14 @@ function Sidebar() {
 
       {/* Menú lateral */}
       <div
-        className={`fixed top-0 left-0 min-h-screen w-64 bg-gray-100 shadow-md transform transition-transform duration-300 z-40
+        className={`fixed top-0 left-0 w-64 bg-gray-100 pt-16 px-4 shadow-md z-40 transition-transform duration-300
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
+        style={{ height: "100dvh" }} // 💡 clave para móviles
       >
-        <div className="flex flex-col h-full p-4 pt-16">
-          <div className="flex-1 space-y-4">
+        <div className="flex flex-col h-full">
+          {/* Parte scrollable */}
+          <div className="flex-1 overflow-y-auto space-y-4">
             <button onClick={() => navigate("/")} className="text-left w-full text-blue-600 hover:underline">
               Instrucciones
             </button>
@@ -59,8 +61,8 @@ function Sidebar() {
             </button>
           </div>
 
-          {/* Botón inferior */}
-          <div className="pt-4">
+          {/* Parte fija abajo */}
+          <div className="py-4 border-t border-gray-300">
             {authToken ? (
               <button
                 onClick={handleLogout}
