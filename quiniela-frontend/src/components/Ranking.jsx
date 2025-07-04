@@ -6,51 +6,43 @@ import { useAuth } from "../context/AuthContext";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Ranking = () => {
-  const { authToken, userId: contextUserId } = useAuth();
+  const { authToken } = useAuth();
   const [rankingData, setRankingData] = useState([]);
-  const [userId, setUserId] = useState(contextUserId);
-  const [loadingUserId, setLoadingUserId] = useState(!contextUserId && !!authToken);
+  const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserIdIfNeeded = async () => {
-      if (!contextUserId && authToken) {
-        try {
-          const response = await axios.get(`${baseUrl}/me`, {
+    const fetchAll = async () => {
+      try {
+        // Obtener userId solo si hay token
+        let fetchedUserId = null;
+        if (authToken) {
+          const res = await axios.get(`${baseUrl}/me`, {
             headers: { Authorization: `Bearer ${authToken}` },
           });
-          setUserId(response.data.user_id);
-        } catch (error) {
-          console.error("Error al obtener el usuario:", error);
-        } finally {
-          setLoadingUserId(false);
+          fetchedUserId = res.data.user_id;
+          setUserId(fetchedUserId);
         }
-      } else {
-        setLoadingUserId(false);
-      }
-    };
 
-    fetchUserIdIfNeeded();
-  }, [authToken, contextUserId]);
-
-  useEffect(() => {
-    const fetchRanking = async () => {
-      try {
+        // Obtener el ranking
         const response = await axios.get(`${baseUrl}/ranking/`);
         setRankingData(response.data);
       } catch (error) {
-        console.error("Error al obtener el ranking:", error);
+        console.error("Error cargando datos:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchRanking();
-  }, []);
+    fetchAll();
+  }, [authToken]);
 
   return (
     <>
       <Sidebar />
       <div className="pt-20 px-4 w-full max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-center">Ranking de Usuarios</h1>
-        {loadingUserId ? (
+        {loading ? (
           <p className="text-center text-gray-500">Cargando...</p>
         ) : (
           <table className="w-full table-auto border-collapse border border-gray-300">
