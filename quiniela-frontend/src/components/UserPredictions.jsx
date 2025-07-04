@@ -71,6 +71,7 @@ const UserPredictions = () => {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      hour12: false,
     });
   };
 
@@ -82,74 +83,79 @@ const UserPredictions = () => {
         {predictions.length === 0 ? (
           <p className="text-center">No tienes pronósticos aún.</p>
         ) : (
-          <table className="min-w-full bg-white border border-gray-300">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">Partido</th>
-                <th className="py-2 px-4 border-b">Pronóstico</th>
-                <th className="py-2 px-4 border-b">Marcador real</th>
-                <th className="py-2 px-4 border-b">Puntos</th>
-                <th className="py-2 px-4 border-b">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {predictions.map((pred) => (
-                <tr key={pred.prediction_id}>
-                  <td className="py-2 px-4 border-b">
-                    <div>
-                      {pred.home_team} vs {pred.away_team}
-                      <div className="text-sm text-gray-500">
-                        {formatDate(pred.match_date)}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {editPredictionId === pred.prediction_id ? (
-                      <form
-                        className="flex items-center gap-2"
-                        onSubmit={(e) => handleEditSubmit(e, pred.prediction_id)}
-                      >
-                        <input
-                          type="number"
-                          value={editValues.pred_home}
-                          onChange={(e) => setEditValues({ ...editValues, pred_home: e.target.value })}
-                          className="border rounded px-2 py-1 w-16"
-                          required
-                        />
-                        <span>-</span>
-                        <input
-                          type="number"
-                          value={editValues.pred_away}
-                          onChange={(e) => setEditValues({ ...editValues, pred_away: e.target.value })}
-                          className="border rounded px-2 py-1 w-16"
-                          required
-                        />
-                        <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">
-                          Guardar
-                        </button>
-                      </form>
-                    ) : (
-                      `${pred.pred_home} - ${pred.pred_away}`
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
-                  </td>
-                  <td className="py-2 px-4 border-b">{pred.points ?? "-"}</td>
-                  <td className="py-2 px-4 border-b">
-                    {isEditable(pred.match_date) && editPredictionId !== pred.prediction_id && (
-                      <button
-                        onClick={() => handleEditClick(pred)}
-                        className="bg-yellow-500 text-white px-3 py-1 rounded"
-                      >
-                        Editar
-                      </button>
-                    )}
-                  </td>
+          <>
+            <p className="text-sm text-gray-500 text-center mb-2">
+              * Las fechas y horas se muestran en tu horario local.
+            </p>
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b">Partido</th>
+                  <th className="py-2 px-4 border-b">Pronóstico</th>
+                  <th className="py-2 px-4 border-b">Marcador real</th>
+                  <th className="py-2 px-4 border-b">Puntos</th>
+                  <th className="py-2 px-4 border-b">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {predictions.map((pred) => (
+                  <tr key={pred.prediction_id}>
+                    <td className="py-2 px-4 border-b">
+                      <div>
+                        {pred.home_team} vs {pred.away_team}
+                        <div className="text-sm text-gray-500">
+                          {formatDate(pred.match_date)}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      {editPredictionId === pred.prediction_id ? (
+                        <form
+                          className="flex items-center gap-2"
+                          onSubmit={(e) => handleEditSubmit(e, pred.prediction_id)}
+                        >
+                          <input
+                            type="number"
+                            value={editValues.pred_home}
+                            onChange={(e) => setEditValues({ ...editValues, pred_home: e.target.value })}
+                            className="border rounded px-2 py-1 w-16"
+                            required
+                          />
+                          <span>-</span>
+                          <input
+                            type="number"
+                            value={editValues.pred_away}
+                            onChange={(e) => setEditValues({ ...editValues, pred_away: e.target.value })}
+                            className="border rounded px-2 py-1 w-16"
+                            required
+                          />
+                          <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">
+                            Guardar
+                          </button>
+                        </form>
+                      ) : (
+                        `${pred.pred_home} - ${pred.pred_away}`
+                      )}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
+                    </td>
+                    <td className="py-2 px-4 border-b">{pred.points ?? "-"}</td>
+                    <td className="py-2 px-4 border-b">
+                      {isEditable(pred.match_date) && editPredictionId !== pred.prediction_id && (
+                        <button
+                          onClick={() => handleEditClick(pred)}
+                          className="bg-yellow-500 text-white px-3 py-1 rounded"
+                        >
+                          Editar
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         )}
       </div>
     </div>
