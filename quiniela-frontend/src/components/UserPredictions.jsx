@@ -62,6 +62,7 @@ const UserPredictions = () => {
   };
 
   const isEditable = (match_date) => new Date(match_date) > new Date();
+
   const normalizeISOString = (s) => s.endsWith("Z") ? s : s + "Z";
   const formatDate = (isoString) => {
     const s = normalizeISOString(isoString);
@@ -117,6 +118,7 @@ const UserPredictions = () => {
                         >
                           <input
                             type="number"
+                            min="0"
                             value={editValues.pred_home}
                             onChange={(e) => setEditValues({ ...editValues, pred_home: e.target.value })}
                             className="border rounded px-2 py-1 w-16"
@@ -125,6 +127,7 @@ const UserPredictions = () => {
                           <span>-</span>
                           <input
                             type="number"
+                            min="0"
                             value={editValues.pred_away}
                             onChange={(e) => setEditValues({ ...editValues, pred_away: e.target.value })}
                             className="border rounded px-2 py-1 w-16"
