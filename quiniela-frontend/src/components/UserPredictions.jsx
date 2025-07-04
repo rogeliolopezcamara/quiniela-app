@@ -62,9 +62,10 @@ const UserPredictions = () => {
   };
 
   const isEditable = (match_date) => new Date(match_date) > new Date();
-
+  const normalizeISOString = (s) => s.endsWith("Z") ? s : s + "Z";
   const formatDate = (isoString) => {
-    const date = new Date(isoString);
+    const s = normalizeISOString(isoString);
+    const date = new Date(s);
     return date.toLocaleString("es-MX", {
       day: "2-digit",
       month: "2-digit",
