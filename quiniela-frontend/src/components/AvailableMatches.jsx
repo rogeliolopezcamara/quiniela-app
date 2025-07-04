@@ -1,10 +1,23 @@
-// src/components/AvailableMatches.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
 
 const baseUrl = import.meta.env.VITE_API_URL;
+
+const normalizeISOString = (s) => (s.endsWith("Z") ? s : s + "Z");
+
+const formatDate = (iso) => {
+  const d = new Date(normalizeISOString(iso));
+  return d.toLocaleString("es-MX", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+};
 
 const AvailableMatches = () => {
   const [matches, setMatches] = useState([]);
@@ -55,14 +68,16 @@ const AvailableMatches = () => {
       <Sidebar />
       <div className="p-6 w-full max-w-3xl mx-auto mt-20">
         <h1 className="text-2xl font-bold mb-4 text-center">Partidos Disponibles</h1>
+        <p className="text-sm text-gray-500 text-center mb-2">
+          * Las fechas y horas se muestran en tu horario local
+        </p>
         {matches.map((match) => (
           <div key={match.match_id} className="bg-gray-100 p-4 mb-4 rounded">
-            <p className="mb-2">
-              {match.home_team} vs {match.away_team} —{" "}
-              {new Date(match.match_date).toLocaleString("es-MX", {
-                dateStyle: "full",
-                timeStyle: "short",
-              })}
+            <p className="mb-2 font-semibold">
+              {match.home_team} vs {match.away_team}
+            </p>
+            <p className="text-sm text-gray-600 mb-2">
+              {formatDate(match.match_date)}
             </p>
             <form
               className="flex items-center gap-2"
