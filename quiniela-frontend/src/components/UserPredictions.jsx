@@ -61,9 +61,14 @@ const UserPredictions = () => {
     }
   };
 
-  const isEditable = (match_date) => new Date(match_date) > new Date();
-
   const normalizeISOString = (s) => s.endsWith("Z") ? s : s + "Z";
+
+  const isEditable = (match_date) => {
+    const localMatchDate = new Date(normalizeISOString(match_date));
+    const now = new Date(); // local time
+    return localMatchDate > now;
+  };
+
   const formatDate = (isoString) => {
     const s = normalizeISOString(isoString);
     const date = new Date(s);
