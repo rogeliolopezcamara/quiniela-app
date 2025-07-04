@@ -1,4 +1,3 @@
-// src/components/Ranking.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
@@ -7,8 +6,26 @@ import { useAuth } from "../context/AuthContext";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Ranking = () => {
-  const { authToken, userId } = useAuth();
+  const { authToken, userId: contextUserId } = useAuth();
   const [rankingData, setRankingData] = useState([]);
+  const [userId, setUserId] = useState(contextUserId);
+
+  useEffect(() => {
+    const fetchUserIdIfNeeded = async () => {
+      if (!contextUserId && authToken) {
+        try {
+          const response = await axios.get(`${baseUrl}/me`, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          });
+          setUserId(response.data.user_id);
+        } catch (error) {
+          console.error("Error al obtener el usuario:", error);
+        }
+      }
+    };
+
+    fetchUserIdIfNeeded();
+  }, [authToken, contextUserId]);
 
   useEffect(() => {
     const fetchRanking = async () => {
