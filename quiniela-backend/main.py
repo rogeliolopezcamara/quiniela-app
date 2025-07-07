@@ -136,7 +136,7 @@ from collections import defaultdict
 
 @app.get("/ranking/")
 def get_ranking(db: Session = Depends(get_db)):
-    # 1. Obtener rondas activas (con al menos un pronóstico)
+    # 1. Obtener rondas activas (donde haya al menos un pronóstico)
     active_rounds = (
         db.query(models.Match.league_round)
         .join(models.Prediction, models.Prediction.match_id == models.Match.id)
@@ -150,7 +150,7 @@ def get_ranking(db: Session = Depends(get_db)):
     # 2. Obtener todos los usuarios
     users = db.query(models.User).all()
 
-    # 3. Obtener puntos por usuario y por ronda
+    # 3. Obtener puntos por usuario y por ronda (solo para rondas activas)
     round_points = (
         db.query(
             models.User.id.label("user_id"),
@@ -169,15 +169,15 @@ def get_ranking(db: Session = Depends(get_db)):
     for row in round_points:
         points_by_user_round[(row.user_id, row.league_round)] = row.points
 
-    # 5. Construir respuesta por usuario
+    # 5. Construir estructura por usuario
     result = []
     for user in users:
         user_entry = {
             "user_id": user.id,
             "name": user.name,
             "email": user.email,
-            "total_points": 0,
-            "rounds": {}
+            "rounds": {},
+            "total_points": 0
         }
 
         total = 0
@@ -189,13 +189,14 @@ def get_ranking(db: Session = Depends(get_db)):
         user_entry["total_points"] = total
         result.append(user_entry)
 
-    # 6. Ordenar por puntos
+    # 6. Ordenar por total de puntos
     result.sort(key=lambda x: x["total_points"], reverse=True)
 
     return {
         "rounds": rounds,
         "ranking": result
     }
+
 
 from datetime import datetime
 from fastapi import Path
