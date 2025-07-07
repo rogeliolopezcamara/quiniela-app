@@ -50,16 +50,19 @@ const AvailableMatches = () => {
     }
   };
 
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    return date.toLocaleString(undefined, {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+const normalizeISOString = (s) => s.endsWith("Z") ? s : s + "Z";
+
+const formatDate = (isoString) => {
+  const localDate = new Date(normalizeISOString(isoString));
+  return localDate.toLocaleString("es-MX", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+};
 
   return (
     <div className="flex">
