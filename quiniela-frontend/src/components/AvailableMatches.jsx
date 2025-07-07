@@ -50,19 +50,19 @@ const AvailableMatches = () => {
     }
   };
 
-const normalizeISOString = (s) => s.endsWith("Z") ? s : s + "Z";
+  const normalizeISOString = (s) => s.endsWith("Z") ? s : s + "Z";
 
-const formatDate = (isoString) => {
-  const localDate = new Date(normalizeISOString(isoString));
-  return localDate.toLocaleString("es-MX", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-};
+  const formatDate = (isoString) => {
+    const localDate = new Date(normalizeISOString(isoString));
+    return localDate.toLocaleString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
 
   return (
     <div className="flex">
@@ -70,10 +70,19 @@ const formatDate = (isoString) => {
       <div className="p-6 w-full max-w-3xl mx-auto mt-20">
         <h1 className="text-2xl font-bold mb-4 text-center">Partidos Disponibles</h1>
         {matches.map((match) => (
-          <div key={match.match_id} className="bg-gray-100 p-4 mb-4 rounded">
-            <p className="mb-2">
-              {match.home_team} vs {match.away_team} — {formatDate(match.match_date)}
-            </p>
+          <div key={match.match_id} className="bg-gray-100 p-4 mb-6 rounded">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <img src={match.home_team_logo} alt={match.home_team} className="w-6 h-6" />
+                <span className="font-semibold">{match.home_team}</span>
+              </div>
+              <span className="text-sm text-gray-600">{formatDate(match.match_date)}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">{match.away_team}</span>
+                <img src={match.away_team_logo} alt={match.away_team} className="w-6 h-6" />
+              </div>
+            </div>
+
             <form
               className="flex items-center gap-2"
               onSubmit={(e) => {
