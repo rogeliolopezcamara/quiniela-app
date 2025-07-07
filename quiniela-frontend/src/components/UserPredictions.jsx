@@ -1,3 +1,4 @@
+// src/components/UserPredictions.jsx
 import { useEffect, useState } from "react";
 import axios from "../utils/axiosConfig";
 import { useAuth } from "../context/AuthContext";
@@ -108,12 +109,14 @@ const UserPredictions = () => {
                 {predictions.map((pred) => (
                   <tr key={pred.prediction_id}>
                     <td className="py-2 px-4 border-b">
-                      <div>
-                        {pred.home_team} vs {pred.away_team}
-                        <div className="text-sm text-gray-500">
-                          {formatDate(pred.match_date)}
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6 object-contain" />
+                        <span>{pred.home_team}</span>
+                        <span>vs</span>
+                        <span>{pred.away_team}</span>
+                        <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6 object-contain" />
                       </div>
+                      <div className="text-sm text-gray-500">{formatDate(pred.match_date)}</div>
                     </td>
                     <td className="py-2 px-4 border-b">
                       {editPredictionId === pred.prediction_id ? (
