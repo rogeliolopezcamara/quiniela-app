@@ -219,7 +219,16 @@ def get_available_matches(
             "match_id": match.id,
             "home_team": match.home_team,
             "away_team": match.away_team,
-            "match_date": match.match_date
+            "match_date": match.match_date,
+            "score_home": match.score_home,
+            "score_away": match.score_away,
+            "league_id": match.league_id,
+            "league_name": match.league_name,
+            "league_logo": match.league_logo,
+            "league_season": match.league_season,
+            "league_round": match.league_round,
+            "home_team_logo": match.home_team_logo,
+            "away_team_logo": match.away_team_logo
         }
         for match in matches
     ]
