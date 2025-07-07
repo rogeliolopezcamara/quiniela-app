@@ -1,6 +1,6 @@
 // src/components/Register.jsx
 import { useState } from "react";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 const baseUrl = import.meta.env.VITE_API_URL;

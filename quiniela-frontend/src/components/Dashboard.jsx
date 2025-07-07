@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
