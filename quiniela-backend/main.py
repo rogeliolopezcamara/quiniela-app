@@ -136,56 +136,56 @@ from collections import defaultdict
 
 @app.get("/ranking/")
 def get_ranking(db: Session = Depends(get_db)):
-    # Obtener todos los rounds únicos ordenados
-    rounds = (
+    # 1. Obtener rondas con al menos un pronóstico
+    active_rounds = (
         db.query(models.Match.league_round)
+        .join(models.Prediction, models.Prediction.match_id == models.Match.id)
+        .filter(models.Match.league_round.isnot(None))
         .distinct()
         .order_by(models.Match.league_round)
         .all()
     )
-    round_names = [r.league_round for r in rounds]
+    rounds = [r[0] for r in active_rounds]
 
-    # Inicializar estructura
-    user_points = defaultdict(lambda: {"total_points": 0, "per_round": {r: 0 for r in round_names}})
-
-    # Hacer join y sumar puntos
-    rows = (
+    # 2. Obtener puntos por usuario y por ronda
+    results = (
         db.query(
-            models.User.id,
+            models.User.id.label("user_id"),
             models.User.name,
             models.User.email,
-            func.coalesce(models.Prediction.points, 0),
-            models.Match.league_round
+            models.Match.league_round,
+            func.coalesce(func.sum(models.Prediction.points), 0).label("points")
         )
         .join(models.Prediction, models.User.id == models.Prediction.user_id)
         .join(models.Match, models.Prediction.match_id == models.Match.id)
+        .filter(models.Match.league_round.in_(rounds))
+        .group_by(models.User.id, models.Match.league_round)
         .all()
     )
 
-    for user_id, name, email, points, round_name in rows:
-        user = user_points[user_id]
-        user["name"] = name
-        user["email"] = email
-        user["total_points"] += points
-        user["per_round"][round_name] += points
+    # 3. Estructurar resultados por usuario
+    user_data = defaultdict(lambda: {
+        "user_id": None,
+        "name": "",
+        "email": "",
+        "total_points": 0,
+        "rounds": {r: 0 for r in rounds}
+    })
 
-    # Formatear resultado
-    result = []
-    for user_id, data in user_points.items():
-        user_data = {
-            "user_id": user_id,
-            "name": data["name"],
-            "email": data["email"],
-            "total_points": data["total_points"],
-            **data["per_round"]
-        }
-        result.append(user_data)
+    for row in results:
+        user = user_data[row.user_id]
+        user["user_id"] = row.user_id
+        user["name"] = row.name
+        user["email"] = row.email
+        user["rounds"][row.league_round] += row.points
+        user["total_points"] += row.points
 
-    result.sort(key=lambda x: x["total_points"], reverse=True)
+    # 4. Convertir a lista y ordenar
+    ranked = sorted(user_data.values(), key=lambda x: x["total_points"], reverse=True)
 
     return {
-        "rounds": round_names,
-        "ranking": result
+        "rounds": rounds,
+        "ranking": ranked
     }
 
 from datetime import datetime
