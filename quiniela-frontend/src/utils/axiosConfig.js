@@ -1,22 +1,31 @@
 // src/utils/axiosConfig.js
 import axios from "axios";
-import { logout } from "../context/AuthContext"; // asumiendo que tienes esta función
 
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+const baseUrl = import.meta.env.VITE_API_URL;
+
+const api = axios.create({
+  baseURL: baseUrl,
 });
 
-instance.interceptors.response.use(
+// Aquí se almacena el callback externo para logout
+let onUnauthorizedCallback = null;
+
+// Función para registrar el callback de logout (la usaremos desde App.jsx)
+export const registerOnUnauthorized = (callback) => {
+  onUnauthorizedCallback = callback;
+};
+
+// Interceptor para manejar errores 401 (token expirado, inválido, etc.)
+api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // sesión expirada
-      alert("Tu sesión ha expirado. Por favor inicia sesión nuevamente.");
-      logout(); // <- esto limpia el contexto y localStorage
-      window.location.reload(); // recarga con la interfaz de usuario sin sesión
+    if (error.response && error.response.status === 401 && onUnauthorizedCallback) {
+      alert("Tu sesión ha expirado. Se cerrará la sesión.");
+      onUnauthorizedCallback(); // hace logout
+      window.location.reload(); // fuerza recarga para mostrar vista de no autenticado
     }
     return Promise.reject(error);
   }
 );
 
-export default instance;
+export default api;

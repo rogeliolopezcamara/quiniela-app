@@ -9,10 +9,15 @@ import { useAuth } from "./context/AuthContext";
 import Register from "./components/Register";
 import Changelog from "./components/Changelog";
 import Instructions from "./components/Instructions";
-
+import { useEffect } from "react";
+import { registerOnUnauthorized } from "./utils/axiosConfig"; // ✅ Importa la función
 
 function App() {
-  const { authToken } = useAuth();
+  const { authToken, logout } = useAuth();
+
+  useEffect(() => {
+    registerOnUnauthorized(logout); // ✅ Registra logout como callback en caso de 401
+  }, [logout]);
 
   return (
     <Router>
@@ -31,5 +36,3 @@ function App() {
 }
 
 export default App;
-
-
