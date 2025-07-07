@@ -45,15 +45,25 @@ def trigger_points_recalculation(match_id, score_home, score_away):
 def upsert_matches_to_db(fixtures, db: Session):
     for match in fixtures:
         fixture = match["fixture"]
+        league = match["league"]
         teams = match["teams"]
         goals = match["goals"]
 
         match_id = fixture["id"]
-        home_team = teams["home"]["name"]
-        away_team = teams["away"]["name"]
         match_date = datetime.fromisoformat(fixture["date"].replace("Z", "+00:00"))
         score_home = goals["home"]
         score_away = goals["away"]
+
+        # Nuevos campos
+        league_id = league["id"]
+        league_name = league["name"]
+        league_logo = league["logo"]
+        league_season = league["season"]
+        league_round = league["round"]
+        home_team = teams["home"]["name"]
+        away_team = teams["away"]["name"]
+        home_team_logo = teams["home"]["logo"]
+        away_team_logo = teams["away"]["logo"]
 
         existing_match = db.query(Match).filter_by(id=match_id).first()
 
@@ -63,6 +73,13 @@ def upsert_matches_to_db(fixtures, db: Session):
             existing_match.match_date = match_date
             existing_match.score_home = score_home
             existing_match.score_away = score_away
+            existing_match.league_id = league_id
+            existing_match.league_name = league_name
+            existing_match.league_logo = league_logo
+            existing_match.league_season = league_season
+            existing_match.league_round = league_round
+            existing_match.home_team_logo = home_team_logo
+            existing_match.away_team_logo = away_team_logo
         else:
             new_match = Match(
                 id=match_id,
@@ -70,11 +87,17 @@ def upsert_matches_to_db(fixtures, db: Session):
                 away_team=away_team,
                 match_date=match_date,
                 score_home=score_home,
-                score_away=score_away
+                score_away=score_away,
+                league_id=league_id,
+                league_name=league_name,
+                league_logo=league_logo,
+                league_season=league_season,
+                league_round=league_round,
+                home_team_logo=home_team_logo,
+                away_team_logo=away_team_logo
             )
             db.add(new_match)
 
-        # Si hay resultado, recalcular puntos
         if score_home is not None and score_away is not None:
             trigger_points_recalculation(match_id, score_home, score_away)
 

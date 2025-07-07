@@ -11,13 +11,21 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Match(Base):
-    __tablename__ = 'matches'
-    id = Column(Integer, primary_key=True, index=True)
-    home_team = Column(String, nullable=False)
-    away_team = Column(String, nullable=False)
-    match_date = Column(DateTime, nullable=False)
-    score_home = Column(Integer)
-    score_away = Column(Integer)
+    __tablename__ = "matches"
+
+    id = Column(Integer, primary_key=True)
+    home_team = Column(String)
+    away_team = Column(String)
+    match_date = Column(DateTime)
+    score_home = Column(Integer, nullable=True)
+    score_away = Column(Integer, nullable=True)
+    league_id = Column(Integer, nullable=True)
+    league_name = Column(String, nullable=True)
+    league_logo = Column(String, nullable=True)
+    league_season = Column(Integer, nullable=True)
+    league_round = Column(String, nullable=True)
+    home_team_logo = Column(String, nullable=True)
+    away_team_logo = Column(String, nullable=True)
 
 class Prediction(Base):
     __tablename__ = 'predictions'
