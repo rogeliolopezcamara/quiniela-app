@@ -1,3 +1,4 @@
+// src/components/Ranking.jsx
 import { useEffect, useState } from "react";
 import axios from "../utils/axiosConfig";
 import Sidebar from "./Sidebar";
@@ -68,7 +69,7 @@ const Ranking = () => {
                   <td className="border border-gray-300 px-2 py-1">{user.name}</td>
                   {rounds.map((r) => (
                     <td key={r} className="border border-gray-300 px-2 py-1 text-center">
-                      {user[r] ?? 0}
+                      {user.rounds?.[r] ?? 0}
                     </td>
                   ))}
                   <td className="border border-gray-300 px-2 py-1 text-center font-bold">
