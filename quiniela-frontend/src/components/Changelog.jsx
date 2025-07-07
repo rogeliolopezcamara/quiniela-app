@@ -3,6 +3,18 @@ import Sidebar from "./Sidebar";
 
 const changelogEntries = [
 {
+  date: "2025-07-07",
+  items: [
+    "Se detecta automáticamente el vencimiento del token y se cierra la sesión con un mensaje al usuario.",
+    "Se cambió el formato de fecha a 'dd/mm/aaaa, HH:mm' y se muestra en horario local del usuario.",
+    "Se agregaron los logos de los equipos en las páginas de partidos disponibles y de pronósticos del usuario.",
+    "Se agregaron nuevas columnas a la tabla 'matches' en la base de datos: league_id, league_name, league_logo, league_season, league_round, home_team_logo, y away_team_logo.",
+    "La tabla de ranking ahora muestra columnas por ronda ('league_round') con los puntos de cada usuario en cada una.",
+    "Se puede ordenar la tabla de ranking por cualquier columna, incluyendo rondas individuales y puntos totales.",
+    "La vista de 'Tus pronósticos' ahora es responsiva: en dispositivos móviles los datos se muestran como tarjetas para una mejor experiencia.",
+  ],
+},
+{
 date: "2025-06-27",
 items: [
     "Se corrigió un error que impedía recargar las páginas correctamente.",
