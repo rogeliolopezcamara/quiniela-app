@@ -258,7 +258,14 @@ def get_user_predictions(
             "pred_away": prediction.pred_away,
             "score_home": match.score_home,
             "score_away": match.score_away,
-            "points": prediction.points
+            "points": prediction.points,
+            "league_id": match.league_id,
+            "league_name": match.league_name,
+            "league_logo": match.league_logo,
+            "league_season": match.league_season,
+            "league_round": match.league_round,
+            "home_team_logo": match.home_team_logo,
+            "away_team_logo": match.away_team_logo
         })
 
     return result
