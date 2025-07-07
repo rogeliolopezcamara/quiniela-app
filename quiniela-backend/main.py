@@ -136,7 +136,7 @@ from collections import defaultdict
 
 @app.get("/ranking/")
 def get_ranking(db: Session = Depends(get_db)):
-    # 1. Obtener rondas con al menos un pronóstico
+    # 1. Obtener rondas activas (con al menos un pronóstico)
     active_rounds = (
         db.query(models.Match.league_round)
         .join(models.Prediction, models.Prediction.match_id == models.Match.id)
@@ -147,14 +147,15 @@ def get_ranking(db: Session = Depends(get_db)):
     )
     rounds = [r[0] for r in active_rounds]
 
-    # 2. Obtener puntos por usuario y por ronda
-    results = (
+    # 2. Obtener todos los usuarios
+    users = db.query(models.User).all()
+
+    # 3. Obtener puntos por usuario y por ronda
+    round_points = (
         db.query(
             models.User.id.label("user_id"),
-            models.User.name,
-            models.User.email,
             models.Match.league_round,
-            func.coalesce(func.sum(models.Prediction.points), 0).label("points")
+            func.sum(models.Prediction.points).label("points")
         )
         .join(models.Prediction, models.User.id == models.Prediction.user_id)
         .join(models.Match, models.Prediction.match_id == models.Match.id)
@@ -163,29 +164,37 @@ def get_ranking(db: Session = Depends(get_db)):
         .all()
     )
 
-    # 3. Estructurar resultados por usuario
-    user_data = defaultdict(lambda: {
-        "user_id": None,
-        "name": "",
-        "email": "",
-        "total_points": 0,
-        "rounds": {r: 0 for r in rounds}
-    })
+    # 4. Mapear puntos por (user_id, round)
+    points_by_user_round = {}
+    for row in round_points:
+        points_by_user_round[(row.user_id, row.league_round)] = row.points
 
-    for row in results:
-        user = user_data[row.user_id]
-        user["user_id"] = row.user_id
-        user["name"] = row.name
-        user["email"] = row.email
-        user["rounds"][row.league_round] += row.points
-        user["total_points"] += row.points
+    # 5. Construir respuesta por usuario
+    result = []
+    for user in users:
+        user_entry = {
+            "user_id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "total_points": 0,
+            "rounds": {}
+        }
 
-    # 4. Convertir a lista y ordenar
-    ranked = sorted(user_data.values(), key=lambda x: x["total_points"], reverse=True)
+        total = 0
+        for rnd in rounds:
+            pts = points_by_user_round.get((user.id, rnd), 0)
+            user_entry["rounds"][rnd] = pts
+            total += pts
+
+        user_entry["total_points"] = total
+        result.append(user_entry)
+
+    # 6. Ordenar por puntos
+    result.sort(key=lambda x: x["total_points"], reverse=True)
 
     return {
         "rounds": rounds,
-        "ranking": ranked
+        "ranking": result
     }
 
 from datetime import datetime
