@@ -1,4 +1,3 @@
-// src/components/Ranking.jsx
 import { useEffect, useState } from "react";
 import axios from "../utils/axiosConfig";
 import Sidebar from "./Sidebar";
@@ -9,9 +8,11 @@ const baseUrl = import.meta.env.VITE_API_URL;
 const Ranking = () => {
   const { authToken } = useAuth();
   const [rankingData, setRankingData] = useState([]);
+  const [sortedData, setSortedData] = useState([]);
   const [rounds, setRounds] = useState([]);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: "total_points", direction: "desc" });
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -36,6 +37,31 @@ const Ranking = () => {
     fetchAll();
   }, [authToken]);
 
+  useEffect(() => {
+    let sorted = [...rankingData];
+    if (sortConfig.key === "total_points") {
+      sorted.sort((a, b) =>
+        sortConfig.direction === "asc"
+          ? a.total_points - b.total_points
+          : b.total_points - a.total_points
+      );
+    } else {
+      sorted.sort((a, b) =>
+        sortConfig.direction === "asc"
+          ? (a.rounds[sortConfig.key] ?? 0) - (b.rounds[sortConfig.key] ?? 0)
+          : (b.rounds[sortConfig.key] ?? 0) - (a.rounds[sortConfig.key] ?? 0)
+      );
+    }
+    setSortedData(sorted);
+  }, [rankingData, sortConfig]);
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => ({
+      key,
+      direction: prev.key === key && prev.direction === "desc" ? "asc" : "desc",
+    }));
+  };
+
   return (
     <>
       <Sidebar />
@@ -50,13 +76,27 @@ const Ranking = () => {
                 <th className="border border-gray-300 px-2 py-1">#</th>
                 <th className="border border-gray-300 px-2 py-1">Nombre</th>
                 {rounds.map((r) => (
-                  <th key={r} className="border border-gray-300 px-2 py-1">{r}</th>
+                  <th key={r} className="border border-gray-300 px-2 py-1 text-center">
+                    <button
+                      onClick={() => handleSort(r)}
+                      className="hover:underline text-blue-600"
+                    >
+                      {r} {sortConfig.key === r ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+                    </button>
+                  </th>
                 ))}
-                <th className="border border-gray-300 px-2 py-1 font-bold">Total</th>
+                <th className="border border-gray-300 px-2 py-1 text-center font-bold">
+                  <button
+                    onClick={() => handleSort("total_points")}
+                    className="hover:underline text-blue-600"
+                  >
+                    Total {sortConfig.key === "total_points" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {rankingData.map((user, index) => (
+              {sortedData.map((user, index) => (
                 <tr
                   key={user.user_id}
                   className={
@@ -69,7 +109,7 @@ const Ranking = () => {
                   <td className="border border-gray-300 px-2 py-1">{user.name}</td>
                   {rounds.map((r) => (
                     <td key={r} className="border border-gray-300 px-2 py-1 text-center">
-                      {user.rounds?.[r] ?? 0}
+                      {user.rounds[r] ?? 0}
                     </td>
                   ))}
                   <td className="border border-gray-300 px-2 py-1 text-center font-bold">
