@@ -12,10 +12,11 @@ app = FastAPI()
 def root():
     return {"message": "Bienvenido a la API de la quiniela"}
 
+FRONT_END_URL = os.getenv("FRONTEND_URL")
 # Configura los orígenes permitidos (tu frontend)
 origins = [
     "http://localhost:5173",
-    "https://quiniela-frontend.onrender.com"  # <--- importante
+    FRONT_END_URL  # <--- importante
 ]
 
 app.add_middleware(
