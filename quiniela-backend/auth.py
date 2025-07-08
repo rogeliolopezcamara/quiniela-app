@@ -16,7 +16,7 @@ load_dotenv()
 # Configuración
 SECRET_KEY = os.getenv("SECRET_KEY", "mi_clave_por_defecto")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+#ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # Para manejar contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -33,10 +33,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 # Crear un JWT válido con tiempo de expiración
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=60))
-    to_encode.update({"exp": expire})
+    #expire = datetime.utcnow() + (expires_delta or timedelta(minutes=60))
+    #to_encode.update({"exp": expire})
     print("DEBUG - Payload antes de codificar:", to_encode)
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
