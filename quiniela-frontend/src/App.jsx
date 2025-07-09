@@ -17,6 +17,7 @@ function App() {
   const { authToken, logout } = useAuth();
 
   console.log("🔍 authToken:", authToken); // <- nuevo log
+  console.log("🌐 Clave pública desde ENV:", import.meta.env.VITE_VAPID_PUBLIC_KEY);
 
   useEffect(() => {
     registerOnUnauthorized(logout);
