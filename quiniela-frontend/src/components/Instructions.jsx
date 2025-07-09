@@ -12,6 +12,22 @@ const Instructions = () => {
           <h1 className="text-2xl font-bold">Instrucciones</h1>
         </div>
 
+        <h2 className="text-lg font-semibold mb-2">📱 Cómo añadir esta página a tu pantalla de inicio (iOS)</h2>
+        <p className="mb-4">
+          Si estás usando un iPhone o iPad, sigue estos pasos para agregar la app como si fuera una aplicación nativa:
+        </p>
+        <ol className="list-decimal list-inside space-y-2 mb-6">
+          <li>Abre esta página desde el navegador Safari.</li>
+          <li>Toca el botón de <strong>compartir</strong> (el icono de un cuadrado con una flecha hacia arriba).</li>
+          <li>Selecciona <strong>"Agregar a pantalla de inicio"</strong>.</li>
+          <li>Cambia el nombre si lo deseas, luego toca <strong>"Agregar"</strong>.</li>
+          <li>¡Listo! Ahora podrás acceder a la app desde el ícono en tu pantalla como si fuera una app instalada.</li>
+        </ol>
+
+        <p className="mb-4">
+          Nota: Esto permite que la app tenga su propio entorno independiente (sin barra de Safari) y te permitirá recibir notificaciones push en el futuro.
+        </p>
+
         <p className="mb-4">
           Amigos! Les cuento que estoy desarrollando una web-app para hacer quinielas con tus amigos de forma sencilla.
           La idea es que puedas entrar a la página, ingresar tus pronósticos, y que la app descargue automáticamente los resultados

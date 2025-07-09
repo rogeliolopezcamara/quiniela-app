@@ -3,6 +3,16 @@ import Sidebar from "./Sidebar";
 
 const changelogEntries = [
 {
+  date: "2025-07-10",
+  items: [
+    "Se implementó un sistema de notificaciones push para recordar a los usuarios hacer su pronóstico antes de cada partido.",
+    "El backend envía notificaciones si falta menos de 24 horas o menos de 1 hora para un partido y el usuario aún no ha hecho su predicción.",
+    "Se agregó el registro automático de Service Worker para habilitar las notificaciones push.",
+    "Se actualizó el componente de Instrucciones para incluir pasos sobre cómo añadir la app a la pantalla de inicio en dispositivos iOS.",
+    "Mejoras de compatibilidad para dispositivos móviles, incluyendo la configuración como PWA en Safari.",
+  ],
+},
+{
   date: "2025-07-07",
   items: [
     "Se detecta automáticamente el vencimiento del token y se cierra la sesión con un mensaje al usuario.",
