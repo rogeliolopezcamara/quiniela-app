@@ -1,11 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/icono.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Mi Quiniela</title>
+
+    <!-- Ícono para favicon y manifest -->
+    <link rel="icon" href="/icono.png" />
+    <link rel="apple-touch-icon" href="/icono.png" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- PWA: Theme y comportamiento standalone -->
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Mi Quiniela" />
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
