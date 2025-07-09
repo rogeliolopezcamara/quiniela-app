@@ -16,6 +16,8 @@ import { subscribeToNotifications } from "./utils/subscribeToNotifications"; // 
 function App() {
   const { authToken, logout } = useAuth();
 
+  console.log("🔍 authToken:", authToken); // <- nuevo log
+
   useEffect(() => {
     registerOnUnauthorized(logout);
   }, [logout]);
