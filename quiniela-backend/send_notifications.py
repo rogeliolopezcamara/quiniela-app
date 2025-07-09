@@ -32,8 +32,16 @@ def notify_upcoming_matches():
 
                 # 4. Enviar notificación
                 for sub in subs:
+                    subscription = {
+                        "endpoint": sub.endpoint,
+                        "keys": {
+                            "p256dh": sub.p256dh_key,
+                            "auth": sub.auth_key,
+                        },
+                    }
+
                     send_push_message(
-                        sub.subscription_json,
+                        subscription,
                         f"⚽ {match.home_team} vs {match.away_team}",
                         "¡Haz tu pronóstico antes de que comience el partido mañana!"
                     )
