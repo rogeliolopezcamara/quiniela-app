@@ -5,6 +5,9 @@ from pydantic import BaseModel
 import models
 from database import get_db
 from auth import get_current_user
+from pywebpush import webpush, WebPushException
+import os
+import json
 
 router = APIRouter()
 
@@ -41,3 +44,17 @@ def subscribe_to_notifications(
 
     db.commit()
     return {"message": "✅ Suscripción guardada correctamente"}
+
+def send_push_message(subscription, title, body):
+    try:
+        webpush(
+            subscription_info=json.loads(subscription),
+            data=json.dumps({"title": title, "body": body}),
+            vapid_private_key=os.getenv("VAPID_PRIVATE_KEY"),
+            vapid_claims={
+                "sub": "mailto:admin@tu-app.com"
+            }
+        )
+        print(f"✅ Notificación enviada: {title}")
+    except WebPushException as ex:
+        print("❌ Error al enviar push:", repr(ex))
