@@ -6,7 +6,6 @@ export async function subscribeToNotifications() {
     return;
   }
 
-  // Paso 1: Pedir permiso
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
     console.warn("❌ El usuario no concedió permiso para notificaciones.");
@@ -16,31 +15,37 @@ export async function subscribeToNotifications() {
   try {
     const registration = await navigator.serviceWorker.ready;
 
-    const existingSubscription = await registration.pushManager.getSubscription();
-    if (existingSubscription) {
+    const existing = await registration.pushManager.getSubscription();
+    if (existing) {
       console.log("✅ Ya estás suscrito a notificaciones.");
       return;
     }
 
     console.log("🔔 Intentando suscribirse a notificaciones...");
     console.log("🔑 Clave pública VAPID:", publicVapidKey);
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
     });
 
+    const json = subscription.toJSON();
     const payload = {
-      endpoint: subscription.endpoint,
-      p256dh_key: subscription.keys?.p256dh,
-      auth_key: subscription.keys?.auth,
+      endpoint: json.endpoint,
+      p256dh_key: json.keys.p256dh,
+      auth_key: json.keys.auth,
     };
 
     console.log("📦 Payload a enviar:", payload);
 
+    const token = localStorage.getItem("token");
+
     const res = await fetch(`${import.meta.env.VITE_API_URL}/subscribe`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // importante para cookies y autenticación
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(payload),
     });
 
@@ -54,7 +59,6 @@ export async function subscribeToNotifications() {
   }
 }
 
-// Utilidad VAPID
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
