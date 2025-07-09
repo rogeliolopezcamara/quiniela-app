@@ -8,10 +8,11 @@ from auth import get_current_user
 
 router = APIRouter()
 
-# Modelo Pydantic para validar lo que envía el frontend
+# ✅ Modelo actualizado para coincidir con lo que envía el frontend
 class SubscriptionPayload(BaseModel):
     endpoint: str
-    keys: dict
+    p256dh_key: str
+    auth_key: str
 
 @router.post("/subscribe")
 def subscribe_to_notifications(
@@ -19,12 +20,6 @@ def subscribe_to_notifications(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    p256dh_key = payload.keys.get("p256dh")
-    auth_key = payload.keys.get("auth")
-
-    if not p256dh_key or not auth_key:
-        raise HTTPException(status_code=400, detail="Faltan claves públicas de suscripción")
-
     # Verifica si ya existe una suscripción con ese endpoint para este usuario
     existing = (
         db.query(models.PushSubscription)
@@ -33,16 +28,16 @@ def subscribe_to_notifications(
     )
 
     if existing:
-        existing.p256dh_key = p256dh_key
-        existing.auth_key = auth_key
+        existing.p256dh_key = payload.p256dh_key
+        existing.auth_key = payload.auth_key
     else:
         new_sub = models.PushSubscription(
             user_id=current_user.id,
             endpoint=payload.endpoint,
-            p256dh_key=p256dh_key,
-            auth_key=auth_key,
+            p256dh_key=payload.p256dh_key,
+            auth_key=payload.auth_key,
         )
         db.add(new_sub)
 
     db.commit()
-    return {"message": "Suscripción guardada correctamente"}
+    return {"message": "✅ Suscripción guardada correctamente"}
