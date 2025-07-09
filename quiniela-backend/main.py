@@ -372,7 +372,7 @@ def run_update_script(request: Request):
         update_matches.upsert_matches_to_db(fixtures, db)
 
         # Enviar notificaciones después de actualizar
-        send_notifications.send_match_notifications(db)  # 👈 llama a tu función
+        send_notifications.notify_upcoming_matches()  # 👈 llama a tu función
 
         return {"message": "Actualización y notificaciones completadas"}
     except Exception as e:
