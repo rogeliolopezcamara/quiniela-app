@@ -1,4 +1,5 @@
 # send_notifications.py
+import json
 from sqlalchemy.orm import Session
 from database import SessionLocal
 import models
@@ -21,8 +22,11 @@ def notify_upcoming_matches():
                 },
             }
 
+            # ✅ Convertir el diccionario a JSON string
+            subscription_json = json.dumps(subscription)
+
             send_push_message(
-                subscription,
+                subscription_json,
                 "🔔 Notificación de prueba",
                 "Si ves esto, las notificaciones push funcionan 🎉"
             )
@@ -31,4 +35,4 @@ def notify_upcoming_matches():
         db.close()
 
 if __name__ == "__main__":
-    notify_test()
+    notify_upcoming_matches()
