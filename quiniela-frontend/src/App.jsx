@@ -10,14 +10,21 @@ import Register from "./components/Register";
 import Changelog from "./components/Changelog";
 import Instructions from "./components/Instructions";
 import { useEffect } from "react";
-import { registerOnUnauthorized } from "./utils/axiosConfig"; // ✅ Importa la función
+import { registerOnUnauthorized } from "./utils/axiosConfig";
+import { subscribeToNotifications } from "./utils/subscribeToNotifications"; // ✅ Nuevo import
 
 function App() {
   const { authToken, logout } = useAuth();
 
   useEffect(() => {
-    registerOnUnauthorized(logout); // ✅ Registra logout como callback en caso de 401
+    registerOnUnauthorized(logout);
   }, [logout]);
+
+  useEffect(() => {
+    if (authToken) {
+      subscribeToNotifications(); // ✅ Intenta suscribirse cuando el usuario está logueado
+    }
+  }, [authToken]);
 
   return (
     <Router>

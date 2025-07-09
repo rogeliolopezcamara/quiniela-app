@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException, Request, APIRouter
 from sqlalchemy.orm import Session
+from fastapi.responses import JSONResponse
 from database import SessionLocal, engine, Base
 import models, schemas, utils, auth
 from fastapi.middleware.cors import CORSMiddleware
+from auth import get_current_user
 import os
 
 
@@ -361,10 +363,21 @@ def run_update_script(request: Request):
 
     try:
         import update_matches
-        fixtures = update_matches.get_fixtures()
+        import send_notifications  # 👈 importa tu nuevo script
+
         db = next(get_db())
+
+        # Actualizar partidos
+        fixtures = update_matches.get_fixtures()
         update_matches.upsert_matches_to_db(fixtures, db)
-        return {"message": "Actualización completada"}
+
+        # Enviar notificaciones después de actualizar
+        send_notifications.send_match_notifications(db)  # 👈 llama a tu función
+
+        return {"message": "Actualización y notificaciones completadas"}
     except Exception as e:
-        print("❌ Error durante la actualización:", e)
+        print("❌ Error durante la actualización o notificación:", e)
         raise HTTPException(status_code=500, detail="Error interno")
+
+from push_notifications import router as push_router
+app.include_router(push_router)
