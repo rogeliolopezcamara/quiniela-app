@@ -28,6 +28,10 @@ const Instructions = () => {
           Nota: Esto permite que la app tenga su propio entorno independiente (sin barra de Safari) y te permitirá recibir notificaciones push en el futuro.
         </p>
 
+        <hr className="my-6" />
+
+        <h2 className="text-lg font-semibold mb-4">🧪 Instrucciones de alpha testing</h2>
+
         <p className="mb-4">
           Amigos! Les cuento que estoy desarrollando una web-app para hacer quinielas con tus amigos de forma sencilla.
           La idea es que puedas entrar a la página, ingresar tus pronósticos, y que la app descargue automáticamente los resultados
