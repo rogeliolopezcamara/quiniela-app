@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user_id", String(user_id));
     setAuthToken(token);
     setUserId(user_id);
+    console.log("✅ login() guardó el token:", token); // 👈 Log importante
   };
 
   const logout = () => {
@@ -18,7 +19,14 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user_id");
     setAuthToken(null);
     setUserId(null);
+    console.log("🔒 Sesión cerrada"); // 👈 Log útil
   };
+
+  // 👇 Verifica carga inicial desde localStorage
+  useEffect(() => {
+    console.log("🪪 AuthContext - token inicial:", authToken);
+    console.log("🧑‍🦱 AuthContext - user_id inicial:", userId);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ authToken, userId, login, logout }}>
