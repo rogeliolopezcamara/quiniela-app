@@ -4,7 +4,7 @@ from database import SessionLocal
 import models
 from push_notifications import send_push_message
 
-def notify_test():
+def notify_upcoming_matches():
     db: Session = SessionLocal()
 
     try:
