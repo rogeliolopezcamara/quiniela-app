@@ -6,6 +6,13 @@ export async function subscribeToNotifications() {
     return;
   }
 
+  // ✅ Paso 1: Pedir permiso para notificaciones
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") {
+    console.warn("❌ El usuario no concedió permiso para notificaciones.");
+    return;
+  }
+
   try {
     const registration = await navigator.serviceWorker.ready;
 
@@ -23,7 +30,7 @@ export async function subscribeToNotifications() {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/subscribe`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // para enviar cookies
+      credentials: "include",
       body: JSON.stringify(subscription),
     });
 
@@ -35,7 +42,6 @@ export async function subscribeToNotifications() {
   }
 }
 
-// Utilidad para convertir la clave VAPID
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
