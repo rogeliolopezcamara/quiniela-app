@@ -22,6 +22,7 @@ function App() {
 
   useEffect(() => {
     if (authToken) {
+      console.log("🔔 Intentando suscribirse a notificaciones...");
       subscribeToNotifications(); // ✅ Intenta suscribirse cuando el usuario está logueado
     }
   }, [authToken]);
