@@ -384,3 +384,6 @@ app.include_router(push_router)
 
 from password_reset import router as password_reset_router
 app.include_router(password_reset_router)
+
+from groups import router as groups_router
+app.include_router(groups_router)

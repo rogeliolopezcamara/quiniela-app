@@ -14,6 +14,8 @@ import { registerOnUnauthorized } from "./utils/axiosConfig";
 import { subscribeToNotifications } from "./utils/subscribeToNotifications";
 import ResetPassword from "./components/ResetPassword";
 import GenerateResetLink from "./components/GenerateResetLink";
+import CrearGrupo from "./components/CrearGrupo";
+import JoinGroupForm from "./components/JoinGroupForm";
 
 
 function App() {
@@ -46,6 +48,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/admin/generar-reset" element={<GenerateResetLink />} />
+        <Route path="/crear-grupo" element={<CrearGrupo />} />
+        <Route path="/unirse-a-grupo" element={<JoinGroupForm />} />
       </Routes>
     </Router>
   );

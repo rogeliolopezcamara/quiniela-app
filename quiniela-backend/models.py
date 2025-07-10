@@ -65,3 +65,26 @@ class PasswordResetToken(Base):
     used = Column(Boolean, default=False)
 
     user = relationship("User", backref="reset_tokens")
+
+class Group(Base):
+    __tablename__ = "groups"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    code = Column(String, unique=True, nullable=False, index=True)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    creator = relationship("User", backref="created_groups")
+    members = relationship("GroupMember", back_populates="group", cascade="all, delete")
+
+class GroupMember(Base):
+    __tablename__ = "group_members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    group_id = Column(Integer, ForeignKey("groups.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    joined_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    group = relationship("Group", back_populates="members")
+    user = relationship("User", backref="group_memberships")
