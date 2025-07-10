@@ -1,3 +1,4 @@
+// CrearGrupo.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -25,7 +26,7 @@ function CrearGrupo() {
 
     try {
       const response = await axios.post(
-        `${baseUrl}/groups/create-group`,
+        `${baseUrl}/groups/`,
         { name: groupName },
         {
           headers: {
@@ -34,7 +35,7 @@ function CrearGrupo() {
         }
       );
 
-      setSuccess(`✅ Grupo creado con éxito. Código: ${response.data.code}`);
+      setSuccess(`✅ Grupo creado con éxito. Código: ${response.data.group.invite_code}`);
       setGroupName("");
     } catch (err) {
       setError("❌ No se pudo crear el grupo. Intenta de nuevo.");

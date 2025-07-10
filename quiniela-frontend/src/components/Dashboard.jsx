@@ -1,6 +1,6 @@
 // src/components/Dashboard.jsx
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useNavigate as useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import axios from "../utils/axiosConfig";
@@ -42,12 +42,12 @@ function Dashboard() {
 
     const fetchUserGroups = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/groups/get_my_groups`, {
+        const response = await axios.get(`${baseUrl}/groups/`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         });
-        setUserGroups(response.data.groups);
+        setUserGroups(response.data);
       } catch (error) {
         console.error("Error al obtener grupos:", error);
       }
@@ -115,7 +115,7 @@ function Dashboard() {
                   </p>
                   <p>
                     <span className="font-bold">Código de invitación:</span>{" "}
-                    <span className="font-mono">{group.code}</span>
+                    <span className="font-mono">{group.invite_code}</span>
                   </p>
                 </li>
               ))}

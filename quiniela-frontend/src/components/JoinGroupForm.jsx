@@ -8,7 +8,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 const JoinGroupForm = () => {
   const { authToken } = useAuth();
-  const [code, setCode] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
@@ -16,8 +16,8 @@ const JoinGroupForm = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        `${baseUrl}/groups/join-group/`,
-        { code },
+        `${baseUrl}/groups/join/`,
+        { invite_code: inviteCode },
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -45,8 +45,8 @@ const JoinGroupForm = () => {
         >
           <input
             type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
             placeholder="Código del grupo"
             required
             className="border rounded px-4 py-2"
