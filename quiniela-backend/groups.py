@@ -2,16 +2,22 @@
 import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+
 import models
 from database import get_db
 from auth import get_current_user
-from pydantic import BaseModel
 
-router = APIRouter(prefix="/groups")  # ✅ Añadido
+router = APIRouter(prefix="/groups")  # ✅ prefijo para agrupar rutas relacionadas
 
+# 📌 Schemas
 class CreateGroupRequest(BaseModel):
     name: str
 
+class JoinGroupRequest(BaseModel):
+    invite_code: str
+
+# ✅ Crear un nuevo grupo
 @router.post("/")
 def create_group(
     request: CreateGroupRequest,
@@ -20,7 +26,11 @@ def create_group(
 ):
     invite_code = str(uuid.uuid4())[:8]
 
-    group = models.Group(name=request.name, invite_code=invite_code)
+    group = models.Group(
+        name=request.name,
+        invite_code=invite_code,
+        creator_id=current_user.id  # ✅ usar la columna correcta
+    )
     db.add(group)
     db.commit()
     db.refresh(group)
@@ -38,9 +48,7 @@ def create_group(
         }
     }
 
-class JoinGroupRequest(BaseModel):
-    invite_code: str
-
+# ✅ Unirse a un grupo con código
 @router.post("/join/")
 def join_group(
     request: JoinGroupRequest,
@@ -63,6 +71,7 @@ def join_group(
 
     return {"message": "✅ Te uniste al grupo", "group_id": group.id}
 
+# ✅ Obtener los grupos del usuario
 @router.get("/")
 def get_my_groups(
     db: Session = Depends(get_db),
@@ -75,8 +84,16 @@ def get_my_groups(
         .all()
     )
 
-    return [{"id": g.id, "name": g.name, "invite_code": g.invite_code} for g in groups]
+    return [
+        {
+            "id": g.id,
+            "name": g.name,
+            "invite_code": g.invite_code
+        }
+        for g in groups
+    ]
 
+# ✅ Obtener los miembros de un grupo
 @router.get("/{group_id}/members")
 def get_group_members(
     group_id: int,
@@ -90,4 +107,11 @@ def get_group_members(
         .all()
     )
 
-    return [{"id": m.id, "name": m.name, "email": m.email} for m in members]
+    return [
+        {
+            "id": m.id,
+            "name": m.name,
+            "email": m.email
+        }
+        for m in members
+    ]
