@@ -114,18 +114,22 @@ def get_groups_with_stats(
     result = []
 
     for group in groups:
-        # Obtener todos los miembros del grupo con sus puntos
         members = (
-            db.query(models.User.id, models.User.name, models.User.total_points)
+            db.query(
+                models.User.id.label("user_id"),
+                models.User.name,
+                func.coalesce(func.sum(models.Prediction.points), 0).label("total_points")
+            )
             .join(models.GroupMember, models.User.id == models.GroupMember.user_id)
+            .outerjoin(models.Prediction, models.User.id == models.Prediction.user_id)
             .filter(models.GroupMember.group_id == group.id)
-            .order_by(models.User.total_points.desc())
+            .group_by(models.User.id)
+            .order_by(func.coalesce(func.sum(models.Prediction.points), 0).desc())
             .all()
         )
 
-        # Calcular posición del usuario actual
         user_ranking = next(
-            (i + 1 for i, m in enumerate(members) if m.id == current_user.id),
+            (i + 1 for i, m in enumerate(members) if m.user_id == current_user.id),
             None
         )
 
@@ -139,6 +143,7 @@ def get_groups_with_stats(
 
     return result
 
+
 @router.get("/{group_id}/ranking")
 def group_ranking(
     group_id: int,
@@ -150,14 +155,22 @@ def group_ranking(
         raise HTTPException(status_code=404, detail="Grupo no encontrado")
 
     members = (
-        db.query(models.User.id.label("user_id"), models.User.name, models.User.total_points)
+        db.query(
+            models.User.id.label("user_id"),
+            models.User.name,
+            func.coalesce(func.sum(models.Prediction.points), 0).label("total_points")
+        )
         .join(models.GroupMember, models.User.id == models.GroupMember.user_id)
+        .outerjoin(models.Prediction, models.User.id == models.Prediction.user_id)
         .filter(models.GroupMember.group_id == group_id)
-        .order_by(models.User.total_points.desc())
+        .group_by(models.User.id)
+        .order_by(func.coalesce(func.sum(models.Prediction.points), 0).desc())
         .all()
     )
 
     return {
         "group_name": group.name,
-        "ranking": [{"user_id": m.user_id, "name": m.name, "points": m.total_points} for m in members]
+        "ranking": [
+            {"user_id": m.user_id, "name": m.name, "points": m.total_points} for m in members
+        ]
     }
