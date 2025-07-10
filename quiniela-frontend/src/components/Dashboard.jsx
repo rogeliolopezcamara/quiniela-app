@@ -42,7 +42,7 @@ function Dashboard() {
 
     const fetchUserGroups = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/my-groups`, {
+        const response = await axios.get(`${baseUrl}/groups/get_my_groups`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },

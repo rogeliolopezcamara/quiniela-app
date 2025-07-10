@@ -16,7 +16,7 @@ const JoinGroupForm = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        `${baseUrl}/join-group/`,
+        `${baseUrl}/groups/join-group/`,
         { code },
         {
           headers: {

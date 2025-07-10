@@ -25,7 +25,7 @@ function CrearGrupo() {
 
     try {
       const response = await axios.post(
-        `${baseUrl}/create-group`,
+        `${baseUrl}/groups/create-group`,
         { name: groupName },
         {
           headers: {
