@@ -16,6 +16,7 @@ import ResetPassword from "./components/ResetPassword";
 import GenerateResetLink from "./components/GenerateResetLink";
 import CrearGrupo from "./components/CrearGrupo";
 import JoinGroupForm from "./components/JoinGroupForm";
+import GroupRanking from "./components/GroupRanking";
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
         <Route path="/admin/generar-reset" element={<GenerateResetLink />} />
         <Route path="/crear-grupo" element={<CrearGrupo />} />
         <Route path="/unirse-a-grupo" element={<JoinGroupForm />} />
+        <Route path="/ranking-grupo/:group_id" element={<GroupRanking />} />
       </Routes>
     </Router>
   );

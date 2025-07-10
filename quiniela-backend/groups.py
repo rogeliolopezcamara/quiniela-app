@@ -98,3 +98,66 @@ def get_group_members(
     )
 
     return [{"id": m.id, "name": m.name, "email": m.email} for m in members]
+
+@router.get("/my-groups-with-stats")
+def get_groups_with_stats(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    groups = (
+        db.query(models.Group)
+        .join(models.GroupMember, models.Group.id == models.GroupMember.group_id)
+        .filter(models.GroupMember.user_id == current_user.id)
+        .all()
+    )
+
+    result = []
+
+    for group in groups:
+        # Obtener todos los miembros del grupo con sus puntos
+        members = (
+            db.query(models.User.id, models.User.name, models.User.total_points)
+            .join(models.GroupMember, models.User.id == models.GroupMember.user_id)
+            .filter(models.GroupMember.group_id == group.id)
+            .order_by(models.User.total_points.desc())
+            .all()
+        )
+
+        # Calcular posición del usuario actual
+        user_ranking = next(
+            (i + 1 for i, m in enumerate(members) if m.id == current_user.id),
+            None
+        )
+
+        result.append({
+            "id": group.id,
+            "name": group.name,
+            "invite_code": group.invite_code,
+            "member_count": len(members),
+            "my_ranking": user_ranking
+        })
+
+    return result
+
+@router.get("/{group_id}/ranking")
+def group_ranking(
+    group_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    group = db.query(models.Group).filter(models.Group.id == group_id).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Grupo no encontrado")
+
+    members = (
+        db.query(models.User.id.label("user_id"), models.User.name, models.User.total_points)
+        .join(models.GroupMember, models.User.id == models.GroupMember.user_id)
+        .filter(models.GroupMember.group_id == group_id)
+        .order_by(models.User.total_points.desc())
+        .all()
+    )
+
+    return {
+        "group_name": group.name,
+        "ranking": [{"user_id": m.user_id, "name": m.name, "points": m.total_points} for m in members]
+    }

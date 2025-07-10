@@ -1,4 +1,3 @@
-// src/components/Dashboard.jsx
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -42,7 +41,7 @@ function Dashboard() {
 
     const fetchUserGroups = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/groups/`, {
+        const response = await axios.get(`${baseUrl}/groups/my-groups-with-stats`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
@@ -109,14 +108,17 @@ function Dashboard() {
           ) : (
             <ul className="space-y-3">
               {userGroups.map((group) => (
-                <li key={group.id} className="border p-3 rounded shadow">
-                  <p>
-                    <span className="font-bold">Nombre:</span> {group.name}
-                  </p>
-                  <p>
-                    <span className="font-bold">Código de invitación:</span>{" "}
-                    <span className="font-mono">{group.invite_code}</span>
-                  </p>
+                <li key={group.id} className="border p-3 rounded shadow text-left">
+                  <p><span className="font-bold">Nombre:</span> {group.name}</p>
+                  <p><span className="font-bold">Código de invitación:</span> <span className="font-mono">{group.invite_code}</span></p>
+                  <p><span className="font-bold">Miembros:</span> {group.member_count}</p>
+                  <p><span className="font-bold">Tu posición:</span> {group.my_ranking}</p>
+                  <button
+                    onClick={() => navigate(`/ranking-grupo/${group.id}`)}
+                    className="mt-2 bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
+                  >
+                    Ver ranking del grupo
+                  </button>
                 </li>
               ))}
             </ul>
