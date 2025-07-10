@@ -60,7 +60,7 @@ def reset_password(
             SELECT * FROM password_reset_tokens WHERE token = :token
         """),
         {"token": token}
-    ).fetchone()
+    ).mappings().fetchone()  # ✅ ← importante
 
     if not reset_entry:
         raise HTTPException(status_code=400, detail="Token inválido o expirado")
