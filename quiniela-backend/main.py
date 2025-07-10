@@ -381,3 +381,6 @@ def run_update_script(request: Request):
 
 from push_notifications import router as push_router
 app.include_router(push_router)
+
+from password_reset import router as password_reset_router
+app.include_router(password_reset_router)

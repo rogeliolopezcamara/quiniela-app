@@ -11,7 +11,10 @@ import Changelog from "./components/Changelog";
 import Instructions from "./components/Instructions";
 import { useEffect } from "react";
 import { registerOnUnauthorized } from "./utils/axiosConfig";
-import { subscribeToNotifications } from "./utils/subscribeToNotifications"; // ✅ Nuevo import
+import { subscribeToNotifications } from "./utils/subscribeToNotifications";
+import ResetPassword from "./components/ResetPassword";
+import GenerateResetLink from "./components/GenerateResetLink";
+
 
 function App() {
   const { authToken, logout } = useAuth();
@@ -41,6 +44,8 @@ function App() {
         <Route path="/my-predictions" element={<UserPredictions />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/admin/generar-reset" element={<GenerateResetLink />} />
       </Routes>
     </Router>
   );
