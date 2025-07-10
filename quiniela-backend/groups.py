@@ -137,7 +137,7 @@ def get_groups_with_stats(
         result.append({
             "id": group.id,
             "name": group.name,
-            "invite_code": group.invite_code,
+            "invite_code": group.code,
             "member_count": len(members),
             "my_ranking": user_ranking
         })
