@@ -3,21 +3,15 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-
 import models
 from database import get_db
 from auth import get_current_user
 
-router = APIRouter(prefix="/groups")  # ✅ prefijo para agrupar rutas relacionadas
+router = APIRouter(prefix="/groups")
 
-# 📌 Schemas
 class CreateGroupRequest(BaseModel):
     name: str
 
-class JoinGroupRequest(BaseModel):
-    invite_code: str
-
-# ✅ Crear un nuevo grupo
 @router.post("/")
 def create_group(
     request: CreateGroupRequest,
@@ -28,8 +22,8 @@ def create_group(
 
     group = models.Group(
         name=request.name,
-        invite_code=invite_code,
-        creator_id=current_user.id  # ✅ usar la columna correcta
+        code=invite_code,  # ✅ campo corregido
+        creator_id=current_user.id  # ✅ se asigna el creador
     )
     db.add(group)
     db.commit()
@@ -44,18 +38,20 @@ def create_group(
         "group": {
             "id": group.id,
             "name": group.name,
-            "invite_code": group.invite_code
+            "invite_code": group.code  # ✅ uso correcto del campo
         }
     }
 
-# ✅ Unirse a un grupo con código
+class JoinGroupRequest(BaseModel):
+    invite_code: str
+
 @router.post("/join/")
 def join_group(
     request: JoinGroupRequest,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    group = db.query(models.Group).filter(models.Group.invite_code == request.invite_code).first()
+    group = db.query(models.Group).filter(models.Group.code == request.invite_code).first()
     if not group:
         raise HTTPException(status_code=404, detail="Código inválido")
 
@@ -71,7 +67,6 @@ def join_group(
 
     return {"message": "✅ Te uniste al grupo", "group_id": group.id}
 
-# ✅ Obtener los grupos del usuario
 @router.get("/")
 def get_my_groups(
     db: Session = Depends(get_db),
@@ -85,15 +80,10 @@ def get_my_groups(
     )
 
     return [
-        {
-            "id": g.id,
-            "name": g.name,
-            "invite_code": g.invite_code
-        }
+        {"id": g.id, "name": g.name, "invite_code": g.code}
         for g in groups
     ]
 
-# ✅ Obtener los miembros de un grupo
 @router.get("/{group_id}/members")
 def get_group_members(
     group_id: int,
@@ -107,11 +97,4 @@ def get_group_members(
         .all()
     )
 
-    return [
-        {
-            "id": m.id,
-            "name": m.name,
-            "email": m.email
-        }
-        for m in members
-    ]
+    return [{"id": m.id, "name": m.name, "email": m.email} for m in members]
