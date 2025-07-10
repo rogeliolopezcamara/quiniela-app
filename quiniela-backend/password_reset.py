@@ -3,11 +3,18 @@ import uuid
 import os
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 import models
 from database import get_db
+from pydantic import BaseModel
+from passlib.context import CryptContext
 
 router = APIRouter()
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
+# ✅ Paso 1: Generar enlace de recuperación
 @router.post("/generate-reset-link/")
 def generate_reset_link(
     request: Request,
@@ -26,22 +33,18 @@ def generate_reset_link(
     token = str(uuid.uuid4())
 
     db.execute(
-        """
-        INSERT INTO password_reset_tokens (user_id, token)
-        VALUES (:user_id, :token)
-        """,
+        text("""
+            INSERT INTO password_reset_tokens (user_id, token)
+            VALUES (:user_id, :token)
+        """),
         {"user_id": user.id, "token": token}
     )
     db.commit()
 
-    reset_link = f"https://quiniela-frontend.onrender.com/reset-password/{token}"
+    reset_link = f"{FRONTEND_URL}/reset-password/{token}"
     return {"reset_link": reset_link}
 
-from pydantic import BaseModel
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
+# ✅ Paso 2: Actualizar la contraseña
 class ResetPasswordPayload(BaseModel):
     new_password: str
 
@@ -53,16 +56,15 @@ def reset_password(
 ):
     # Buscar el token en la tabla
     reset_entry = db.execute(
-        """
-        SELECT * FROM password_reset_tokens WHERE token = :token
-        """,
+        text("""
+            SELECT * FROM password_reset_tokens WHERE token = :token
+        """),
         {"token": token}
     ).fetchone()
 
     if not reset_entry:
         raise HTTPException(status_code=400, detail="Token inválido o expirado")
 
-    # Verificar si el token ya fue usado
     if reset_entry["used"]:
         raise HTTPException(status_code=400, detail="Este enlace ya fue utilizado")
 
@@ -77,9 +79,9 @@ def reset_password(
 
     # Marcar el token como usado
     db.execute(
-        """
-        UPDATE password_reset_tokens SET used = true WHERE token = :token
-        """,
+        text("""
+            UPDATE password_reset_tokens SET used = true WHERE token = :token
+        """),
         {"token": token}
     )
 
