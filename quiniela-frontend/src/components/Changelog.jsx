@@ -6,12 +6,7 @@ const changelogEntries = [
   date: "2025-06-27",
   items: [
     "Se implementó la funcionalidad para crear grupos privados con un código de invitación único.",
-    "Se agregó la opción de unirse a grupos mediante código desde el frontend y backend.",
-    "Se añadió al Dashboard una vista con todos los grupos del usuario, mostrando número de miembros, posición en el ranking y link al ranking del grupo.",
-    "Se crearon los endpoints `/groups/my-groups-with-stats` y `/groups/{group_id}/ranking` para obtener información detallada de los grupos.",
-    "Se corrigió el modelo `Group` para incluir correctamente `creator_id` y `code` como columnas válidas.",
-    "Se ajustó la lógica para calcular los puntos de los usuarios a partir de la tabla `predictions`, en lugar de `users`.",
-    "Se actualizó el componente de Instrucciones para incluir un índice de navegación sticky y una nueva sección sobre cómo recuperar tu contraseña si la olvidaste.",
+    "Se agregó un procedimiento para recuperar la contraseña olvidada mediante un enlace de restablecimiento",
   ],
 },
 {
