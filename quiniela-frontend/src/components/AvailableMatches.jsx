@@ -18,7 +18,17 @@ const AvailableMatches = () => {
             Authorization: `Bearer ${authToken}`,
           },
         });
-        setMatches(response.data);
+
+        const now = new Date();
+        const in8Days = new Date();
+        in8Days.setDate(now.getDate() + 8);
+
+        const filtered = response.data.filter((match) => {
+          const matchDate = new Date(match.match_date);
+          return matchDate <= in8Days;
+        });
+
+        setMatches(filtered);
       } catch (error) {
         console.error("Error al obtener partidos disponibles:", error);
       }
@@ -31,11 +41,7 @@ const AvailableMatches = () => {
     try {
       await axios.post(
         `${baseUrl}/predictions/`,
-        {
-          match_id,
-          pred_home,
-          pred_away,
-        },
+        { match_id, pred_home, pred_away },
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -43,7 +49,7 @@ const AvailableMatches = () => {
         }
       );
       alert("Pronóstico enviado correctamente");
-      setMatches((prevMatches) => prevMatches.filter((m) => m.match_id !== match_id));
+      setMatches((prev) => prev.filter((m) => m.match_id !== match_id));
     } catch (error) {
       console.error("Error al enviar el pronóstico:", error);
       alert("Hubo un error al enviar el pronóstico");
@@ -64,7 +70,6 @@ const AvailableMatches = () => {
     });
   };
 
-  // Agrupar partidos por league_round
   const groupedMatches = matches.reduce((acc, match) => {
     const round = match.league_round || "Otros";
     if (!acc[round]) acc[round] = [];
