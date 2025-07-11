@@ -17,7 +17,7 @@ HEADERS = {
 }
 BASE_URL = "https://v3.football.api-sports.io"
 
-def get_fixtures(league_id=15, season=2025):
+def get_fixtures(league_id=262, season=2025):
     url = f"{BASE_URL}/fixtures?league={league_id}&season={season}"
     response = requests.get(url, headers=HEADERS)
     data = response.json()
