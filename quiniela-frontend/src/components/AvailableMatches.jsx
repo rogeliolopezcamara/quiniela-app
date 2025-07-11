@@ -50,7 +50,7 @@ const AvailableMatches = () => {
     }
   };
 
-  const normalizeISOString = (s) => s.endsWith("Z") ? s : s + "Z";
+  const normalizeISOString = (s) => (s.endsWith("Z") ? s : s + "Z");
 
   const formatDate = (isoString) => {
     const localDate = new Date(normalizeISOString(isoString));
@@ -64,63 +64,79 @@ const AvailableMatches = () => {
     });
   };
 
+  // Agrupar partidos por league_round
+  const groupedMatches = matches.reduce((acc, match) => {
+    const round = match.league_round || "Otros";
+    if (!acc[round]) acc[round] = [];
+    acc[round].push(match);
+    return acc;
+  }, {});
+
   return (
     <div className="flex">
       <Sidebar />
       <div className="p-6 w-full max-w-3xl mx-auto mt-20">
         <h1 className="text-2xl font-bold mb-4 text-center">Partidos Disponibles</h1>
-        {matches.map((match) => (
-          <div key={match.match_id} className="bg-gray-100 p-4 mb-6 rounded">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <img src={match.home_team_logo} alt={match.home_team} className="w-6 h-6" />
-                <span className="font-semibold">{match.home_team}</span>
-              </div>
-              <span className="text-sm text-gray-600">{formatDate(match.match_date)}</span>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">{match.away_team}</span>
-                <img src={match.away_team_logo} alt={match.away_team} className="w-6 h-6" />
-              </div>
-            </div>
-
-            <form
-              className="flex items-center gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target;
-                const pred_home = form.elements[`home_${match.match_id}`].value;
-                const pred_away = form.elements[`away_${match.match_id}`].value;
-                handleSubmit(match.match_id, parseInt(pred_home), parseInt(pred_away));
-              }}
-            >
-              <input
-                name={`home_${match.match_id}`}
-                type="number"
-                placeholder="Local"
-                className="border rounded px-2 py-1 w-16"
-                required
-                min="0"
-              />
-              <span>-</span>
-              <input
-                name={`away_${match.match_id}`}
-                type="number"
-                placeholder="Visita"
-                className="border rounded px-2 py-1 w-16"
-                required
-                min="0"
-              />
-              <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">
-                Enviar
-              </button>
-            </form>
-          </div>
-        ))}
         {matches.length > 0 && (
-          <p className="text-sm text-center text-gray-500 mt-6">
+          <p className="text-sm text-center text-gray-500 mb-6">
             * Las fechas y horas se muestran en tu horario local.
           </p>
         )}
+
+        {Object.entries(groupedMatches).map(([round, roundMatches]) => (
+          <div key={round} className="mb-10">
+            <h2 className="text-lg font-semibold mb-4">{round}</h2>
+
+            {roundMatches.map((match) => (
+              <div key={match.match_id} className="bg-gray-100 p-4 mb-6 rounded">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <img src={match.home_team_logo} alt={match.home_team} className="w-6 h-6" />
+                    <span className="font-semibold">{match.home_team}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{match.away_team}</span>
+                    <img src={match.away_team_logo} alt={match.away_team} className="w-6 h-6" />
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 mb-2 text-center">{formatDate(match.match_date)}</p>
+
+                <form
+                  className="flex items-center gap-2 justify-center"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const pred_home = form.elements[`home_${match.match_id}`].value;
+                    const pred_away = form.elements[`away_${match.match_id}`].value;
+                    handleSubmit(match.match_id, parseInt(pred_home), parseInt(pred_away));
+                  }}
+                >
+                  <input
+                    name={`home_${match.match_id}`}
+                    type="number"
+                    placeholder="Local"
+                    className="border rounded px-2 py-1 w-16"
+                    required
+                    min="0"
+                  />
+                  <span>-</span>
+                  <input
+                    name={`away_${match.match_id}`}
+                    type="number"
+                    placeholder="Visita"
+                    className="border rounded px-2 py-1 w-16"
+                    required
+                    min="0"
+                  />
+                  <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">
+                    Enviar
+                  </button>
+                </form>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
