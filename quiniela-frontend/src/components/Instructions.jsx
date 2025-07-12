@@ -89,7 +89,7 @@ const Instructions = () => {
         <hr className="my-6" />
 
         {/* Sección precio y premios */}
-        <div id="precio-premios" className="scroll-mt-20">
+        <div id="precio" className="scroll-mt-20">
         <h2 className="text-lg font-semibold mb-2">💰 Sobre el precio y los premios</h2>
         <p className="mb-4">
             La participación en la quiniela tiene un costo de <strong>$200 pesos mexicanos</strong>.
