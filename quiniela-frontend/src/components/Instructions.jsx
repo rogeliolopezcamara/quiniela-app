@@ -88,20 +88,30 @@ const Instructions = () => {
 
         <hr className="my-6" />
 
-        {/* Precio y premios */}
-        <div id="precio" className="scroll-mt-20">
-          <h2 className="text-lg font-semibold mb-2">💰 Sobre el precio y los premios</h2>
-          <p className="mb-4">
-            El costo de la quiniela es de <strong>$200 MXN</strong>. Este debe pagarse antes de que inicie la jornada 5 (15 de agosto). Si no se paga a tiempo, la cuenta será desactivada.
-          </p>
-          <p className="mb-4">
-            Los premios se reparten así:
-            <ul className="list-disc list-inside space-y-2">
-              <li>🥇 1er lugar: 70% del total acumulado</li>
-              <li>🥈 2do lugar: 20%</li>
-              <li>🥉 3er lugar: 10%</li>
-            </ul>
-          </p>
+        {/* Sección precio y premios */}
+        <div id="precio-premios" className="scroll-mt-20">
+        <h2 className="text-lg font-semibold mb-2">💰 Sobre el precio y los premios</h2>
+        <p className="mb-4">
+            La participación en la quiniela tiene un costo de <strong>$200 pesos mexicanos</strong>.
+            Este pago debe realizarse antes de que comiencen los partidos de la jornada 5, es decir, antes del <strong>15 de agosto</strong>.
+        </p>
+        <p className="mb-4">
+            Si no se ha realizado el pago antes de esta fecha, la cuenta del usuario quedará <strong>inactiva</strong> y no podrá seguir participando en la quiniela.
+        </p>
+        <p className="mb-4">
+            Los premios serán distribuidos entre los <strong>tres primeros lugares</strong> del ranking global:
+        </p>
+        <ul className="list-disc list-inside space-y-2 mb-4">
+            <li>🥇 1er lugar: 70% del total acumulado</li>
+            <li>🥈 2do lugar: 20%</li>
+            <li>🥉 3er lugar: 10%</li>
+        </ul>
+        <p className="mb-4">
+            Para realizar el pago, por favor contacta al administrador por WhatsApp 👉{" "}
+            <a href="https://wa.me/13322052695" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
+            wa.me/13322052695
+            </a>
+        </p>
         </div>
 
         <hr className="my-6" />
