@@ -1,3 +1,4 @@
+// src/components/Dashboard.jsx
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -23,6 +24,25 @@ function Dashboard() {
 
   const handleGoToJoinGroup = () => {
     navigate("/unirse-a-grupo");
+  };
+
+  const handleDeleteGroup = async (groupId) => {
+    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este grupo?");
+    if (!confirmed) return;
+
+    try {
+      await axios.delete(`${baseUrl}/groups/${groupId}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      setUserGroups((prev) => prev.filter((g) => g.id !== groupId));
+      alert("Grupo eliminado correctamente");
+    } catch (error) {
+      console.error("Error al eliminar grupo:", error);
+      alert("Hubo un error al eliminar el grupo");
+    }
   };
 
   useEffect(() => {
@@ -84,7 +104,6 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Botones para crear/unirse a grupos */}
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
           <button
             onClick={handleGoToCreateGroup}
@@ -100,7 +119,6 @@ function Dashboard() {
           </button>
         </div>
 
-        {/* Sección de grupos */}
         <div className="mt-10 text-left max-w-xl mx-auto">
           <h2 className="text-xl font-semibold mb-3">📋 Tus grupos</h2>
           {userGroups.length === 0 ? (
@@ -113,12 +131,22 @@ function Dashboard() {
                   <p><span className="font-bold">Código de invitación:</span> <span className="font-mono">{group.invite_code}</span></p>
                   <p><span className="font-bold">Miembros:</span> {group.member_count}</p>
                   <p><span className="font-bold">Tu posición:</span> {group.my_ranking}</p>
-                  <button
-                    onClick={() => navigate(`/ranking-grupo/${group.id}`)}
-                    className="mt-2 bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
-                  >
-                    Ver ranking del grupo
-                  </button>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => navigate(`/ranking-grupo/${group.id}`)}
+                      className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
+                    >
+                      Ver ranking del grupo
+                    </button>
+                    {group.is_creator && (
+                      <button
+                        onClick={() => handleDeleteGroup(group.id)}
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      >
+                        Eliminar grupo
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

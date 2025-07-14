@@ -139,7 +139,8 @@ def get_groups_with_stats(
             "name": group.name,
             "invite_code": group.code,
             "member_count": len(members),
-            "my_ranking": user_ranking
+            "my_ranking": user_ranking,
+            "is_creator": group.creator_id == current_user.id
         })
 
     return result
@@ -175,3 +176,23 @@ def group_ranking(
             {"user_id": m.user_id, "name": m.name, "points": m.total_points} for m in members
         ]
     }
+
+@router.delete("/{group_id}")
+def delete_group(
+    group_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    group = db.query(models.Group).filter(models.Group.id == group_id).first()
+
+    if not group:
+        raise HTTPException(status_code=404, detail="Grupo no encontrado")
+
+    if group.creator_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes permisos para eliminar este grupo")
+
+    db.delete(group)
+    db.commit()
+
+    return {"message": "🗑️ Grupo eliminado correctamente"}
+
