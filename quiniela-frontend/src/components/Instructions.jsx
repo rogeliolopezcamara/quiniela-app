@@ -16,27 +16,123 @@ const Instructions = () => {
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-2">📚 Índice</h2>
           <ul className="list-disc list-inside space-y-1">
-            <li>
-              <a href="#instalar-ios" className="text-blue-600 underline">
-                Cómo añadir esta página a tu pantalla de inicio (iOS)
-              </a>
-            </li>
-            <li>
-              <a href="#alpha-testing" className="text-blue-600 underline">
-                Instrucciones de alpha testing
-              </a>
-            </li>
-            <li>
-              <a href="#olvido-password" className="text-blue-600 underline">
-                ¿Qué hacer si olvidé mi contraseña?
-              </a>
-            </li>
+            <li><a href="#bienvenida" className="text-blue-600 underline">Bienvenida</a></li>
+            <li><a href="#como-jugar" className="text-blue-600 underline">¿Cómo se juega a la quiniela?</a></li>
+            <li><a href="#registro" className="text-blue-600 underline">¿Cómo me registro e ingreso mis pronósticos?</a></li>
+            <li><a href="#resultados" className="text-blue-600 underline">¿Cuándo se actualizan los resultados?</a></li>
+            <li><a href="#ranking" className="text-blue-600 underline">Ranking</a></li>
+            <li><a href="#precio" className="text-blue-600 underline">Sobre el precio y los premios</a></li>
+            <li><a href="#olvido-password" className="text-blue-600 underline">¿Qué hacer si olvidé mi usuario o contraseña?</a></li>
+            <li><a href="#instalar-ios" className="text-blue-600 underline">Cómo añadir esta página a tu pantalla de inicio (iOS) y recibir notificaciones</a></li>
+            <li><a href="#dudas" className="text-blue-600 underline">¿Qué pasa si encuentro algún error en mis puntos o tengo alguna duda adicional?</a></li>
           </ul>
         </div>
 
-        {/* Sección iOS */}
+        {/* Bienvenida */}
+        <div id="bienvenida" className="scroll-mt-20">
+          <h2 className="text-lg font-semibold mb-2">🎉 Bienvenida</h2>
+          <img src="https://media.api-sports.io/football/leagues/262.png" alt="Liga MX" className="w-10 h-10 mb-2" />
+          <p className="mb-4">
+            Bienvenidos a la quiniela de la <strong>Liga MX Apertura 2025</strong>. Vamos a comenzar oficialmente a jugar a partir de la jornada 2.
+            Actualmente el ranking muestra los resultados de la quiniela del Mundial de Clubes, pero durante la semana del 14 de julio todo será reseteado para dar inicio a esta nueva edición.
+          </p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* ¿Cómo se juega? */}
+        <div id="como-jugar" className="scroll-mt-20">
+          <h2 className="text-lg font-semibold mb-2">⚽ ¿Cómo se juega a la quiniela?</h2>
+          <p className="mb-4">
+            Debes ingresar tus pronósticos con marcador exacto para los partidos.
+            <ul className="list-disc list-inside space-y-2">
+              <li>1 punto si aciertas al resultado (gana local, empate o gana visita).</li>
+              <li>3 puntos si además aciertas el marcador exacto.</li>
+            </ul>
+          </p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* ¿Cómo registrarse? */}
+        <div id="registro" className="scroll-mt-20">
+          <h2 className="text-lg font-semibold mb-2">📝 ¿Cómo me registro e ingreso mis pronósticos?</h2>
+          <p className="mb-4">
+            Ve a “Iniciar sesión” y haz clic en “Regístrate”. Solo necesitas un nombre, correo y contraseña. Luego podrás iniciar sesión con esos datos.
+          </p>
+          <p className="mb-4">
+            Los pronósticos pueden ser ingresados en la sección “Partidos” y sólo estarán disponibles para los partidos que comienzan dentro de los próximos 8 días.
+          </p>
+          <p className="mb-4">
+            También puedes editar tus pronósticos en la sección “Mis pronósticos” (siempre que el partido no haya comenzado), y ahí mismo verás los pronósticos pasados y cuántos puntos ganaste.
+          </p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* Resultados */}
+        <div id="resultados" className="scroll-mt-20">
+          <h2 className="text-lg font-semibold mb-2">⏱️ ¿Cuándo se actualizan los resultados?</h2>
+          <p className="mb-4">Los resultados se actualizan cada 30 minutos. No es en tiempo real, pero es bastante frecuente 😄.</p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* Ranking */}
+        <div id="ranking" className="scroll-mt-20">
+          <h2 className="text-lg font-semibold mb-2">🏆 Ranking</h2>
+          <p className="mb-4">
+            Aquí puedes ver el ranking global de todos los participantes. Si quieres competir internamente con tus amigos, puedes crear un grupo desde la pestaña “Dashboard” y comparar posiciones entre ustedes.
+          </p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* Sección precio y premios */}
+        <div id="precio" className="scroll-mt-20">
+        <h2 className="text-lg font-semibold mb-2">💰 Sobre el precio y los premios</h2>
+        <p className="mb-4">
+            La participación en la quiniela tiene un costo de <strong>$200 pesos mexicanos</strong>.
+            Este pago debe realizarse antes de que comiencen los partidos de la jornada 5, es decir, antes del <strong>15 de agosto</strong>.
+        </p>
+        <p className="mb-4">
+            Si no se ha realizado el pago antes de esta fecha, la cuenta del usuario quedará <strong>inactiva</strong> y no podrá seguir participando en la quiniela.
+        </p>
+        <p className="mb-4">
+            Los premios serán distribuidos entre los <strong>tres primeros lugares</strong> del ranking global:
+        </p>
+        <ul className="list-disc list-inside space-y-2 mb-4">
+            <li>🥇 1er lugar: 70% del total acumulado</li>
+            <li>🥈 2do lugar: 20%</li>
+            <li>🥉 3er lugar: 10%</li>
+        </ul>
+        <p className="mb-4">
+            Para realizar el pago, por favor contacta al administrador por WhatsApp 👉{" "}
+            <a href="https://wa.me/13322052695" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
+            wa.me/13322052695
+            </a>
+        </p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* Olvidé mi contraseña */}
+        <div id="olvido-password" className="scroll-mt-20">
+          <h2 className="text-lg font-semibold mb-2">🔐 ¿Qué hacer si olvidé mi usuario o contraseña?</h2>
+          <p className="mb-4">
+            Si olvidaste tu contraseña o correo, contacta al administrador por WhatsApp:
+            <a href="https://wa.me/13322052695" target="_blank" className="text-blue-600 underline ml-1">wa.me/13322052695</a>
+          </p>
+          <p className="mb-4">
+            Él te generará un <strong>link único</strong> para que puedas ingresar una nueva contraseña y recuperar el acceso.
+          </p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* Añadir a inicio (iOS) */}
         <div id="instalar-ios" className="scroll-mt-20">
-          <h2 className="text-lg font-semibold mb-2">📱 Cómo añadir esta página a tu pantalla de inicio (iOS)</h2>
+          <h2 className="text-lg font-semibold mb-2">📱 Cómo añadir esta página a tu pantalla de inicio (iOS) y recibir notificaciones</h2>
           <p className="mb-4">
             Si estás usando un iPhone o iPad, sigue estos pasos para agregar la app como si fuera una aplicación nativa:
           </p>
@@ -48,70 +144,23 @@ const Instructions = () => {
             <li>¡Listo! Ahora podrás acceder a la app desde el ícono en tu pantalla como si fuera una app instalada.</li>
           </ol>
           <p className="mb-4">
-            Nota: Esto permite que la app tenga su propio entorno independiente (sin barra de Safari) y te permitirá recibir notificaciones push en el futuro.
+            Esto permitirá que la app se vea más bonita (sin barra de Safari) y que puedas recibir notificaciones push en el futuro.
           </p>
         </div>
 
         <hr className="my-6" />
 
-        {/* Sección alpha testing */}
-        <div id="alpha-testing" className="scroll-mt-20">
-          <h2 className="text-lg font-semibold mb-4">🧪 Instrucciones de alpha testing</h2>
+        {/* Dudas o errores */}
+        <div id="dudas" className="scroll-mt-20">
+          <h2 className="text-lg font-semibold mb-2">❓ ¿Qué pasa si encuentro algún error en mis puntos o tengo alguna duda adicional?</h2>
           <p className="mb-4">
-            Amigos! Les cuento que estoy desarrollando una web-app para hacer quinielas con tus amigos de forma sencilla.
-            La idea es que puedas entrar a la página, ingresar tus pronósticos, y que la app descargue automáticamente los resultados
-            de los partidos para calcular los puntos.
-          </p>
-          <p className="mb-4">
-            En este momento la app está en una versión muy inicial, así que le faltan muchas cosas: desde mejorar el diseño hasta
-            implementar nuevas funcionalidades. La meta es tener una versión sólida para el próximo Mundial.
-          </p>
-          <p className="mb-4">
-            Por eso, quería pedirles su ayuda para ser alpha-testers y jugar una pequeña quiniela con los partidos que quedan del Mundial de Clubes.
-          </p>
-          <p className="mb-4">
-            Para participar, solo tienen que entrar a 👉{" "}
-            <a href="https://quiniela-frontend.onrender.com/" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
-              https://quiniela-frontend.onrender.com/
-            </a>, registrarse, y luego iniciar sesión para ingresar sus pronósticos en la sección “Partidos”.
-          </p>
-          <p className="mb-4">
-            Y para hacerlo un poquito más interesante, el ganador de la quiniela se llevará <strong>$50 USD</strong> de premio 🤑
-            (siempre y cuando den su feedback, y como el presupuesto es limitado, si hay varios ganadores tendrán que repartirlo 😅).
-          </p>
-
-          <hr className="my-6" />
-
-          <h2 className="text-lg font-semibold mb-2">📝 Algunas consideraciones:</h2>
-          <ul className="list-disc list-inside space-y-2">
-            <li>Al registrarse, no usen un correo real, solo asegúrense de que tenga formato válido (por ejemplo: algo@ejemplo.com).</li>
-            <li>Tampoco usen una contraseña real. No hay restricciones, así que puede ser algo corto y fácil de recordar.</li>
-            <li>Los resultados de los partidos (y por lo tanto los puntos de la quiniela) se actualizan una vez al día, aunque en algunos casos puedo ejecutarlo manualmente.</li>
-            <li>El servidor tiene recursos bastante limitados, así que les pido paciencia, sobre todo al iniciar sesión o crear un nuevo usuario.</li>
-            <li>No inviten a más gente por ahora. Si todo sale bien, más adelante podré abrir la app a nuevos usuarios.</li>
-            <li>La app fue diseñada en computadora, así que en el celular (especialmente en vertical) se ve fea 😅. Les recomiendo usar el celular en modo horizontal.</li>
-            <li>Yo también estoy haciendo pruebas, así que verán mi usuario en el ranking, pero no participo oficialmente.</li>
-            <li>Así se asignan los puntos: 1 punto si aciertas el resultado (quién gana) y 3 puntos si aciertas el marcador exacto, considerando tiempo regular y tiempos extra.</li>
-          </ul>
-        </div>
-
-        <hr className="my-6" />
-
-        {/* Sección olvido contraseña */}
-        <div id="olvido-password" className="scroll-mt-20">
-          <h2 className="text-lg font-semibold mb-2">🔐 ¿Qué hacer si olvidé mi contraseña?</h2>
-          <p className="mb-4">
-            Si olvidaste tu contraseña, por ahora no hay una funcionalidad automática para restablecerla. Pero no te preocupes:
-          </p>
-          <p className="mb-4">
-            Solo tienes que contactar al administrador de la app. Él te generará un <strong>link único</strong> con el que podrás ingresar una nueva contraseña y recuperar el acceso a tu cuenta.
-          </p>
-          <p className="mb-4">
-            En futuras versiones, se añadirá una opción directa desde la pantalla de inicio de sesión.
+            Escríbele al administrador por WhatsApp:
+            <a href="https://wa.me/13322052695" target="_blank" className="text-blue-600 underline ml-1">wa.me/13322052695</a>
+            . Él podrá ayudarte con cualquier tema relacionado con tus puntos, partidos o funcionamiento de la app.
           </p>
         </div>
 
-        <p className="mt-6">Gracias por su apoyo 🙌 ¡Ojalá se animen a participar y podamos divertirnos un rato con lo que queda del torneo!</p>
+        <p className="mt-6">¡Gracias por participar y que gane el mejor! 🙌</p>
       </div>
     </>
   );

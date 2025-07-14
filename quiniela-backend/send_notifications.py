@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 import models
 from push_notifications import send_push_message
+import json
 
 def notify_upcoming_matches():
     db: Session = SessionLocal()
@@ -56,7 +57,7 @@ def notify_upcoming_matches():
                         continue  # Seguridad extra
 
                     send_push_message(
-                        subscription,
+                        json.dumps(subscription),
                         f"⚽ {match.home_team} vs {match.away_team}",
                         body
                     )
