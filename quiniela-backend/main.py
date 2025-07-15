@@ -1,12 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException, Request, APIRouter
-from sqlalchemy.orm import Session
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Depends, HTTPException, Request, APIRouter # type: ignore
+from sqlalchemy.orm import Session # type: ignore
+from fastapi.responses import JSONResponse # type: ignore
 from database import SessionLocal, engine, Base
 import models, schemas, utils, auth
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from auth import get_current_user
 import os
-from sqlalchemy import text
+from sqlalchemy import text # type: ignore
+import time
+from sqlalchemy.exc import OperationalError # type: ignore
 
 
 app = FastAPI()
@@ -58,7 +60,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return {"id": new_user.id, "name": new_user.name, "email": new_user.email}
 
-from fastapi import status
+from fastapi import status # type: ignore
 
 @app.post("/predictions/")
 def create_prediction(
@@ -136,9 +138,9 @@ def update_match_result(
 
     return {"message": f"Resultado actualizado y puntos recalculados para {len(predictions)} pronósticos"}
 
-from sqlalchemy import func
+from sqlalchemy import func # type: ignore
 
-from sqlalchemy import func
+from sqlalchemy import func # type: ignore
 from collections import defaultdict
 
 @app.get("/ranking/")
@@ -207,7 +209,7 @@ def get_ranking(db: Session = Depends(get_db)):
 
 
 from datetime import datetime
-from fastapi import Path
+from fastapi import Path # type: ignore
 
 @app.put("/predictions/{prediction_id}")
 def update_prediction(
@@ -247,7 +249,7 @@ def update_prediction(
         }
     }
 
-from sqlalchemy import and_
+from sqlalchemy import and_ # type: ignore
 
 @app.get("/available-matches/")
 def get_available_matches(
@@ -331,7 +333,7 @@ def get_user_predictions(
 
     return result
 
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm # type: ignore
 import auth
 
 @app.post("/login")
@@ -374,8 +376,21 @@ def run_update_script(request: Request):
         import update_matches
         import send_notifications  # 👈 importa tu nuevo script
 
-        db = next(get_db())
-        db.execute(text("SELECT 1"))
+        MAX_RETRIES = 5
+        WAIT_SECONDS = 3
+
+        for attempt in range(MAX_RETRIES):
+            try:
+                db = next(get_db())
+                db.execute(text("SELECT 1"))  # ping preventivo
+                break  # todo bien
+            except OperationalError as e:
+                print(f"Intento {attempt + 1} falló: {e}")
+                if attempt < MAX_RETRIES - 1:
+                    time.sleep(WAIT_SECONDS)
+                else:
+                    print("❌ No se pudo conectar a la base de datos después de varios intentos.")
+                    raise
 
         # Actualizar partidos
         fixtures = update_matches.get_fixtures()
