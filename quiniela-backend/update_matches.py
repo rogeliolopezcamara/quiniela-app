@@ -1,11 +1,11 @@
 import os
 import requests
 from datetime import datetime
-from dotenv import load_dotenv
-from sqlalchemy.orm import Session
+from dotenv import load_dotenv # type: ignore
+from sqlalchemy.orm import Session # type: ignore
 from database import get_db
 from models import Match
-from sqlalchemy import text
+from sqlalchemy import text # type: ignore
 
 # Cargar claves y configuración
 load_dotenv()
