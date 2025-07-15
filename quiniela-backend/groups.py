@@ -7,6 +7,7 @@ from pydantic import BaseModel
 import models
 from database import get_db
 from auth import get_current_user
+from sqlalchemy import text
 
 router = APIRouter(prefix="/groups")
 
@@ -19,6 +20,8 @@ def create_group(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+
     invite_code = str(uuid.uuid4())[:8]
 
     group = models.Group(
@@ -52,6 +55,8 @@ def join_group(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+
     group = db.query(models.Group).filter(models.Group.code == request.invite_code).first()
     if not group:
         raise HTTPException(status_code=404, detail="Código inválido")
@@ -73,6 +78,8 @@ def get_my_groups(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+
     groups = (
         db.query(models.Group)
         .join(models.GroupMember, models.Group.id == models.GroupMember.group_id)
@@ -91,6 +98,8 @@ def get_group_members(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+
     members = (
         db.query(models.User)
         .join(models.GroupMember, models.User.id == models.GroupMember.user_id)
@@ -105,6 +114,8 @@ def get_groups_with_stats(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+
     groups = (
         db.query(models.Group)
         .join(models.GroupMember, models.Group.id == models.GroupMember.group_id)
@@ -152,6 +163,8 @@ def group_ranking(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+
     group = db.query(models.Group).filter(models.Group.id == group_id).first()
     if not group:
         raise HTTPException(status_code=404, detail="Grupo no encontrado")
@@ -183,6 +196,8 @@ def delete_group(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+
     group = db.query(models.Group).filter(models.Group.id == group_id).first()
 
     if not group:

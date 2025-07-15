@@ -8,6 +8,7 @@ from auth import get_current_user
 from pywebpush import webpush, WebPushException
 import os
 import json
+from sqlalchemy import text
 
 router = APIRouter()
 
@@ -23,6 +24,8 @@ def subscribe_to_notifications(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    db.execute(text("SELECT 1"))
+    
     # Verifica si ya existe una suscripción con ese endpoint para este usuario
     existing = (
         db.query(models.PushSubscription)

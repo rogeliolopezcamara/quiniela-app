@@ -21,6 +21,7 @@ def generate_reset_link(
     email: str,
     db: Session = Depends(get_db)
 ):
+    db.execute(text("SELECT 1"))
     # 🔐 Protección: validar token secreto en el header
     secret = request.headers.get("X-Reset-Token")
     if secret != os.getenv("RESET_SECRET"):
@@ -54,6 +55,7 @@ def reset_password(
     payload: ResetPasswordPayload,
     db: Session = Depends(get_db)
 ):
+    db.execute(text("SELECT 1"))
     # Buscar el token en la tabla
     reset_entry = db.execute(
         text("""
