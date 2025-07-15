@@ -6,6 +6,7 @@ import models, schemas, utils, auth
 from fastapi.middleware.cors import CORSMiddleware
 from auth import get_current_user
 import os
+from sqlalchemy import text
 
 
 app = FastAPI()
@@ -40,7 +41,7 @@ def get_db():
 
 @app.post("/users/")
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     # Verifica si ya existe el correo
     existing = db.query(models.User).filter(models.User.email == user.email).first()
     if existing:
@@ -65,7 +66,7 @@ def create_prediction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     match = db.query(models.Match).filter(models.Match.id == pred.match_id).first()
     if not match:
         raise HTTPException(status_code=404, detail="Partido no encontrado")
@@ -101,7 +102,7 @@ def update_match_result(
     result: schemas.MatchResultUpdate,
     db: Session = Depends(get_db)
 ):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     # Buscar el partido
     match = db.query(models.Match).filter(models.Match.id == match_id).first()
     if not match:
@@ -142,7 +143,7 @@ from collections import defaultdict
 
 @app.get("/ranking/")
 def get_ranking(db: Session = Depends(get_db)):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     # 1. Obtener rondas activas (donde haya al menos un pronóstico)
     active_rounds = (
         db.query(models.Match.league_round)
@@ -215,7 +216,7 @@ def update_prediction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user)
 ):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     prediction = db.query(models.Prediction).filter(models.Prediction.id == prediction_id).first()
     if not prediction:
         raise HTTPException(status_code=404, detail="Pronóstico no encontrado")
@@ -253,7 +254,7 @@ def get_available_matches(
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     now = datetime.utcnow()
 
     subquery = (
@@ -297,7 +298,7 @@ def get_user_predictions(
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     predictions = (
         db.query(models.Prediction, models.Match)
         .join(models.Match, models.Prediction.match_id == models.Match.id)
@@ -348,7 +349,7 @@ def get_my_profile(
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
-    db.execute("SELECT 1")
+    db.execute(text("SELECT 1"))
     total_points = (
         db.query(func.coalesce(func.sum(models.Prediction.points), 0))
         .filter(models.Prediction.user_id == current_user.id)
@@ -374,7 +375,7 @@ def run_update_script(request: Request):
         import send_notifications  # 👈 importa tu nuevo script
 
         db = next(get_db())
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
 
         # Actualizar partidos
         fixtures = update_matches.get_fixtures()
