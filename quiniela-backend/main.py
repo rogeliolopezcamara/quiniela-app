@@ -385,7 +385,7 @@ def get_my_profile(
     }
 
 @app.post("/update-matches")
-def run_update_script(request: Request):
+async def run_update_script(request: Request, db: Session = Depends(get_db)):
     secret = request.headers.get("X-Update-Token")
     if secret != os.getenv("UPDATE_SECRET"):
         raise HTTPException(status_code=403, detail="No autorizado")
@@ -393,24 +393,16 @@ def run_update_script(request: Request):
     from update_matches import get_fixtures, upsert_matches_to_db
     from send_notifications import notify_upcoming_matches
 
-    db = SessionLocal()
     try:
         fixtures = get_fixtures()
         upsert_matches_to_db(fixtures, db)
         db.commit()
-        db.close()
-
-        db2 = SessionLocal()
-        notify_upcoming_matches(db2)
-        db2.close()
-
+        notify_upcoming_matches(db)
         return {"message": "Actualización y notificaciones completadas"}
     except Exception as e:
         db.rollback()
         print("❌ Error durante la actualización o notificación:", e)
         raise HTTPException(status_code=500, detail="Error interno")
-    finally:
-        db.close()
 
 from push_notifications import router as push_router
 app.include_router(push_router)
