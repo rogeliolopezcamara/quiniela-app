@@ -1,14 +1,14 @@
 # push_notifications.py
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException # type: ignore
+from sqlalchemy.orm import Session # type: ignore
+from pydantic import BaseModel # type: ignore
 import models
 from database import get_db
 from auth import get_current_user
-from pywebpush import webpush, WebPushException
+from pywebpush import webpush, WebPushException # type: ignore
 import os
 import json
-from sqlalchemy import text
+from sqlalchemy import text # type: ignore
 
 router = APIRouter()
 

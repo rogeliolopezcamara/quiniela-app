@@ -1,14 +1,12 @@
 # send_notifications.py
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session # type: ignore
 from database import SessionLocal
 import models
 from push_notifications import send_push_message
 import json
 
-def notify_upcoming_matches():
-    db: Session = SessionLocal()
-
+def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
     try:
         now = datetime.utcnow()
 
@@ -66,4 +64,5 @@ def notify_upcoming_matches():
         db.close()
 
 if __name__ == "__main__":
-    notify_upcoming_matches()
+    db = SessionLocal()
+    notify_upcoming_matches(db)
