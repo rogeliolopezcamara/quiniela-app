@@ -41,7 +41,7 @@ def get_db():
     from sqlalchemy.exc import OperationalError # type: ignore
 
     MAX_RETRIES = 5
-    WAIT_SECONDS = 3
+    WAIT_SECONDS = 1
 
     for attempt in range(MAX_RETRIES):
         try:
