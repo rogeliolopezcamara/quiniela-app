@@ -389,8 +389,7 @@ from fastapi import BackgroundTasks
 @app.post("/update-matches")
 async def run_update_script(
     request: Request,
-    background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    background_tasks: BackgroundTasks
 ):
     secret = request.headers.get("X-Update-Token")
     if secret != os.getenv("UPDATE_SECRET"):
@@ -398,8 +397,10 @@ async def run_update_script(
 
     from update_matches import get_fixtures, upsert_matches_to_db
     from send_notifications import notify_upcoming_matches
+    from database import SessionLocal
 
-    def run_update(db_session: Session):
+    def run_update():
+        db_session = SessionLocal()
         try:
             fixtures = get_fixtures()
             upsert_matches_to_db(fixtures, db_session)
@@ -408,8 +409,10 @@ async def run_update_script(
         except Exception as e:
             db_session.rollback()
             print("❌ Error en background:", e)
+        finally:
+            db_session.close()
 
-    background_tasks.add_task(run_update, db)
+    background_tasks.add_task(run_update)
 
     return {"message": "⏳ Actualización iniciada en segundo plano"}
 
