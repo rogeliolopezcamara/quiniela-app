@@ -392,32 +392,22 @@ def run_update_script(request: Request):
 
     try:
         import update_matches
-        import send_notifications  # 👈 importa tu nuevo script
+        import send_notifications
 
-        MAX_RETRIES = 5
-        WAIT_SECONDS = 3
+        db = next(get_db())
 
-        for attempt in range(MAX_RETRIES):
-            try:
-                db = next(get_db())
-                db.execute(text("SELECT 1"))  # ping preventivo
-                break  # todo bien
-            except OperationalError as e:
-                print(f"Intento {attempt + 1} falló: {e}")
-                if attempt < MAX_RETRIES - 1:
-                    time.sleep(WAIT_SECONDS)
-                else:
-                    print("❌ No se pudo conectar a la base de datos después de varios intentos.")
-                    raise
+        try:
+            fixtures = update_matches.get_fixtures()
+            update_matches.upsert_matches_to_db(fixtures, db)
+            send_notifications.notify_upcoming_matches()
+            db.commit()
+            return {"message": "Actualización y notificaciones completadas"}
+        except Exception as inner_e:
+            db.rollback()
+            raise inner_e
+        finally:
+            db.close()
 
-        # Actualizar partidos
-        fixtures = update_matches.get_fixtures()
-        update_matches.upsert_matches_to_db(fixtures, db)
-
-        # Enviar notificaciones después de actualizar
-        send_notifications.notify_upcoming_matches()  # 👈 llama a tu función
-
-        return {"message": "Actualización y notificaciones completadas"}
     except Exception as e:
         print("❌ Error durante la actualización o notificación:", e)
         raise HTTPException(status_code=500, detail="Error interno")
