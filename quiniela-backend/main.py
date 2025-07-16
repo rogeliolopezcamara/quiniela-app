@@ -398,8 +398,12 @@ def run_update_script(request: Request):
         fixtures = get_fixtures()
         upsert_matches_to_db(fixtures, db)
         db.commit()
+        db.close()
 
-        notify_upcoming_matches()
+        db2 = SessionLocal()
+        notify_upcoming_matches(db2)
+        db2.close()
+
         return {"message": "Actualización y notificaciones completadas"}
     except Exception as e:
         db.rollback()
