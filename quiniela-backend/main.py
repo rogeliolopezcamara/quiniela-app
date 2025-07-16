@@ -384,8 +384,14 @@ def get_my_profile(
         "total_points": total_points
     }
 
+from fastapi import BackgroundTasks
+
 @app.post("/update-matches")
-async def run_update_script(request: Request, db: Session = Depends(get_db)):
+async def run_update_script(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
     secret = request.headers.get("X-Update-Token")
     if secret != os.getenv("UPDATE_SECRET"):
         raise HTTPException(status_code=403, detail="No autorizado")
@@ -393,16 +399,19 @@ async def run_update_script(request: Request, db: Session = Depends(get_db)):
     from update_matches import get_fixtures, upsert_matches_to_db
     from send_notifications import notify_upcoming_matches
 
-    try:
-        fixtures = get_fixtures()
-        upsert_matches_to_db(fixtures, db)
-        db.commit()
-        notify_upcoming_matches(db)
-        return {"message": "Actualización y notificaciones completadas"}
-    except Exception as e:
-        db.rollback()
-        print("❌ Error durante la actualización o notificación:", e)
-        raise HTTPException(status_code=500, detail="Error interno")
+    def run_update(db_session: Session):
+        try:
+            fixtures = get_fixtures()
+            upsert_matches_to_db(fixtures, db_session)
+            db_session.commit()
+            notify_upcoming_matches(db_session)
+        except Exception as e:
+            db_session.rollback()
+            print("❌ Error en background:", e)
+
+    background_tasks.add_task(run_update, db)
+
+    return {"message": "⏳ Actualización iniciada en segundo plano"}
 
 from push_notifications import router as push_router
 app.include_router(push_router)
