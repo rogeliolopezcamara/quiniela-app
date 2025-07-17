@@ -17,6 +17,7 @@ import GenerateResetLink from "./components/GenerateResetLink";
 import CrearGrupo from "./components/CrearGrupo";
 import JoinGroupForm from "./components/JoinGroupForm";
 import GroupRanking from "./components/GroupRanking";
+import Profile from "./pages/Profile";
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
         <Route path="/crear-grupo" element={<CrearGrupo />} />
         <Route path="/unirse-a-grupo" element={<JoinGroupForm />} />
         <Route path="/ranking-grupo/:group_id" element={<GroupRanking />} />
+        <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
       </Routes>
     </Router>
   );

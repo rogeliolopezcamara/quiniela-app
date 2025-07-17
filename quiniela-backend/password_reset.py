@@ -8,6 +8,7 @@ import models
 from database import get_db
 from pydantic import BaseModel # type: ignore
 from passlib.context import CryptContext # type: ignore
+from auth import get_current_user  # asegúrate de tener esta importación
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -21,7 +22,7 @@ def generate_reset_link(
     email: str,
     db: Session = Depends(get_db)
 ):
-    db.execute(text("SELECT 1"))
+    
     # 🔐 Protección: validar token secreto en el header
     secret = request.headers.get("X-Reset-Token")
     if secret != os.getenv("RESET_SECRET"):
@@ -45,6 +46,25 @@ def generate_reset_link(
     reset_link = f"{FRONTEND_URL}/reset-password/{token}"
     return {"reset_link": reset_link}
 
+@router.post("/user-reset-link/")
+def user_reset_link(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    token = str(uuid.uuid4())
+
+    db.execute(
+        text("""
+            INSERT INTO password_reset_tokens (user_id, token)
+            VALUES (:user_id, :token)
+        """),
+        {"user_id": current_user.id, "token": token}
+    )
+    db.commit()
+
+    reset_link = f"{FRONTEND_URL}/reset-password/{token}"
+    return {"reset_link": reset_link}
+
 # ✅ Paso 2: Actualizar la contraseña
 class ResetPasswordPayload(BaseModel):
     new_password: str
@@ -55,7 +75,6 @@ def reset_password(
     payload: ResetPasswordPayload,
     db: Session = Depends(get_db)
 ):
-    db.execute(text("SELECT 1"))
     # Buscar el token en la tabla
     reset_entry = db.execute(
         text("""
@@ -89,3 +108,39 @@ def reset_password(
 
     db.commit()
     return {"message": "✅ Contraseña actualizada correctamente"}
+
+
+# Endpoint para actualizar el nombre del usuario autenticado
+class UpdateUserNamePayload(BaseModel):
+    name: str
+
+@router.put("/update-name/")
+def update_name(
+    payload: UpdateUserNamePayload,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    current_user.name = payload.name
+    db.commit()
+    db.refresh(current_user)
+    return {"message": "Nombre actualizado correctamente", "name": current_user.name}
+
+# Endpoint para actualizar el correo electrónico del usuario autenticado
+class UpdateUserEmailPayload(BaseModel):
+    email: str
+
+@router.put("/update-email/")
+def update_email(
+    payload: UpdateUserEmailPayload,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Verifica si el nuevo email ya está registrado
+    existing = db.query(models.User).filter(models.User.email == payload.email).first()
+    if existing and existing.id != current_user.id:
+        raise HTTPException(status_code=400, detail="Este correo ya está en uso")
+
+    current_user.email = payload.email
+    db.commit()
+    db.refresh(current_user)
+    return {"message": "Correo actualizado correctamente", "email": current_user.email}
