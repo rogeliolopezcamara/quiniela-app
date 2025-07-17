@@ -1,13 +1,13 @@
 # password_reset.py
 import uuid
 import os
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from fastapi import APIRouter, Depends, HTTPException, Request # type: ignore
+from sqlalchemy.orm import Session # type: ignore
+from sqlalchemy import text # type: ignore
 import models
 from database import get_db
-from pydantic import BaseModel
-from passlib.context import CryptContext
+from pydantic import BaseModel # type: ignore
+from passlib.context import CryptContext # type: ignore
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
