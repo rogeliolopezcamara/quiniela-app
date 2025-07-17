@@ -36,9 +36,9 @@ Base.metadata.create_all(bind=engine)
 # Dependency: cada vez que se hace un request, se abre una sesión de BD
 def get_db():
     db = SessionLocal()
-    from sqlalchemy import text # type: ignore
+    from sqlalchemy import text  # type: ignore
     import time
-    from sqlalchemy.exc import OperationalError # type: ignore
+    from sqlalchemy.exc import OperationalError, PendingRollbackError  # type: ignore
 
     MAX_RETRIES = 5
     WAIT_SECONDS = 3
@@ -47,6 +47,9 @@ def get_db():
         try:
             db.execute(text("SELECT 1"))
             break
+        except PendingRollbackError:
+            print("[DB] Detectado rollback pendiente, intentando limpiar...")
+            db.rollback()
         except OperationalError as e:
             print(f"[DB] Intento {attempt + 1} falló: {e}")
             if attempt < MAX_RETRIES - 1:
@@ -384,7 +387,7 @@ def get_my_profile(
         "total_points": total_points
     }
 
-from fastapi import BackgroundTasks
+from fastapi import BackgroundTasks # type: ignore
 
 @app.post("/update-matches")
 async def run_update_script(
