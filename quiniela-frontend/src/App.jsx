@@ -53,7 +53,7 @@ function App() {
         <Route path="/crear-grupo" element={<CrearGrupo />} />
         <Route path="/unirse-a-grupo" element={<JoinGroupForm />} />
         <Route path="/ranking-grupo/:group_id" element={<GroupRanking />} />
-        <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );
