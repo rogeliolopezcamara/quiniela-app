@@ -45,7 +45,6 @@ def trigger_points_recalculation(match_id, score_home, score_away):
         print(f"[✘] Fallo al conectar con el backend: {e}")
 
 def upsert_matches_to_db(fixtures, db: Session):
-    db.execute(text("SELECT 1"))
     for match in fixtures:
         fixture = match["fixture"]
         league = match["league"]
