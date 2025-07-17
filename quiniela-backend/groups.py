@@ -1,13 +1,13 @@
 # groups.py
 import uuid
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy import func 
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException # type: ignore
+from sqlalchemy.orm import Session # type: ignore
+from sqlalchemy import func # type: ignore
+from pydantic import BaseModel # type: ignore
 import models
 from database import get_db
 from auth import get_current_user
-from sqlalchemy import text
+from sqlalchemy import text # type: ignore
 
 router = APIRouter(prefix="/groups")
 

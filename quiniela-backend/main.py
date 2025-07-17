@@ -36,27 +36,14 @@ Base.metadata.create_all(bind=engine)
 # Dependency: cada vez que se hace un request, se abre una sesión de BD
 def get_db():
     db = SessionLocal()
-    from sqlalchemy import text  # type: ignore
-    import time
-    from sqlalchemy.exc import OperationalError, PendingRollbackError  # type: ignore
+    from sqlalchemy import text # type: ignore
+    from sqlalchemy.exc import PendingRollbackError # type: ignore
 
-    MAX_RETRIES = 5
-    WAIT_SECONDS = 3
-
-    for attempt in range(MAX_RETRIES):
-        try:
-            db.execute(text("SELECT 1"))
-            break
-        except PendingRollbackError:
-            print("[DB] Detectado rollback pendiente, intentando limpiar...")
-            db.rollback()
-        except OperationalError as e:
-            print(f"[DB] Intento {attempt + 1} falló: {e}")
-            if attempt < MAX_RETRIES - 1:
-                time.sleep(WAIT_SECONDS)
-            else:
-                print("❌ No se pudo conectar a la base de datos después de varios intentos.")
-                raise
+    try:
+        db.execute(text("SELECT 1"))
+    except PendingRollbackError:
+        print("[DB] Rollback pendiente detectado")
+        db.rollback()
     try:
         yield db
     finally:
