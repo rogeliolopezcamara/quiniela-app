@@ -43,7 +43,7 @@ function Sidebar() {
             {authToken && (
               <>
                 <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
-                  Dashboard
+                  Inicio
                 </button>
                 <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
                   Ranking

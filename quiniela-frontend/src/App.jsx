@@ -19,6 +19,7 @@ import JoinGroupForm from "./components/JoinGroupForm";
 import GroupRanking from "./components/GroupRanking";
 import Profile from "./pages/Profile";
 import HelpCenter from "./components/HelpCenter";
+import PredictionsCenter from "./components/PredictionsCenter";
 
 
 function App() {
@@ -46,7 +47,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/ranking" element={<Ranking />} />
-        <Route path="/matches" element={<AvailableMatches />} />
+        <Route path="/matches" element={<PredictionsCenter />} />
+        <Route path="/available-matches" element={<AvailableMatches />} />
         <Route path="/my-predictions" element={<UserPredictions />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/login" element={<Login />} />
