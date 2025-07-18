@@ -18,6 +18,7 @@ import CrearGrupo from "./components/CrearGrupo";
 import JoinGroupForm from "./components/JoinGroupForm";
 import GroupRanking from "./components/GroupRanking";
 import Profile from "./pages/Profile";
+import HelpCenter from "./components/HelpCenter";
 
 
 function App() {
@@ -40,7 +41,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Instructions />} />
+        <Route path="/helpcenter" element={<HelpCenter />} />
+        <Route path="/instructions" element={<Instructions />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/ranking" element={<Ranking />} />
