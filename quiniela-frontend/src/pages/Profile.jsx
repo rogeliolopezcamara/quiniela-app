@@ -1,7 +1,7 @@
 // src/pages/Profile.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 const baseUrl = import.meta.env.VITE_API_URL;
