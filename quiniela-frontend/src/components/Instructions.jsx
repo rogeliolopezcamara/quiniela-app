@@ -1,11 +1,10 @@
 // src/components/Instructions.jsx
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 import icono from "/icono.png";
 
 const Instructions = () => {
   return (
     <>
-      <Sidebar />
       <div className="pt-20 px-4 max-w-3xl mx-auto scroll-smooth">
         <div className="flex items-center gap-4 mb-6">
           <img src={icono} alt="Icono de la app" className="w-10 h-10" />

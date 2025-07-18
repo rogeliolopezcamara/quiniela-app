@@ -1,6 +1,6 @@
 // src/components/HelpCenter.jsx
 import { useState } from "react";
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 import Instructions from "./Instructions";
 import Changelog from "./Changelog";
 
@@ -9,7 +9,6 @@ const HelpCenter = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="pt-20 px-4 max-w-5xl mx-auto">
         <div className="flex justify-center mb-8">
           <button
