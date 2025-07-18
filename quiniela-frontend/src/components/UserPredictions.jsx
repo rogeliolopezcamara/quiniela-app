@@ -85,7 +85,7 @@ const UserPredictions = () => {
 
   return (
     <div className="flex">
-    <div className="p-6 w-full max-w-5xl mx-auto">
+    <div className="pt-6 px-4 w-full max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">Tus pronósticos</h2>
       {predictions.length === 0 ? (
         <p className="text-center">No tienes pronósticos aún.</p>
