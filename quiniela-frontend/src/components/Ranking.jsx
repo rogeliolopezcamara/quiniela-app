@@ -70,65 +70,68 @@ const Ranking = () => {
         {loading ? (
           <p className="text-center text-gray-500">Cargando...</p>
         ) : (
-          <table className="w-full table-auto border-collapse border border-gray-300 text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-2 py-1">#</th>
-                <th className="border border-gray-300 px-2 py-1">Nombre</th>
-                {rounds.map((r) => (
-                  <th key={r} className="border border-gray-300 px-2 py-1 text-center">
+          <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+            <table className="w-full table-auto border border-gray-200 shadow-md rounded-lg overflow-hidden text-sm">
+              <thead>
+                <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
+                  <th className="border border-gray-300 px-3 py-2">#</th>
+                  <th className="border border-gray-300 px-3 py-2">Nombre</th>
+                  {rounds.map((r) => (
+                    <th key={r} className="border border-gray-300 px-3 py-2 text-center">
+                      <button
+                        onClick={() => handleSort(r)}
+                        className="hover:underline text-blue-600"
+                      >
+                        {r} {sortConfig.key === r ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+                      </button>
+                    </th>
+                  ))}
+                  <th className="border border-gray-300 px-3 py-2 text-center font-bold">
                     <button
-                      onClick={() => handleSort(r)}
+                      onClick={() => handleSort("total_points")}
                       className="hover:underline text-blue-600"
                     >
-                      {r} {sortConfig.key === r ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+                      Total {sortConfig.key === "total_points" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
                     </button>
                   </th>
-                ))}
-                <th className="border border-gray-300 px-2 py-1 text-center font-bold">
-                  <button
-                    onClick={() => handleSort("total_points")}
-                    className="hover:underline text-blue-600"
-                  >
-                    Total {sortConfig.key === "total_points" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedData.map((user, index) => (
-                <tr
-                  key={user.user_id}
-                  className={
-                    authToken && userId === user.user_id
-                      ? "bg-green-100 font-semibold"
-                      : ""
-                  }
-                >
-                  <td className="border border-gray-300 px-2 py-1 text-center">
-                    {index === 0 ? (
-                      <span title="Primer lugar">🥇</span>
-                    ) : index === 1 ? (
-                      <span title="Segundo lugar">🥈</span>
-                    ) : index === 2 ? (
-                      <span title="Tercer lugar">🥉</span>
-                    ) : (
-                      index + 1
-                    )}
-                  </td>
-                  <td className="border border-gray-300 px-2 py-1">{user.name}</td>
-                  {rounds.map((r) => (
-                    <td key={r} className="border border-gray-300 px-2 py-1 text-center">
-                      {user.rounds[r] ?? 0}
-                    </td>
-                  ))}
-                  <td className="border border-gray-300 px-2 py-1 text-center font-bold">
-                    {user.total_points}
-                  </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sortedData.map((user, index) => (
+                  <tr
+                    key={user.user_id}
+                    className={`border-t border-gray-200 hover:bg-gray-50 ${
+                      index === 0 ? "bg-yellow-100 font-semibold" :
+                      index === 1 ? "bg-gray-200 font-semibold" :
+                      index === 2 ? "bg-orange-100 font-semibold" :
+                      authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
+                    }`}
+                  >
+                    <td className="border border-gray-300 px-3 py-2 text-center">
+                      {index === 0 ? (
+                        <span title="Primer lugar">🥇</span>
+                      ) : index === 1 ? (
+                        <span title="Segundo lugar">🥈</span>
+                      ) : index === 2 ? (
+                        <span title="Tercer lugar">🥉</span>
+                      ) : (
+                        index + 1
+                      )}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2">{user.name}</td>
+                    {rounds.map((r) => (
+                      <td key={r} className="border border-gray-300 px-3 py-2 text-center">
+                        {user.rounds[r] ?? 0}
+                      </td>
+                    ))}
+                    <td className="border border-gray-300 px-3 py-2 text-center font-bold">
+                      {user.total_points}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </>
