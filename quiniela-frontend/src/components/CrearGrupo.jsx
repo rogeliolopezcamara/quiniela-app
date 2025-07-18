@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-// import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar";
 import axios from "../utils/axiosConfig";
 
 const baseUrl = import.meta.env.VITE_API_URL;
@@ -45,6 +45,7 @@ function CrearGrupo() {
 
   return (
     <div className="flex">
+      <Sidebar />
       <div className="mt-20 px-4 w-full max-w-xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Crear nuevo grupo</h1>
 
