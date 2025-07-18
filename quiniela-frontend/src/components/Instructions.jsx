@@ -5,7 +5,7 @@ import icono from "/icono.png";
 const Instructions = () => {
   return (
     <>
-      <div className="pt-20 px-4 max-w-3xl mx-auto scroll-smooth">
+      <div className="px-4 max-w-3xl mx-auto scroll-smooth">
         <div className="flex items-center gap-4 mb-6">
           <img src={icono} alt="Icono de la app" className="w-10 h-10" />
           <h1 className="text-2xl font-bold">Instrucciones</h1>

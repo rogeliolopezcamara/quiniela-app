@@ -66,7 +66,7 @@ items: [
 const Changelog = () => {
   return (
     <>
-      <div className="pt-20 px-4 max-w-3xl mx-auto">
+      <div className="px-4 max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">Novedades</h1>
         {changelogEntries.map((entry) => (
           <div key={entry.date} className="mb-6">

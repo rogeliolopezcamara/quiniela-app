@@ -79,7 +79,7 @@ const AvailableMatches = () => {
 
   return (
     <div className="flex">
-      <div className="p-6 w-full max-w-3xl mx-auto mt-20">
+      <div className="p-6 w-full max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-center">Partidos Disponibles</h1>
         {matches.length > 0 && (
           <p className="text-sm text-center text-gray-500 mb-6">
