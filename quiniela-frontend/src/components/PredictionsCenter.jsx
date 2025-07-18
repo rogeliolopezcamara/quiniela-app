@@ -5,39 +5,36 @@ import AvailableMatches from "./AvailableMatches";
 import UserPredictions from "./UserPredictions";
 
 const PredictionsCenter = () => {
-  const [selectedSection, setSelectedSection] = useState("available");
+  const [activeTab, setActiveTab] = useState("available");
 
   return (
-    <div className="flex">
+    <>
       <Sidebar />
-      <div className="pt-20 px-4 w-full max-w-5xl mx-auto">
-        <div className="flex justify-center gap-6 mb-6 sticky top-20 bg-white z-10 py-2 shadow-md rounded">
+      <div className="pt-20 px-4 max-w-5xl mx-auto">
+        <div className="flex justify-center mb-8">
           <button
-            className={`px-4 py-2 rounded font-semibold transition-colors duration-200 ${
-              selectedSection === "available"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 hover:bg-gray-200"
+            className={`px-4 py-2 rounded-l-lg font-semibold border border-gray-300 transition-all duration-200 hover:bg-gray-100 ${
+              activeTab === "available" ? "bg-gray-200" : "bg-white"
             }`}
-            onClick={() => setSelectedSection("available")}
+            onClick={() => setActiveTab("available")}
           >
             Próximos partidos
           </button>
           <button
-            className={`px-4 py-2 rounded font-semibold transition-colors duration-200 ${
-              selectedSection === "predictions"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 hover:bg-gray-200"
+            className={`px-4 py-2 rounded-r-lg font-semibold border-t border-b border-r border-gray-300 transition-all duration-200 hover:bg-gray-100 ${
+              activeTab === "predictions" ? "bg-gray-200" : "bg-white"
             }`}
-            onClick={() => setSelectedSection("predictions")}
+            onClick={() => setActiveTab("predictions")}
           >
             Mis pronósticos
           </button>
         </div>
 
-        {selectedSection === "available" && <AvailableMatches embedded={true} />}
-        {selectedSection === "predictions" && <UserPredictions embedded={true} />}
+        <div className="bg-white rounded-2xl shadow-md p-6">
+          {activeTab === "available" ? <AvailableMatches embedded /> : <UserPredictions embedded />}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

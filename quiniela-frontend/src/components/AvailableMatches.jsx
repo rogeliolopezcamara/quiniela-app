@@ -79,7 +79,6 @@ const AvailableMatches = () => {
 
   return (
     <div className="flex">
-      <Sidebar />
       <div className="p-6 w-full max-w-3xl mx-auto mt-20">
         <h1 className="text-2xl font-bold mb-4 text-center">Partidos Disponibles</h1>
         {matches.length > 0 && (
