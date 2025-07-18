@@ -1,10 +1,19 @@
 # send_notifications.py
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session # type: ignore
-from database import SessionLocal
+from sqlalchemy import Column, Integer, String, DateTime # type: ignore
+from database import SessionLocal, Base
 import models
 from push_notifications import send_push_message
 import json
+
+class SentNotification(models.Base):
+    __tablename__ = "sent_notifications"
+    id = models.Column(models.Integer, primary_key=True, index=True)
+    user_id = models.Column(models.Integer, index=True)
+    match_id = models.Column(models.Integer, index=True)
+    type = models.Column(models.String, index=True)  # "24h" o "1h"
+    timestamp = models.Column(models.DateTime, default=datetime.utcnow)
 
 def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
     try:
@@ -32,7 +41,19 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
 
             users = db.query(models.User).filter(~models.User.id.in_(predicted_users)).all()
 
+            notif_type = "24h" if lower_bound_24h <= match.match_date <= upper_bound_24h else "1h"
+
             for user in users:
+                # Verifica si ya se envió esta notificación
+                already_sent = db.query(SentNotification).filter_by(
+                    user_id=user.id,
+                    match_id=match.id,
+                    type=notif_type
+                ).first()
+
+                if already_sent:
+                    continue
+
                 subs = db.query(models.PushSubscription).filter(
                     models.PushSubscription.user_id == user.id
                 ).all()
@@ -59,6 +80,14 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
                         f"⚽ {match.home_team} vs {match.away_team}",
                         body
                     )
+
+                    new_notif = SentNotification(
+                        user_id=user.id,
+                        match_id=match.id,
+                        type=notif_type
+                    )
+                    db.add(new_notif)
+                    db.commit()
 
     finally:
         db.close()
