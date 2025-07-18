@@ -81,14 +81,18 @@ const fetchProfile = async () => {
     }
   };
 
-  // Show loading if waiting for profile AND there is a token, otherwise show page
-  if (authToken && !profile) return <div className="p-6">Cargando...</div>;
+// Show loading message below Sidebar and title
+let loadingMessage = null;
+if (authToken && !profile) {
+  loadingMessage = <p className="text-gray-600 text-center mt-4">Cargando...</p>;
+}
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       <Sidebar />
       <div className="flex-grow p-6 w-full max-w-3xl mx-auto">
         <h1 className="text-3xl font-extrabold mb-6 border-b pb-2 border-gray-300">👤 Mi Perfil</h1>
+        {loadingMessage}
 
         {/* Mensaje para no autenticado */}
         {!authToken && (
