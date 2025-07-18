@@ -82,10 +82,18 @@ const Ranking = () => {
               <table className="w-full table-fixed border border-gray-200 shadow-md rounded-lg text-sm">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
-                    <th className="border border-gray-300 px-2 py-2 w-10 bg-white sticky left-0 z-10">#</th>
-                    <th className="border border-gray-300 px-3 py-2 max-w-[200px] truncate w-1/4 bg-white sticky left-10 z-10">Nombre</th>
+                    <th className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white">#</th>
+                    <th className="border border-gray-300 px-3 py-2 max-w-[180px] truncate sticky left-10 z-20 bg-white">Nombre</th>
+                    <th className="border border-gray-300 px-3 py-2 text-center font-bold sticky left-[210px] z-20 bg-white w-16">
+                      <button
+                        onClick={() => handleSort("total_points")}
+                        className="hover:underline text-blue-600"
+                      >
+                        Total {sortConfig.key === "total_points" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+                      </button>
+                    </th>
                     {rounds.map((r) => (
-                      <th key={r} className="border border-gray-300 px-3 py-2 text-center">
+                      <th key={r} className="border border-gray-300 px-3 py-2 text-center whitespace-nowrap">
                         <button
                           onClick={() => handleSort(r)}
                           className="hover:underline text-blue-600"
@@ -94,14 +102,6 @@ const Ranking = () => {
                         </button>
                       </th>
                     ))}
-                    <th className="border border-gray-300 px-2 py-2 text-center font-bold w-16">
-                      <button
-                        onClick={() => handleSort("total_points")}
-                        className="hover:underline text-blue-600"
-                      >
-                        Total {sortConfig.key === "total_points" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
-                      </button>
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -115,7 +115,7 @@ const Ranking = () => {
                         authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
                       }`}
                     >
-                      <td className="border border-gray-300 px-2 py-2 w-10 bg-white sticky left-0 z-10 text-center">
+                      <td className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-10 bg-inherit text-center">
                         {index === 0 ? (
                           <span title="Primer lugar">🥇</span>
                         ) : index === 1 ? (
@@ -126,15 +126,17 @@ const Ranking = () => {
                           index + 1
                         )}
                       </td>
-                      <td className="border border-gray-300 px-3 py-2 max-w-[200px] truncate w-1/4 bg-white sticky left-10 z-10">{user.name}</td>
+                      <td className="border border-gray-300 px-3 py-2 max-w-[180px] truncate sticky left-10 z-10 bg-inherit">
+                        {user.name}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2 text-center font-bold sticky left-[210px] z-10 bg-inherit w-16">
+                        {user.total_points}
+                      </td>
                       {rounds.map((r) => (
                         <td key={r} className="border border-gray-300 px-3 py-2 text-center">
                           {user.rounds[r] ?? 0}
                         </td>
                       ))}
-                      <td className="border border-gray-300 px-2 py-2 text-center font-bold w-16">
-                        {user.total_points}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
