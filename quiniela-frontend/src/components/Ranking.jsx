@@ -65,17 +65,17 @@ const Ranking = () => {
   return (
     <>
       <Sidebar />
-      <div className="pt-20 px-4 w-full max-w-6xl mx-auto">
+      <div className="pt-20 px-4 w-full max-w-6xl mx-auto overflow-y-auto h-[calc(100dvh-5rem)]">
         <h1 className="text-2xl font-bold mb-4 text-center">Ranking de Usuarios</h1>
         {loading ? (
           <p className="text-center text-gray-500">Cargando...</p>
         ) : (
-          <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-            <table className="w-full table-auto border border-gray-200 shadow-md rounded-lg overflow-hidden text-sm">
+          <div className="overflow-x-auto bg-white rounded-lg shadow-lg min-h-[300px] overflow-y-auto">
+            <table className="w-full table-fixed border border-gray-200 shadow-md rounded-lg text-sm">
               <thead>
                 <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                   <th className="border border-gray-300 px-3 py-2">#</th>
-                  <th className="border border-gray-300 px-3 py-2">Nombre</th>
+                  <th className="border border-gray-300 px-3 py-2 max-w-[200px] truncate w-1/4">Nombre</th>
                   {rounds.map((r) => (
                     <th key={r} className="border border-gray-300 px-3 py-2 text-center">
                       <button
@@ -118,7 +118,7 @@ const Ranking = () => {
                         index + 1
                       )}
                     </td>
-                    <td className="border border-gray-300 px-3 py-2">{user.name}</td>
+                    <td className="border border-gray-300 px-3 py-2 max-w-[200px] truncate w-1/4">{user.name}</td>
                     {rounds.map((r) => (
                       <td key={r} className="border border-gray-300 px-3 py-2 text-center">
                         {user.rounds[r] ?? 0}
