@@ -1,10 +1,15 @@
 // src/pages/Profile.jsx
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Profile = () => {
+  const { authToken, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState(null);
   const [editingField, setEditingField] = useState(null);
   const [newValue, setNewValue] = useState("");
@@ -142,6 +147,26 @@ const Profile = () => {
             <p className="mt-2 text-sm break-words text-green-600">
               Enlace: <a href={resetLink} className="underline" target="_blank" rel="noreferrer">{resetLink}</a>
             </p>
+          )}
+        </div>
+        <div className="mt-10">
+          {authToken ? (
+            <button
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+              className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Cerrar sesión
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Iniciar sesión
+            </button>
           )}
         </div>
       </div>
