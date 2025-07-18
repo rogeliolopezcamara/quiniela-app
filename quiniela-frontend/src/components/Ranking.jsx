@@ -105,7 +105,17 @@ const Ranking = () => {
                       : ""
                   }
                 >
-                  <td className="border border-gray-300 px-2 py-1 text-center">{index + 1}</td>
+                  <td className="border border-gray-300 px-2 py-1 text-center">
+                    {index === 0 ? (
+                      <span title="Primer lugar">🥇</span>
+                    ) : index === 1 ? (
+                      <span title="Segundo lugar">🥈</span>
+                    ) : index === 2 ? (
+                      <span title="Tercer lugar">🥉</span>
+                    ) : (
+                      index + 1
+                    )}
+                  </td>
                   <td className="border border-gray-300 px-2 py-1">{user.name}</td>
                   {rounds.map((r) => (
                     <td key={r} className="border border-gray-300 px-2 py-1 text-center">
