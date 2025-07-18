@@ -38,15 +38,15 @@ function Sidebar() {
           {/* Parte scrollable */}
           <div className="flex-1 overflow-y-auto space-y-4">
             <button onClick={() => navigate("/")} className="text-left w-full text-blue-600 hover:underline">
-              Instrucciones
-            </button>
-            <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
-              Ranking
+              Guía
             </button>
             {authToken && (
               <>
                 <button onClick={() => navigate("/dashboard")} className="text-left w-full text-blue-600 hover:underline">
                   Dashboard
+                </button>
+                <button onClick={() => navigate("/ranking")} className="text-left w-full text-blue-600 hover:underline">
+                  Ranking
                 </button>
                 <button onClick={() => navigate("/matches")} className="text-left w-full text-blue-600 hover:underline">
                   Partidos
@@ -54,13 +54,10 @@ function Sidebar() {
                 <button onClick={() => navigate("/my-predictions")} className="text-left w-full text-blue-600 hover:underline">
                   Mis Pronósticos
                 </button>
-                <button onClick={() => navigate("/profile")} className="text-left w-full text-blue-600 hover:underline">
-                  Mi Perfil
-                </button>
               </>
             )}
-            <button onClick={() => navigate("/changelog")} className="text-left w-full text-blue-600 hover:underline">
-              Novedades
+            <button onClick={() => navigate("/profile")} className="text-left w-full text-blue-600 hover:underline">
+              Mi Perfil
             </button>
           </div>
 

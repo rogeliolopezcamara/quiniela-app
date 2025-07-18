@@ -41,7 +41,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/helpcenter" element={<HelpCenter />} />
+        <Route path="/" element={<HelpCenter />} />
         <Route path="/instructions" element={<Instructions />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
