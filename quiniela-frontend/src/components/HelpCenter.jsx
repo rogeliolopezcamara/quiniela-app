@@ -11,7 +11,7 @@ const HelpCenter = () => {
     <>
       <Sidebar />
       <div className="pb-24 px-4 max-w-5xl mx-auto">
-        <div className="sticky top-0 bg-white z-30 shadow-md py-4">
+        <div className="sticky top-0 bg-white z-30 shadow-md py-2">
           <div className="flex justify-center mb-8">
             <button
               className={`px-4 py-2 rounded-l-lg font-semibold border border-gray-300 transition-all duration-200 hover:bg-gray-100 ${
