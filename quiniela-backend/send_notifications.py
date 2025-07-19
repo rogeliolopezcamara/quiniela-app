@@ -13,7 +13,7 @@ class SentNotification(models.Base):
     user_id = models.Column(models.Integer, index=True)
     match_id = models.Column(models.Integer, index=True)
     type = models.Column(models.String, index=True)  # "24h" o "1h"
-    timestamp = models.Column(models.DateTime, default=datetime.utcnow)
+    sent_at = models.Column(models.DateTime, default=datetime.utcnow)
 
 def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
     print("🚀 Iniciando ejecución de notify_upcoming_matches")
