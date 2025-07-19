@@ -40,7 +40,7 @@ const Ranking = () => {
   const scrollRef = useRef(null);
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
     }
   }, [sortedData]);
 
