@@ -10,20 +10,23 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
     try:
         now = datetime.utcnow()
 
-        lower_bound_24h = now + timedelta(hours=23)
         upper_bound_24h = now + timedelta(hours=24)
 
-        lower_bound_1h = now + timedelta(minutes=30)
-        upper_bound_1h = now + timedelta(hours=1)
-
-        # Buscar partidos en los rangos deseados
         matches = db.query(models.Match).filter(
-            models.Match.match_date.between(lower_bound_24h, upper_bound_24h) |
-            models.Match.match_date.between(lower_bound_1h, upper_bound_1h)
+            models.Match.match_date <= now + timedelta(hours=1)
         ).all()
 
         for match in matches:
-            time_until_match = (match.match_date - now).total_seconds()
+            seconds_until = (match.match_date - now).total_seconds()
+
+            if 0 < seconds_until <= 3600:
+                notif_type = "1h"
+                body = f"⚠️ Último aviso: {match.home_team} vs {match.away_team} comienza en menos de 1 hora."
+            elif 3600 < seconds_until <= 86400:
+                notif_type = "24h"
+                body = f"⏰ El partido empieza mañana: {match.home_team} vs {match.away_team}. ¡Haz tu pronóstico!"
+            else:
+                continue
 
             # Usuarios sin pronóstico
             predicted_users = db.query(models.Prediction.user_id).filter(
@@ -45,14 +48,6 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
                             "auth": sub.auth_key,
                         },
                     }
-
-                    if lower_bound_24h <= match.match_date <= upper_bound_24h:
-                        body = f"⏰ El partido empieza mañana: {match.home_team} vs {match.away_team}. ¡Haz tu pronóstico!"
-                    elif lower_bound_1h <= match.match_date <= upper_bound_1h:
-                        body = f"⚠️ Último aviso: {match.home_team} vs {match.away_team} comienza en menos de 1 hora."
-
-                    else:
-                        continue  # Seguridad extra
 
                     send_push_message(
                         json.dumps(subscription),
