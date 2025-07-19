@@ -1,10 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { Menu, Home, Info, Trophy, CalendarDays, User } from "lucide-react";
 
 function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, authToken } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -52,7 +53,9 @@ function Sidebar() {
             <div className="flex-1 overflow-y-auto space-y-2">
               <button
                 onClick={() => navigate("/")}
-                className="flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition"
+                className={`flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition ${
+                  location.pathname === "/" ? "bg-gray-300" : ""
+                }`}
               >
                 <Info className="w-5 h-5" />
                 Guía
@@ -61,21 +64,27 @@ function Sidebar() {
                 <>
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition"
+                    className={`flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition ${
+                      location.pathname === "/dashboard" ? "bg-gray-300" : ""
+                    }`}
                   >
                     <Home className="w-5 h-5" />
                     Inicio
                   </button>
                   <button
                     onClick={() => navigate("/ranking")}
-                    className="flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition"
+                    className={`flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition ${
+                      location.pathname === "/ranking" ? "bg-gray-300" : ""
+                    }`}
                   >
                     <Trophy className="w-5 h-5" />
                     Ranking
                   </button>
                   <button
                     onClick={() => navigate("/matches")}
-                    className="flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition"
+                    className={`flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition ${
+                      location.pathname === "/matches" ? "bg-gray-300" : ""
+                    }`}
                   >
                     <CalendarDays className="w-5 h-5" />
                     Pronósticos
@@ -84,7 +93,9 @@ function Sidebar() {
               )}
               <button
                 onClick={() => navigate("/profile")}
-                className="flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition"
+                className={`flex items-center gap-2 w-full text-left text-gray-700 hover:bg-gray-200 px-3 py-2 rounded transition ${
+                  location.pathname === "/profile" ? "bg-gray-300" : ""
+                }`}
               >
                 <User className="w-5 h-5" />
                 Perfil
@@ -115,27 +126,52 @@ function Sidebar() {
 
       {isMobile && (
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-around py-2">
-          <button onClick={() => navigate("/")} className="flex flex-col items-center text-xs text-gray-700">
+          <button
+            onClick={() => navigate("/")}
+            className={`flex flex-col items-center text-xs text-gray-700 ${
+              location.pathname === "/" ? "bg-gray-300" : ""
+            }`}
+          >
             <Info className="w-6 h-6 mb-1" />
             Guía
           </button>
           {authToken && (
             <>
-              <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center text-xs text-gray-700">
+              <button
+                onClick={() => navigate("/dashboard")}
+                className={`flex flex-col items-center text-xs text-gray-700 ${
+                  location.pathname === "/dashboard" ? "bg-gray-300" : ""
+                }`}
+              >
                 <Home className="w-6 h-6 mb-1" />
                 Inicio
               </button>
-              <button onClick={() => navigate("/ranking")} className="flex flex-col items-center text-xs text-gray-700">
+              <button
+                onClick={() => navigate("/ranking")}
+                className={`flex flex-col items-center text-xs text-gray-700 ${
+                  location.pathname === "/ranking" ? "bg-gray-300" : ""
+                }`}
+              >
                 <Trophy className="w-6 h-6 mb-1" />
                 Ranking
               </button>
-              <button onClick={() => navigate("/matches")} className="flex flex-col items-center text-xs text-gray-700">
+              <button
+                onClick={() => navigate("/matches")}
+                className={`flex flex-col items-center text-xs text-gray-700 ${
+                  location.pathname === "/matches" ? "bg-gray-300" : ""
+                }`}
+              >
                 <CalendarDays className="w-6 h-6 mb-1" />
                 Pronósticos
               </button>
             </>
           )}
-          <button onClick={() => navigate("/profile")} className="flex flex-col items-center text-xs text-gray-700">
+          <button
+            onClick={() => navigate("/profile")}
+            className={`flex flex-col items-center text-xs text-gray-700 ${
+              location.pathname === "/profile" ? "bg-gray-300" : ""
+            }`}
+          >
             <User className="w-6 h-6 mb-1" />
             Perfil
           </button>
