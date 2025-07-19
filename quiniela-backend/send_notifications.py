@@ -1,7 +1,7 @@
 # send_notifications.py
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session # type: ignore
-from sqlalchemy import Column, Integer, String, DateTime # type: ignore
+from sqlalchemy import Column, Integer, String, DateTime, select # type: ignore
 from database import SessionLocal, Base
 import models
 from push_notifications import send_push_message
@@ -13,22 +13,19 @@ class SentNotification(models.Base):
     user_id = models.Column(models.Integer, index=True)
     match_id = models.Column(models.Integer, index=True)
     type = models.Column(models.String, index=True)  # "24h" o "1h"
-    timestamp = models.Column(models.DateTime, default=datetime.utcnow)
+    sent_at = models.Column(models.DateTime, default=datetime.utcnow)
 
 def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
+    print("🚀 Iniciando ejecución de notify_upcoming_matches")
     try:
         now = datetime.utcnow()
 
-        lower_bound_24h = now + timedelta(hours=23)
         upper_bound_24h = now + timedelta(hours=24)
 
-        lower_bound_1h = now + timedelta(minutes=30)
-        upper_bound_1h = now + timedelta(hours=1)
-
-        # Buscar partidos en los rangos deseados
+        # Buscar partidos en los rangos deseados, excluyendo los que ya empezaron
         matches = db.query(models.Match).filter(
-            models.Match.match_date.between(lower_bound_24h, upper_bound_24h) |
-            models.Match.match_date.between(lower_bound_1h, upper_bound_1h)
+            models.Match.match_date <= upper_bound_24h,
+            models.Match.match_date > now
         ).all()
 
         for match in matches:
@@ -39,9 +36,13 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
                 models.Prediction.match_id == match.id
             ).subquery()
 
-            users = db.query(models.User).filter(~models.User.id.in_(predicted_users)).all()
+            users = db.query(models.User).filter(
+                ~models.User.id.in_(select(predicted_users.c.user_id))
+            ).all()
 
-            notif_type = "24h" if lower_bound_24h <= match.match_date <= upper_bound_24h else "1h"
+            notif_type = "1h" if time_until_match <= 3600 else "24h"
+
+            print(f"🔔 Se enviarán {len(users)} notificaciones de tipo '{notif_type}' para el partido {match.home_team} vs {match.away_team}")
 
             for user in users:
                 # Verifica si ya se envió esta notificación
@@ -67,13 +68,12 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
                         },
                     }
 
-                    if lower_bound_24h <= match.match_date <= upper_bound_24h:
+                    if notif_type == "24h":
                         body = f"⏰ El partido empieza mañana: {match.home_team} vs {match.away_team}. ¡Haz tu pronóstico!"
-                    elif lower_bound_1h <= match.match_date <= upper_bound_1h:
+                    elif notif_type == "1h":
                         body = f"⚠️ Último aviso: {match.home_team} vs {match.away_team} comienza en menos de 1 hora."
-
                     else:
-                        continue  # Seguridad extra
+                        continue
 
                     send_push_message(
                         json.dumps(subscription),

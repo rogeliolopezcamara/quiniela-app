@@ -81,7 +81,7 @@ function Dashboard() {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="mt-20 w-full text-center px-4">
+      <div className="mt-4 mb-24 w-full text-center px-4 md:mt-20">
         <h1 className="text-3xl font-bold mb-4">
           Bienvenido{userInfo ? `, ${userInfo.name}` : ""}
         </h1>

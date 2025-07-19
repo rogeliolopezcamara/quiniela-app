@@ -1,7 +1,15 @@
 // src/components/Changelog.jsx
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 
 const changelogEntries = [
+  {
+    date: "2024-06-13",
+    items: [
+      "Se mejoró la visualización de la tabla de posiciones en dispositivos móviles.",
+      "Ahora los administradores pueden eliminar grupos desde el panel de control.",
+      "Se optimizó el tiempo de carga inicial de la aplicación.",
+    ],
+  },
 {
   date: "2025-06-27",
   items: [
@@ -66,8 +74,7 @@ items: [
 const Changelog = () => {
   return (
     <>
-      <Sidebar />
-      <div className="pt-20 px-4 max-w-3xl mx-auto">
+      <div className="px-4 max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">Novedades</h1>
         {changelogEntries.map((entry) => (
           <div key={entry.date} className="mb-6">
