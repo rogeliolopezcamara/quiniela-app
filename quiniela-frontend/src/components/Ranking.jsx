@@ -102,12 +102,12 @@ const Ranking = () => {
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th
-                      className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-inherit text-center relative"
+                      className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-white text-center relative"
                     >
                       #
                     </th>
                     <th
-                      className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-inherit relative"
+                      className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-white relative"
                     >
                       Nombre
                     </th>
@@ -145,7 +145,17 @@ const Ranking = () => {
                       }`}
                     >
                       <td
-                        className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-inherit text-center relative"
+                        className={`border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 text-center relative ${
+                          index === 0
+                            ? "bg-yellow-100"
+                            : index === 1
+                            ? "bg-gray-200"
+                            : index === 2
+                            ? "bg-orange-100"
+                            : authToken && userId === user.user_id
+                            ? "bg-green-100"
+                            : "bg-white"
+                        }`}
                       >
                         {index === 0 ? (
                           <span title="Primer lugar">🥇</span>
@@ -158,7 +168,17 @@ const Ranking = () => {
                         )}
                       </td>
                       <td
-                        className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-inherit relative"
+                        className={`border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 relative ${
+                          index === 0
+                            ? "bg-yellow-100"
+                            : index === 1
+                            ? "bg-gray-200"
+                            : index === 2
+                            ? "bg-orange-100"
+                            : authToken && userId === user.user_id
+                            ? "bg-green-100"
+                            : "bg-white"
+                        }`}
                       >
                         {user.name}
                       </td>
