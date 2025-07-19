@@ -77,7 +77,7 @@ const Ranking = () => {
         {loading ? (
           <p className="text-center text-gray-500">Cargando...</p>
         ) : (
-          <div className="bg-white rounded-lg shadow-lg min-h-[300px] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-none min-h-[300px] overflow-y-auto">
             <div
               className="overflow-auto scroll-smooth"
               ref={scrollRef}
@@ -87,7 +87,7 @@ const Ranking = () => {
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white">#</th>
-                    <th className="border border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-10 z-20 bg-white">Nombre</th>
+                    <th className="border border-gray-300 border-r border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white">Nombre</th>
                     {rounds.map((r) => (
                       <th key={r} className="border border-gray-300 px-2 py-2 text-center whitespace-nowrap w-16">
                         <button
@@ -132,7 +132,7 @@ const Ranking = () => {
                           index + 1
                         )}
                       </td>
-                      <td className="border border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-10 z-20 bg-inherit">
+                      <td className="border border-gray-300 border-r border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-inherit">
                         {user.name}
                       </td>
                       {rounds.map((r) => (
