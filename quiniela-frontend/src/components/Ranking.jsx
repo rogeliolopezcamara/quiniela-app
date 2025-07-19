@@ -87,14 +87,12 @@ const Ranking = () => {
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th
-                      className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white"
-                      style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                      className="border border-gray-300 border-r-2 border-r-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white"
                     >
                       #
                     </th>
                     <th
-                      className="border border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white"
-                      style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                      className="border border-gray-300 border-r-2 border-r-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white"
                     >
                       Nombre
                     </th>
@@ -132,8 +130,7 @@ const Ranking = () => {
                       }`}
                     >
                       <td
-                        className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-inherit text-center"
-                        style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                        className="border border-gray-300 border-r-2 border-r-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white text-center"
                       >
                         {index === 0 ? (
                           <span title="Primer lugar">🥇</span>
@@ -146,8 +143,7 @@ const Ranking = () => {
                         )}
                       </td>
                       <td
-                        className="border border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-inherit"
-                        style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                        className="border border-gray-300 border-r-2 border-r-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white"
                       >
                         {user.name}
                       </td>
