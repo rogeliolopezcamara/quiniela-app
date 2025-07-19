@@ -165,6 +165,7 @@ function Sidebar() {
             <User className={`w-6 h-6 mb-1 ${location.pathname === "/profile" ? "text-blue-600" : "text-gray-700"}`} />
             <span className="text-gray-700">Perfil</span>
           </button>
+          <div className="h-2" />
         </nav>
       )}
     </>
