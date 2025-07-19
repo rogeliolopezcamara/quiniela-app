@@ -86,8 +86,18 @@ const Ranking = () => {
               <table className="min-w-max table-fixed border border-gray-200 shadow-md rounded-lg text-sm mx-auto">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
-                    <th className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white">#</th>
-                    <th className="border border-gray-300 border-r border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white">Nombre</th>
+                    <th
+                      className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white"
+                      style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                    >
+                      #
+                    </th>
+                    <th
+                      className="border border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white"
+                      style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                    >
+                      Nombre
+                    </th>
                     {rounds.map((r) => (
                       <th key={r} className="border border-gray-300 px-2 py-2 text-center whitespace-nowrap w-16">
                         <button
@@ -121,7 +131,10 @@ const Ranking = () => {
                         authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
                       }`}
                     >
-                      <td className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-inherit text-center">
+                      <td
+                        className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-inherit text-center"
+                        style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                      >
                         {index === 0 ? (
                           <span title="Primer lugar">🥇</span>
                         ) : index === 1 ? (
@@ -132,7 +145,10 @@ const Ranking = () => {
                           index + 1
                         )}
                       </td>
-                      <td className="border border-gray-300 border-r border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-inherit">
+                      <td
+                        className="border border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-inherit"
+                        style={{ boxShadow: "2px 0 0 0 rgba(209,213,219,1)" }}
+                      >
                         {user.name}
                       </td>
                       {rounds.map((r) => (
