@@ -83,7 +83,7 @@ const Ranking = () => {
               ref={scrollRef}
               style={{ maxWidth: "100%", overflowX: "auto" }}
             >
-              <table className="min-w-max table-fixed border border-gray-200 shadow-md rounded-lg text-sm">
+              <table className="min-w-max table-fixed border border-gray-200 shadow-md rounded-lg text-sm mx-auto">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th className="border border-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white">#</th>
@@ -99,7 +99,7 @@ const Ranking = () => {
                       </th>
                     ))}
                     <th
-                      className="border border-gray-300 px-3 py-2 text-center font-bold sticky right-0 z-20 bg-white w-16"
+                      className="border border-gray-300 px-3 py-2 text-center font-bold bg-white w-16"
                     >
                       <button
                         onClick={() => handleSort("total_points")}
@@ -141,7 +141,7 @@ const Ranking = () => {
                         </td>
                       ))}
                       <td
-                        className="border border-gray-300 px-3 py-2 text-center font-bold sticky right-0 z-20 bg-inherit w-16"
+                        className="border border-gray-300 px-3 py-2 text-center font-bold bg-inherit w-16"
                       >
                         {user.total_points}
                       </td>
