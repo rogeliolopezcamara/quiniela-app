@@ -2,6 +2,14 @@
 // import Sidebar from "./Sidebar";
 
 const changelogEntries = [
+  {
+    date: "2024-06-13",
+    items: [
+      "Se mejoró la visualización de la tabla de posiciones en dispositivos móviles.",
+      "Ahora los administradores pueden eliminar grupos desde el panel de control.",
+      "Se optimizó el tiempo de carga inicial de la aplicación.",
+    ],
+  },
 {
   date: "2025-06-27",
   items: [
