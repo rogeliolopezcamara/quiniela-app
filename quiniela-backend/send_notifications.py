@@ -22,9 +22,10 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
 
         upper_bound_24h = now + timedelta(hours=24)
 
-        # Buscar partidos en los rangos deseados
+        # Buscar partidos en los rangos deseados, excluyendo los que ya empezaron
         matches = db.query(models.Match).filter(
-            models.Match.match_date <= upper_bound_24h
+            models.Match.match_date <= upper_bound_24h,
+            models.Match.match_date > now
         ).all()
 
         for match in matches:
