@@ -87,7 +87,7 @@ const Ranking = () => {
         `}
       </style>
       <Sidebar />
-      <div className="pt-20 px-4 w-full max-w-6xl mx-auto overflow-y-auto h-[calc(100dvh-5rem)]">
+      <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto overflow-y-auto h-[calc(100dvh-5rem)]">
         <h1 className="text-2xl font-bold mb-4 text-center">Ranking de Usuarios</h1>
         {loading ? (
           <p className="text-center text-gray-500">Cargando...</p>
