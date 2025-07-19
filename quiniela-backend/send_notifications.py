@@ -16,6 +16,7 @@ class SentNotification(models.Base):
     timestamp = models.Column(models.DateTime, default=datetime.utcnow)
 
 def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
+    print("🚀 Iniciando ejecución de notify_upcoming_matches")
     try:
         now = datetime.utcnow()
 
