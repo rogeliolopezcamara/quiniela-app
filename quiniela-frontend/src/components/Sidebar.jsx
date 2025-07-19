@@ -9,6 +9,7 @@ function Sidebar() {
   const { logout, authToken } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -16,6 +17,7 @@ function Sidebar() {
     };
     handleResize();
     window.addEventListener("resize", handleResize);
+    setHasMounted(true);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -31,7 +33,7 @@ function Sidebar() {
   return (
     <>
       {/* Botón hamburguesa flotante */}
-      {!isMobile && (
+      {hasMounted && !isMobile && (
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="fixed top-4 left-4 z-50 p-2 bg-gray-200 rounded shadow-md"
@@ -41,7 +43,7 @@ function Sidebar() {
       )}
 
       {/* Menú lateral */}
-      {!isMobile && (
+      {hasMounted && !isMobile && (
         <div
           className={`fixed top-0 left-0 w-64 bg-white border-r border-gray-200 pt-16 px-4 shadow-md z-40 transition-transform duration-300
             ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -124,7 +126,7 @@ function Sidebar() {
         </div>
       )}
 
-      {isMobile && (
+      {hasMounted && isMobile && (
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-between h-20 pt-2 px-2">
           <button
             onClick={() => navigate("/")}
