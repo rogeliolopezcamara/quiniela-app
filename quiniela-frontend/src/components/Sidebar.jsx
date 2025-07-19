@@ -125,7 +125,7 @@ function Sidebar() {
       )}
 
       {isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-around pt-2 pb-1">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-around pt-2 pb-2">
           <button
             onClick={() => navigate("/")}
             className="flex flex-col items-center text-xs"
