@@ -77,22 +77,22 @@ const Ranking = () => {
         {loading ? (
           <p className="text-center text-gray-500">Cargando...</p>
         ) : (
-          <div className="bg-white rounded-lg shadow-none min-h-[300px] overflow-y-auto">
+          <div className="min-h-[300px] overflow-y-auto">
             <div
               className="overflow-auto scroll-smooth"
               ref={scrollRef}
               style={{ maxWidth: "100%", overflowX: "auto" }}
             >
-              <table className="min-w-max table-fixed border border-gray-200 shadow-md rounded-lg text-sm mx-auto">
+              <table className="min-w-max table-fixed border border-gray-200 text-sm mx-auto">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th
-                      className="border border-gray-300 border-r-2 border-r-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white"
+                      className="border-r border-gray-300 px-2 py-2 w-10 sticky left-0 z-30 bg-white"
                     >
                       #
                     </th>
                     <th
-                      className="border border-gray-300 border-r-2 border-r-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white"
+                      className="border-r border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-30 bg-white"
                     >
                       Nombre
                     </th>
@@ -130,7 +130,7 @@ const Ranking = () => {
                       }`}
                     >
                       <td
-                        className="border border-gray-300 border-r-2 border-r-gray-300 px-2 py-2 w-10 sticky left-0 z-20 bg-white text-center"
+                        className="border-r border-gray-300 px-2 py-2 w-10 sticky left-0 z-30 bg-white text-center"
                       >
                         {index === 0 ? (
                           <span title="Primer lugar">🥇</span>
@@ -143,7 +143,7 @@ const Ranking = () => {
                         )}
                       </td>
                       <td
-                        className="border border-gray-300 border-r-2 border-r-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-20 bg-white"
+                        className="border-r border-gray-300 px-3 py-2 min-w-[140px] max-w-[200px] overflow-x-auto whitespace-nowrap sticky left-[2.5rem] z-30 bg-white"
                       >
                         {user.name}
                       </td>
