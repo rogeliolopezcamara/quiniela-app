@@ -100,12 +100,12 @@ const Ranking = () => {
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th
-                      className="border-r border-gray-300 sticky-cell px-2 py-2 w-10 sticky left-0 z-30 bg-white relative"
+                      className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-inherit text-center relative"
                     >
                       #
                     </th>
                     <th
-                      className="border-r border-gray-300 sticky-cell px-3 py-2 min-w-[140px] max-w-[200px] whitespace-nowrap sticky left-[2.5rem] z-30 bg-white relative"
+                      className="border-r border-gray-300 sticky-cell px-3 py-2 min-w-[140px] max-w-[200px] whitespace-nowrap sticky left-[2.5rem] z-30 bg-inherit relative"
                     >
                       Nombre
                     </th>
@@ -143,7 +143,7 @@ const Ranking = () => {
                       }`}
                     >
                       <td
-                        className="border-r border-gray-300 sticky-cell px-2 py-2 w-10 sticky left-0 z-30 bg-white text-center relative"
+                        className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-inherit text-center relative"
                       >
                         {index === 0 ? (
                           <span title="Primer lugar">🥇</span>
@@ -156,7 +156,7 @@ const Ranking = () => {
                         )}
                       </td>
                       <td
-                        className="border-r border-gray-300 sticky-cell px-3 py-2 min-w-[140px] max-w-[200px] whitespace-nowrap sticky left-[2.5rem] z-30 bg-white relative"
+                        className="border-r border-gray-300 sticky-cell px-3 py-2 min-w-[140px] max-w-[200px] whitespace-nowrap sticky left-[2.5rem] z-30 bg-inherit relative"
                       >
                         {user.name}
                       </td>
