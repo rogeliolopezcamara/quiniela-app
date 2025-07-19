@@ -81,6 +81,8 @@ const Ranking = () => {
             width: 1px;
             height: 100%;
             background-color: #D1D5DB; /* Tailwind gray-300 */
+            z-index: 30;
+            pointer-events: none;
           }
         `}
       </style>
@@ -105,7 +107,7 @@ const Ranking = () => {
                       #
                     </th>
                     <th
-                      className="border-r border-gray-300 sticky-cell px-3 py-2 min-w-[140px] max-w-[200px] whitespace-nowrap sticky left-[2.5rem] z-30 bg-inherit relative"
+                      className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-inherit relative"
                     >
                       Nombre
                     </th>
@@ -156,7 +158,7 @@ const Ranking = () => {
                         )}
                       </td>
                       <td
-                        className="border-r border-gray-300 sticky-cell px-3 py-2 min-w-[140px] max-w-[200px] whitespace-nowrap sticky left-[2.5rem] z-30 bg-inherit relative"
+                        className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-inherit relative"
                       >
                         {user.name}
                       </td>
