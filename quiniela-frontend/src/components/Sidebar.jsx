@@ -128,52 +128,42 @@ function Sidebar() {
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-around py-2">
           <button
             onClick={() => navigate("/")}
-            className={`flex flex-col items-center text-xs text-gray-700 ${
-              location.pathname === "/" ? "bg-gray-300" : ""
-            }`}
+            className="flex flex-col items-center text-xs"
           >
-            <Info className="w-6 h-6 mb-1" />
-            Guía
+            <Info className={`w-6 h-6 mb-1 ${location.pathname === "/" ? "text-blue-600" : "text-gray-700"}`} />
+            <span className="text-gray-700">Guía</span>
           </button>
           {authToken && (
             <>
               <button
                 onClick={() => navigate("/dashboard")}
-                className={`flex flex-col items-center text-xs text-gray-700 ${
-                  location.pathname === "/dashboard" ? "bg-gray-300" : ""
-                }`}
+                className="flex flex-col items-center text-xs"
               >
-                <Home className="w-6 h-6 mb-1" />
-                Inicio
+                <Home className={`w-6 h-6 mb-1 ${location.pathname === "/dashboard" ? "text-blue-600" : "text-gray-700"}`} />
+                <span className="text-gray-700">Inicio</span>
               </button>
               <button
                 onClick={() => navigate("/ranking")}
-                className={`flex flex-col items-center text-xs text-gray-700 ${
-                  location.pathname === "/ranking" ? "bg-gray-300" : ""
-                }`}
+                className="flex flex-col items-center text-xs"
               >
-                <Trophy className="w-6 h-6 mb-1" />
-                Ranking
+                <Trophy className={`w-6 h-6 mb-1 ${location.pathname === "/ranking" ? "text-blue-600" : "text-gray-700"}`} />
+                <span className="text-gray-700">Ranking</span>
               </button>
               <button
                 onClick={() => navigate("/matches")}
-                className={`flex flex-col items-center text-xs text-gray-700 ${
-                  location.pathname === "/matches" ? "bg-gray-300" : ""
-                }`}
+                className="flex flex-col items-center text-xs"
               >
-                <CalendarDays className="w-6 h-6 mb-1" />
-                Pronósticos
+                <CalendarDays className={`w-6 h-6 mb-1 ${location.pathname === "/matches" ? "text-blue-600" : "text-gray-700"}`} />
+                <span className="text-gray-700">Pronósticos</span>
               </button>
             </>
           )}
           <button
             onClick={() => navigate("/profile")}
-            className={`flex flex-col items-center text-xs text-gray-700 ${
-              location.pathname === "/profile" ? "bg-gray-300" : ""
-            }`}
+            className="flex flex-col items-center text-xs"
           >
-            <User className="w-6 h-6 mb-1" />
-            Perfil
+            <User className={`w-6 h-6 mb-1 ${location.pathname === "/profile" ? "text-blue-600" : "text-gray-700"}`} />
+            <span className="text-gray-700">Perfil</span>
           </button>
         </nav>
       )}
