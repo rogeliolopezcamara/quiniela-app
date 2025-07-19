@@ -125,7 +125,7 @@ function Sidebar() {
       )}
 
       {isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-around pt-2 pb-1">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-around py-2">
           <button
             onClick={() => navigate("/")}
             className="flex flex-col items-center text-xs"
@@ -165,7 +165,6 @@ function Sidebar() {
             <User className={`w-6 h-6 mb-1 ${location.pathname === "/profile" ? "text-blue-600" : "text-gray-700"}`} />
             <span className="text-gray-700">Perfil</span>
           </button>
-          <div className="h-2" />
         </nav>
       )}
     </>
