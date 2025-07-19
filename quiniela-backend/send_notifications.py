@@ -1,7 +1,7 @@
 # send_notifications.py
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session # type: ignore
-from sqlalchemy import Column, Integer, String, DateTime # type: ignore
+from sqlalchemy import Column, Integer, String, DateTime, select # type: ignore
 from database import SessionLocal, Base
 import models
 from push_notifications import send_push_message
@@ -34,7 +34,9 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
                 models.Prediction.match_id == match.id
             ).subquery()
 
-            users = db.query(models.User).filter(~models.User.id.in_(predicted_users)).all()
+            users = db.query(models.User).filter(
+                ~models.User.id.in_(select(predicted_users.c.user_id))
+            ).all()
 
             notif_type = "1h" if time_until_match <= 3600 else "24h"
 
