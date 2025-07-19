@@ -40,6 +40,8 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
 
             notif_type = "1h" if time_until_match <= 3600 else "24h"
 
+            print(f"🔔 Se enviarán {len(users)} notificaciones de tipo '{notif_type}' para el partido {match.home_team} vs {match.away_team}")
+
             for user in users:
                 # Verifica si ya se envió esta notificación
                 already_sent = db.query(SentNotification).filter_by(
