@@ -3,11 +3,11 @@
 
 const changelogEntries = [
   {
-    date: "2024-06-13",
+    date: "2024-06-18",
     items: [
-      "Se mejoró la visualización de la tabla de posiciones en dispositivos móviles.",
-      "Ahora los administradores pueden eliminar grupos desde el panel de control.",
-      "Se optimizó el tiempo de carga inicial de la aplicación.",
+      "Mejoras en el diseño",
+      "Corrección de errores en la conexión con la BD",
+      "Corrección de errores en el sistema de notificaciones",
     ],
   },
 {
