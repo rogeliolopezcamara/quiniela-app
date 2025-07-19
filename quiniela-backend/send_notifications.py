@@ -1,10 +1,19 @@
 # send_notifications.py
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session # type: ignore
-from database import SessionLocal
+from sqlalchemy import Column, Integer, String, DateTime # type: ignore
+from database import SessionLocal, Base
 import models
 from push_notifications import send_push_message
 import json
+
+class SentNotification(models.Base):
+    __tablename__ = "sent_notifications"
+    id = models.Column(models.Integer, primary_key=True, index=True)
+    user_id = models.Column(models.Integer, index=True)
+    match_id = models.Column(models.Integer, index=True)
+    type = models.Column(models.String, index=True)  # "24h" o "1h"
+    timestamp = models.Column(models.DateTime, default=datetime.utcnow)
 
 def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
     try:
@@ -12,21 +21,13 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
 
         upper_bound_24h = now + timedelta(hours=24)
 
+        # Buscar partidos en los rangos deseados
         matches = db.query(models.Match).filter(
-            models.Match.match_date <= now + timedelta(hours=1)
+            models.Match.match_date <= upper_bound_24h
         ).all()
 
         for match in matches:
-            seconds_until = (match.match_date - now).total_seconds()
-
-            if 0 < seconds_until <= 3600:
-                notif_type = "1h"
-                body = f"⚠️ Último aviso: {match.home_team} vs {match.away_team} comienza en menos de 1 hora."
-            elif 3600 < seconds_until <= 86400:
-                notif_type = "24h"
-                body = f"⏰ El partido empieza mañana: {match.home_team} vs {match.away_team}. ¡Haz tu pronóstico!"
-            else:
-                continue
+            time_until_match = (match.match_date - now).total_seconds()
 
             # Usuarios sin pronóstico
             predicted_users = db.query(models.Prediction.user_id).filter(
@@ -35,7 +36,19 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
 
             users = db.query(models.User).filter(~models.User.id.in_(predicted_users)).all()
 
+            notif_type = "1h" if time_until_match <= 3600 else "24h"
+
             for user in users:
+                # Verifica si ya se envió esta notificación
+                already_sent = db.query(SentNotification).filter_by(
+                    user_id=user.id,
+                    match_id=match.id,
+                    type=notif_type
+                ).first()
+
+                if already_sent:
+                    continue
+
                 subs = db.query(models.PushSubscription).filter(
                     models.PushSubscription.user_id == user.id
                 ).all()
@@ -49,11 +62,26 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
                         },
                     }
 
+                    if notif_type == "24h":
+                        body = f"⏰ El partido empieza mañana: {match.home_team} vs {match.away_team}. ¡Haz tu pronóstico!"
+                    elif notif_type == "1h":
+                        body = f"⚠️ Último aviso: {match.home_team} vs {match.away_team} comienza en menos de 1 hora."
+                    else:
+                        continue
+
                     send_push_message(
                         json.dumps(subscription),
                         f"⚽ {match.home_team} vs {match.away_team}",
                         body
                     )
+
+                    new_notif = SentNotification(
+                        user_id=user.id,
+                        match_id=match.id,
+                        type=notif_type
+                    )
+                    db.add(new_notif)
+                    db.commit()
 
     finally:
         db.close()
