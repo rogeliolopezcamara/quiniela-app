@@ -125,10 +125,10 @@ function Sidebar() {
       )}
 
       {isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-around h-20 pt-2">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 shadow-md z-50 flex justify-between h-20 pt-2 px-2">
           <button
             onClick={() => navigate("/")}
-            className="flex flex-col items-center text-xs"
+            className="flex flex-col items-center text-xs w-1/5"
           >
             <Info className={`w-6 h-6 mb-1 ${location.pathname === "/" ? "text-blue-600" : "text-gray-700"}`} />
             <span className="text-gray-700">Guía</span>
@@ -137,21 +137,21 @@ function Sidebar() {
             <>
               <button
                 onClick={() => navigate("/dashboard")}
-                className="flex flex-col items-center text-xs"
+                className="flex flex-col items-center text-xs w-1/5"
               >
                 <Home className={`w-6 h-6 mb-1 ${location.pathname === "/dashboard" ? "text-blue-600" : "text-gray-700"}`} />
                 <span className="text-gray-700">Inicio</span>
               </button>
               <button
                 onClick={() => navigate("/ranking")}
-                className="flex flex-col items-center text-xs"
+                className="flex flex-col items-center text-xs w-1/5"
               >
                 <Trophy className={`w-6 h-6 mb-1 ${location.pathname === "/ranking" ? "text-blue-600" : "text-gray-700"}`} />
                 <span className="text-gray-700">Ranking</span>
               </button>
               <button
                 onClick={() => navigate("/matches")}
-                className="flex flex-col items-center text-xs"
+                className="flex flex-col items-center text-xs w-1/5"
               >
                 <CalendarDays className={`w-6 h-6 mb-1 ${location.pathname === "/matches" ? "text-blue-600" : "text-gray-700"}`} />
                 <span className="text-gray-700">Pronósticos</span>
@@ -160,7 +160,7 @@ function Sidebar() {
           )}
           <button
             onClick={() => navigate("/profile")}
-            className="flex flex-col items-center text-xs"
+            className="flex flex-col items-center text-xs w-1/5"
           >
             <User className={`w-6 h-6 mb-1 ${location.pathname === "/profile" ? "text-blue-600" : "text-gray-700"}`} />
             <span className="text-gray-700">Perfil</span>
