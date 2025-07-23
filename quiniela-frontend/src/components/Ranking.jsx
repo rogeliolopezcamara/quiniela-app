@@ -135,7 +135,7 @@ const Ranking = () => {
                 </thead>
                 <tbody>
                   {sortedData.map((user, positionIndex) => {
-                    const currentIndex = sortedData.findIndex(u => u.user_id === user.user_id);
+                    const currentIndex = positionIndex;
                     return (
                       <tr
                         key={user.user_id}
@@ -166,7 +166,7 @@ const Ranking = () => {
                           ) : currentIndex === 2 ? (
                             <span title="Tercer lugar">🥉</span>
                           ) : (
-                            sortedData.findIndex(u => u.user_id === user.user_id) + 1
+                            positionIndex + 1
                           )}
                         </td>
                         <td
