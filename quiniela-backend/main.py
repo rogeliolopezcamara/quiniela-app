@@ -206,6 +206,10 @@ def get_ranking(db: Session = Depends(get_db)):
     # 6. Ordenar por total de puntos
     result.sort(key=lambda x: x["total_points"], reverse=True)
 
+    # 7. Asignar posición basada en total_points
+    for idx, entry in enumerate(result, start=1):
+        entry["position"] = idx
+
     return {
         "rounds": rounds,
         "ranking": result

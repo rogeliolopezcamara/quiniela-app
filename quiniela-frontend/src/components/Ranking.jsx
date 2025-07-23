@@ -134,68 +134,58 @@ const Ranking = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedData.map((user, positionIndex) => {
-                    const currentIndex = positionIndex;
+                  {sortedData.map((user) => {
+                    const pos = user.position;
                     return (
                       <tr
                         key={user.user_id}
                         className={`border-t border-gray-200 hover:bg-gray-50 ${
-                          currentIndex === 0 ? "bg-yellow-100 font-semibold" :
-                          currentIndex === 1 ? "bg-gray-200 font-semibold" :
-                          currentIndex === 2 ? "bg-orange-100 font-semibold" :
+                          pos === 1 ? "bg-yellow-100 font-semibold" :
+                          pos === 2 ? "bg-gray-200 font-semibold" :
+                          pos === 3 ? "bg-orange-100 font-semibold" :
                           authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
                         }`}
                       >
                         <td
                           className={`border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 text-center relative ${
-                            currentIndex === 0
-                              ? "bg-yellow-100"
-                              : currentIndex === 1
-                              ? "bg-gray-200"
-                              : currentIndex === 2
-                              ? "bg-orange-100"
-                              : authToken && userId === user.user_id
-                              ? "bg-green-100"
-                              : "bg-white"
+                            pos === 1 ? "bg-yellow-100" :
+                            pos === 2 ? "bg-gray-200" :
+                            pos === 3 ? "bg-orange-100" :
+                            authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
                           }`}
                         >
-                          {currentIndex === 0 ? (
+                          {pos === 1 ? (
                             <span title="Primer lugar">🥇</span>
-                          ) : currentIndex === 1 ? (
+                          ) : pos === 2 ? (
                             <span title="Segundo lugar">🥈</span>
-                          ) : currentIndex === 2 ? (
+                          ) : pos === 3 ? (
                             <span title="Tercer lugar">🥉</span>
                           ) : (
-                            positionIndex + 1
+                            pos
                           )}
                         </td>
                         <td
                           className={`border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 relative ${
-                            currentIndex === 0
-                              ? "bg-yellow-100"
-                              : currentIndex === 1
-                              ? "bg-gray-200"
-                              : currentIndex === 2
-                              ? "bg-orange-100"
-                              : authToken && userId === user.user_id
-                              ? "bg-green-100"
-                              : "bg-white"
+                            pos === 1 ? "bg-yellow-100" :
+                            pos === 2 ? "bg-gray-200" :
+                            pos === 3 ? "bg-orange-100" :
+                            authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
                           }`}
                         >
                           {user.name}
                         </td>
-                      {rounds.map((r) => (
-                        <td key={r} className="border border-gray-300 px-2 py-2 text-center w-16">
-                          {user.rounds[r] ?? 0}
+                        {rounds.map((r) => (
+                          <td key={r} className="border border-gray-300 px-2 py-2 text-center w-16">
+                            {user.rounds[r] ?? 0}
+                          </td>
+                        ))}
+                        <td
+                          className="border border-gray-300 px-3 py-2 text-center font-bold bg-inherit w-16"
+                        >
+                          {user.total_points}
                         </td>
-                      ))}
-                      <td
-                        className="border border-gray-300 px-3 py-2 text-center font-bold bg-inherit w-16"
-                      >
-                        {user.total_points}
-                      </td>
-                    </tr>
-                  );
+                      </tr>
+                    );
                   })}
                 </tbody>
               </table>
