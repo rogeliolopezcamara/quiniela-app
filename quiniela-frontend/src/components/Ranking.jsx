@@ -134,54 +134,56 @@ const Ranking = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedData.map((user, positionIndex) => (
-                    <tr
-                      key={user.user_id}
-                      className={`border-t border-gray-200 hover:bg-gray-50 ${
-                        positionIndex === 0 ? "bg-yellow-100 font-semibold" :
-                        positionIndex === 1 ? "bg-gray-200 font-semibold" :
-                        positionIndex === 2 ? "bg-orange-100 font-semibold" :
-                        authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
-                      }`}
-                    >
-                      <td
-                        className={`border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 text-center relative ${
-                          positionIndex === 0
-                            ? "bg-yellow-100"
-                            : positionIndex === 1
-                            ? "bg-gray-200"
-                            : positionIndex === 2
-                            ? "bg-orange-100"
-                            : authToken && userId === user.user_id
-                            ? "bg-green-100"
-                            : "bg-white"
+                  {sortedData.map((user, positionIndex) => {
+                    const currentIndex = sortedData.findIndex(u => u.user_id === user.user_id);
+                    return (
+                      <tr
+                        key={user.user_id}
+                        className={`border-t border-gray-200 hover:bg-gray-50 ${
+                          currentIndex === 0 ? "bg-yellow-100 font-semibold" :
+                          currentIndex === 1 ? "bg-gray-200 font-semibold" :
+                          currentIndex === 2 ? "bg-orange-100 font-semibold" :
+                          authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
                         }`}
                       >
-                        {positionIndex === 0 ? (
-                          <span title="Primer lugar">🥇</span>
-                        ) : positionIndex === 1 ? (
-                          <span title="Segundo lugar">🥈</span>
-                        ) : positionIndex === 2 ? (
-                          <span title="Tercer lugar">🥉</span>
-                        ) : (
-                          positionIndex + 1
-                        )}
-                      </td>
-                      <td
-                        className={`border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 relative ${
-                          positionIndex === 0
-                            ? "bg-yellow-100"
-                            : positionIndex === 1
-                            ? "bg-gray-200"
-                            : positionIndex === 2
-                            ? "bg-orange-100"
-                            : authToken && userId === user.user_id
-                            ? "bg-green-100"
-                            : "bg-white"
-                        }`}
-                      >
-                        {user.name}
-                      </td>
+                        <td
+                          className={`border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 text-center relative ${
+                            currentIndex === 0
+                              ? "bg-yellow-100"
+                              : currentIndex === 1
+                              ? "bg-gray-200"
+                              : currentIndex === 2
+                              ? "bg-orange-100"
+                              : authToken && userId === user.user_id
+                              ? "bg-green-100"
+                              : "bg-white"
+                          }`}
+                        >
+                          {currentIndex === 0 ? (
+                            <span title="Primer lugar">🥇</span>
+                          ) : currentIndex === 1 ? (
+                            <span title="Segundo lugar">🥈</span>
+                          ) : currentIndex === 2 ? (
+                            <span title="Tercer lugar">🥉</span>
+                          ) : (
+                            sortedData.findIndex(u => u.user_id === user.user_id) + 1
+                          )}
+                        </td>
+                        <td
+                          className={`border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 relative ${
+                            currentIndex === 0
+                              ? "bg-yellow-100"
+                              : currentIndex === 1
+                              ? "bg-gray-200"
+                              : currentIndex === 2
+                              ? "bg-orange-100"
+                              : authToken && userId === user.user_id
+                              ? "bg-green-100"
+                              : "bg-white"
+                          }`}
+                        >
+                          {user.name}
+                        </td>
                       {rounds.map((r) => (
                         <td key={r} className="border border-gray-300 px-2 py-2 text-center w-16">
                           {user.rounds[r] ?? 0}
@@ -193,7 +195,8 @@ const Ranking = () => {
                         {user.total_points}
                       </td>
                     </tr>
-                  ))}
+                  );
+                  })}
                 </tbody>
               </table>
             </div>
