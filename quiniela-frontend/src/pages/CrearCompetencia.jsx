@@ -6,7 +6,7 @@ import Sidebar from "../components/Sidebar";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-function CrearCompetencia() {
+function CrearCompetencia({ onSuccess }) {
   const { authToken } = useAuth();
   const navigate = useNavigate();
 
@@ -51,7 +51,9 @@ function CrearCompetencia() {
         }
       );
       alert("Competencia creada con éxito");
-      navigate("/dashboard");
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 0);
     } catch (error) {
       console.error("Error al crear competencia:", error);
       alert("Hubo un error al crear la competencia");

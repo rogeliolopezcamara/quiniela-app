@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../context/AuthContext";
@@ -6,6 +7,9 @@ import { useAuth } from "../context/AuthContext";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Ranking = () => {
+  const [searchParams] = useSearchParams();
+  const initialCompetenciaId = searchParams.get("competencia_id");
+
   const { authToken } = useAuth();
   const [rankingData, setRankingData] = useState([]);
   const [sortedData, setSortedData] = useState([]);
@@ -31,7 +35,8 @@ const Ranking = () => {
 
           setCompetencias(comps.data);
           if (comps.data.length > 0) {
-            setCompetenciaSeleccionada(comps.data[0].id);
+            const match = comps.data.find(c => c.id === parseInt(initialCompetenciaId));
+            setCompetenciaSeleccionada(match ? match.id : comps.data[0].id);
           }
         }
       } catch (error) {

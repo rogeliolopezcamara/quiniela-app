@@ -6,7 +6,7 @@ import Sidebar from "../components/Sidebar";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-function UnirseCompetencia() {
+function UnirseCompetencia({ onSuccess }) {
   const { authToken } = useAuth();
   const navigate = useNavigate();
 
@@ -48,7 +48,9 @@ function UnirseCompetencia() {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       alert("Te uniste a la competencia correctamente");
-      navigate("/dashboard");
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 0);
     } catch (error) {
       console.error("Error al unirse:", error);
       alert("No se pudo unir a la competencia. Verifica el código.");
@@ -67,7 +69,9 @@ function UnirseCompetencia() {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       alert("Te uniste a la competencia correctamente");
-      navigate("/dashboard");
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 0);
     } catch (error) {
       console.error("Error al unirse:", error);
       alert("No se pudo unir a la competencia.");
