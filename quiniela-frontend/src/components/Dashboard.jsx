@@ -98,27 +98,21 @@ function Dashboard() {
             <p>
               Email: <span className="font-semibold">{userInfo.email}</span>
             </p>
-            <p>
-              Registrado desde:{" "}
-              <span className="font-semibold">
-                {new Date(userInfo.created_at).toLocaleDateString("es-ES")}
-              </span>
-            </p>
           </div>
         )}
 
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-2 px-6 rounded-lg shadow"
           >
-            Crear nueva competencia
+            ➕ Crear nueva competencia
           </button>
           <button
             onClick={() => setShowJoinModal(true)}
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold py-2 px-6 rounded-lg shadow"
           >
-            Unirse a competencia
+            🔗 Unirse a competencia
           </button>
         </div>
 
@@ -129,8 +123,18 @@ function Dashboard() {
           ) : (
             <ul className="space-y-3">
               {userCompetitions.map((comp) => (
-                <li key={comp.id} className="border p-3 rounded shadow text-left">
-                  <p><span className="font-bold">Nombre:</span> {comp.name}</p>
+                <li key={comp.id} className="border p-4 rounded-lg shadow-md bg-white">
+                  <div className="flex items-center gap-4 mb-4">
+                    {comp.leagues.length > 0 && comp.leagues[0].league_logo && (
+                      <img
+                        src={comp.leagues[0].league_logo}
+                        alt="logo"
+                        className="w-12 h-12 object-contain"
+                      />
+                    )}
+                    <h3 className="text-xl font-bold">{comp.leagues.length > 0 ? comp.leagues[0].league_name : "Competencia"}</h3>
+                  </div>
+                  <p className="text-lg font-semibold mb-1">{comp.name}</p>
                   {!comp.is_public && (
                     <p><span className="font-bold">Código de invitación:</span> <span className="font-mono">{comp.invite_code}</span></p>
                   )}
@@ -139,30 +143,28 @@ function Dashboard() {
                   <p><span className="font-bold">Tu posición:</span> {comp.my_ranking}</p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {comp.leagues.map((league, index) => (
-                      <div key={index} className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded">
-                        {league.league_logo && (
-                          <img src={league.league_logo} alt="logo" className="w-6 h-6" />
-                        )}
+                      <div key={index} className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded text-sm">
                         <span>{league.league_name}</span>
+                        <span className="text-gray-500">({league.league_season})</span>
                       </div>
                     ))}
                   </div>
-                  <button
-                    onClick={() => navigate(`/ranking?competencia_id=${comp.id}`)}
-                    className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700 mt-2"
-                  >
-                    Ver Ranking
-                  </button>
-                  {comp.is_creator && (
-                    <div className="mt-2">
+                  <div className="flex gap-2 mt-4 flex-wrap">
+                    <button
+                      onClick={() => navigate(`/ranking?competencia_id=${comp.id}`)}
+                      className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
+                    >
+                      Ver Ranking
+                    </button>
+                    {comp.is_creator && (
                       <button
                         onClick={() => handleDeleteCompetition(comp.id)}
                         className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                       >
                         Eliminar competencia
                       </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
