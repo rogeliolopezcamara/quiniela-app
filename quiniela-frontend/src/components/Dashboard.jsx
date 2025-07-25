@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import axios from "../utils/axiosConfig";
-import CrearCompetencia from "./CrearCompetencia";
-import UnirseCompetencia from "./UnirseCompetencia";
+import CrearCompetencia from "../pages/CrearCompetencia";
+import UnirseCompetencia from "../pages/UnirseCompetencia";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
