@@ -16,10 +16,24 @@ function Dashboard() {
   const [userCompetitions, setUserCompetitions] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [reloadTrigger, setReloadTrigger] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  const reloadCompetitions = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setUserCompetitions(response.data);
+    } catch (error) {
+      console.error("Error al obtener competencias:", error);
+    }
   };
 
   const handleDeleteCompetition = async (competitionId) => {
@@ -41,6 +55,16 @@ function Dashboard() {
     }
   };
 
+  const handleCloseCreate = () => {
+    setShowCreateModal(false);
+    reloadCompetitions();
+  };
+
+  const handleCloseJoin = () => {
+    setShowJoinModal(false);
+    reloadCompetitions();
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -55,24 +79,11 @@ function Dashboard() {
       }
     };
 
-    const fetchUserCompetitions = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setUserCompetitions(response.data);
-      } catch (error) {
-        console.error("Error al obtener competencias:", error);
-      }
-    };
-
     if (authToken) {
       fetchProfile();
-      fetchUserCompetitions();
+      reloadCompetitions();
     }
-  }, [authToken]);
+  }, [authToken, reloadTrigger]);
 
   return (
     <div className="flex">
@@ -136,6 +147,12 @@ function Dashboard() {
                       </div>
                     ))}
                   </div>
+                  <button
+                    onClick={() => navigate(`/ranking?competencia_id=${comp.id}`)}
+                    className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700 mt-2"
+                  >
+                    Ver Ranking
+                  </button>
                   {comp.is_creator && (
                     <div className="mt-2">
                       <button
@@ -157,12 +174,12 @@ function Dashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded shadow-md max-w-2xl w-full relative overflow-y-auto max-h-[90vh]">
             <button
-              onClick={() => setShowCreateModal(false)}
+              onClick={handleCloseCreate}
               className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
             >
               ×
             </button>
-            <CrearCompetencia />
+            <CrearCompetencia onSuccess={handleCloseCreate} />
           </div>
         </div>
       )}
@@ -171,12 +188,12 @@ function Dashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded shadow-md max-w-2xl w-full relative overflow-y-auto max-h-[90vh]">
             <button
-              onClick={() => setShowJoinModal(false)}
+              onClick={handleCloseJoin}
               className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
             >
               ×
             </button>
-            <UnirseCompetencia />
+            <UnirseCompetencia onSuccess={handleCloseJoin} />
           </div>
         </div>
       )}
