@@ -246,98 +246,101 @@ const UserPredictions = () => {
             ))}
           </div>
 
-          {/* Versión desktop (tabla) */}
-          <table className="hidden md:table min-w-full bg-white border border-gray-300">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">Partido</th>
-                <th className="py-2 px-4 border-b">Pronóstico</th>
-                <th className="py-2 px-4 border-b">Marcador real</th>
-                <th className="py-2 px-4 border-b">Puntos</th>
-                <th className="py-2 px-4 border-b">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(predictions).map(([round, preds]) => (
-                <>
-                  <tr key={round}>
-                    <td colSpan="5" className="bg-gray-100 text-center font-semibold py-2 flex justify-center items-center gap-2">
-                      {round}
-                      <button
-                        onClick={() => toggleRoundCollapse(round)}
-                        className={`transform transition-transform duration-200 ${
-                          collapsedRounds[round] ? "-rotate-90" : "rotate-0"
-                        }`}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                  {!collapsedRounds[round] && preds.map((pred) => (
-                    <tr key={pred.prediction_id}>
-                      <td className="py-2 px-4 border-b">
-                        <div className="flex items-center gap-2">
-                          <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6 object-contain" />
-                          <span>{pred.home_team}</span>
-                          <span>vs</span>
-                          <span>{pred.away_team}</span>
-                          <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6 object-contain" />
-                        </div>
-                        <div className="text-sm text-gray-500">{formatDate(pred.match_date)}</div>
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        {editPredictionId === pred.prediction_id ? (
-                          <form
-                            className="flex items-center gap-2"
-                            onSubmit={(e) => handleEditSubmit(e, pred.prediction_id)}
-                          >
-                            <input
-                              type="number"
-                              min="0"
-                              value={editValues.pred_home}
-                              onChange={(e) => setEditValues({ ...editValues, pred_home: e.target.value })}
-                              className="border rounded px-2 py-1 w-16"
-                              required
-                            />
-                            <span>-</span>
-                            <input
-                              type="number"
-                              min="0"
-                              value={editValues.pred_away}
-                              onChange={(e) => setEditValues({ ...editValues, pred_away: e.target.value })}
-                              className="border rounded px-2 py-1 w-16"
-                              required
-                            />
-                            <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">
-                              Guardar
-                            </button>
-                          </form>
-                        ) : (
-                          `${pred.pred_home} - ${pred.pred_away}`
-                        )}
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
-                      </td>
-                      <td className="py-2 px-4 border-b">{pred.points ?? "-"}</td>
-                      <td className="py-2 px-4 border-b">
-                        {isEditable(pred.match_date) && editPredictionId !== pred.prediction_id && (
-                          <button
-                            onClick={() => handleEditClick(pred)}
-                            className="bg-yellow-500 text-white px-3 py-1 rounded"
-                          >
-                            Editar
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </>
-              ))}
-            </tbody>
-          </table>
+          {/* Versión desktop (bloques por ronda, tabla parcial) */}
+          <div className="hidden md:block">
+            {Object.entries(predictions).map(([round, preds]) => (
+              <div key={round} className="mb-6">
+                <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 font-semibold text-sm">
+                  <button
+                    onClick={() => toggleRoundCollapse(round)}
+                    className={`transform transition-transform duration-200 ${
+                      collapsedRounds[round] ? "rotate-0" : "rotate-90"
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                  <span>{round}</span>
+                </div>
+
+                {!collapsedRounds[round] && (
+                  <table className="min-w-full bg-white border border-gray-300">
+                    <thead>
+                      <tr>
+                        <th className="py-2 px-4 border-b">Partido</th>
+                        <th className="py-2 px-4 border-b">Pronóstico</th>
+                        <th className="py-2 px-4 border-b">Marcador real</th>
+                        <th className="py-2 px-4 border-b">Puntos</th>
+                        <th className="py-2 px-4 border-b">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {preds.map((pred) => (
+                        <tr key={pred.prediction_id}>
+                          <td className="py-2 px-4 border-b">
+                            <div className="flex items-center gap-2">
+                              <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6 object-contain" />
+                              <span>{pred.home_team}</span>
+                              <span>vs</span>
+                              <span>{pred.away_team}</span>
+                              <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6 object-contain" />
+                            </div>
+                            <div className="text-sm text-gray-500">{formatDate(pred.match_date)}</div>
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {editPredictionId === pred.prediction_id ? (
+                              <form
+                                className="flex items-center gap-2"
+                                onSubmit={(e) => handleEditSubmit(e, pred.prediction_id)}
+                              >
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={editValues.pred_home}
+                                  onChange={(e) => setEditValues({ ...editValues, pred_home: e.target.value })}
+                                  className="border rounded px-2 py-1 w-16"
+                                  required
+                                />
+                                <span>-</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={editValues.pred_away}
+                                  onChange={(e) => setEditValues({ ...editValues, pred_away: e.target.value })}
+                                  className="border rounded px-2 py-1 w-16"
+                                  required
+                                />
+                                <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">
+                                  Guardar
+                                </button>
+                              </form>
+                            ) : (
+                              `${pred.pred_home} - ${pred.pred_away}`
+                            )}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
+                          </td>
+                          <td className="py-2 px-4 border-b">{pred.points ?? "-"}</td>
+                          <td className="py-2 px-4 border-b">
+                            {isEditable(pred.match_date) && editPredictionId !== pred.prediction_id && (
+                              <button
+                                onClick={() => handleEditClick(pred)}
+                                className="bg-yellow-500 text-white px-3 py-1 rounded"
+                              >
+                                Editar
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>
