@@ -50,7 +50,7 @@ const AvailableMatches = () => {
 
       const now = new Date();
       const in8Days = new Date();
-      in8Days.setDate(now.getDate() + 8);
+      in8Days.setDate(now.getDate() + 30); // se cambio solo para prueba originalmente era 8 días
 
       const filtered = response.data.filter((match) => {
         const matchDate = new Date(match.match_date);
