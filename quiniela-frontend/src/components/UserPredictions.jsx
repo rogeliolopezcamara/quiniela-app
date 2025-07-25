@@ -13,6 +13,7 @@ const UserPredictions = () => {
   const [editValues, setEditValues] = useState({ pred_home: '', pred_away: '' });
   const [competencias, setCompetencias] = useState([]);
   const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState("todas");
+  const [collapsedRounds, setCollapsedRounds] = useState({});
 
   useEffect(() => {
     const fetchCompetencias = async () => {
@@ -55,6 +56,12 @@ const UserPredictions = () => {
           return acc;
         }, {});
         setPredictions(grouped);
+        // Initialize collapsedRounds state for new rounds
+        const initialCollapsed = {};
+        Object.keys(grouped).forEach(round => {
+          initialCollapsed[round] = false;
+        });
+        setCollapsedRounds(initialCollapsed);
       } catch (error) {
         console.error("Error al obtener pronósticos:", error);
       }
@@ -118,6 +125,13 @@ const UserPredictions = () => {
     });
   };
 
+  const toggleRoundCollapse = (round) => {
+    setCollapsedRounds(prev => ({
+      ...prev,
+      [round]: !prev[round],
+    }));
+  };
+
   return (
     <div className="flex">
     <div className="pt-6 px-4 w-full max-w-7xl mx-auto">
@@ -151,7 +165,20 @@ const UserPredictions = () => {
           <div className="flex flex-col gap-4 md:hidden">
             {Object.entries(predictions).map(([round, preds]) => (
               <div key={round}>
-                <h3 className="font-semibold text-center mb-2">{round}</h3>
+                <div className="flex items-center justify-center mb-2 gap-2">
+                  <h3 className="font-semibold text-center">{round}</h3>
+                  <button
+                    onClick={() => toggleRoundCollapse(round)}
+                    className={`transform transition-transform duration-200 ${
+                      collapsedRounds[round] ? "-rotate-90" : "rotate-0"
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+                {!collapsedRounds[round] && (
                 <div className="flex flex-col gap-4 mb-6">
                   {preds.map((pred) => (
                     <div key={pred.prediction_id} className="bg-white border rounded shadow p-4">
@@ -214,6 +241,7 @@ const UserPredictions = () => {
                     </div>
                   ))}
                 </div>
+                )}
               </div>
             ))}
           </div>
@@ -233,9 +261,21 @@ const UserPredictions = () => {
               {Object.entries(predictions).map(([round, preds]) => (
                 <>
                   <tr key={round}>
-                    <td colSpan="5" className="bg-gray-100 text-center font-semibold py-2">{round}</td>
+                    <td colSpan="5" className="bg-gray-100 text-center font-semibold py-2 flex justify-center items-center gap-2">
+                      {round}
+                      <button
+                        onClick={() => toggleRoundCollapse(round)}
+                        className={`transform transition-transform duration-200 ${
+                          collapsedRounds[round] ? "-rotate-90" : "rotate-0"
+                        }`}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </td>
                   </tr>
-                  {preds.map((pred) => (
+                  {!collapsedRounds[round] && preds.map((pred) => (
                     <tr key={pred.prediction_id}>
                       <td className="py-2 px-4 border-b">
                         <div className="flex items-center gap-2">
