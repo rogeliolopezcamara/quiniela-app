@@ -19,8 +19,8 @@ HEADERS = {
 BASE_URL = "https://v3.football.api-sports.io"
 
 def get_leagues_from_competitions(db: Session):
-    # Obtener ligas y temporadas desde la tabla competitions
-    result = db.execute(text("SELECT league_id, season FROM competitions"))
+    # Obtener combinaciones únicas de liga y temporada desde la tabla competition_leagues
+    result = db.execute(text("SELECT DISTINCT league_id, league_season FROM competition_leagues"))
     return result.fetchall()
 
 def get_fixtures():
