@@ -3,6 +3,15 @@
 
 const changelogEntries = [
   {
+    date: "2025-07-25",
+    items: [
+      "Se añadió la funcionalidad de crear y unirse a nuevas competencias tanto públicas como privadas.",
+      "Ahora la app tiene soporte para La Liga de España y la Premier League de Inglaterra.",
+      "Cambios menores de diseño.",
+      "Corrección de errores.",
+    ],
+  },
+  {
     date: "2024-06-18",
     items: [
       "Mejoras en el diseño",
