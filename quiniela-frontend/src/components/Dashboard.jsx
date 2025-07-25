@@ -89,35 +89,38 @@ function Dashboard() {
     <div className="flex">
       <Sidebar />
       <div className="mt-4 mb-24 w-full text-center px-4 md:mt-20">
-        <h1 className="text-3xl font-bold mb-4">
+        <h1 className="text-3xl font-bold mb-4 text-gray-900">
           Bienvenido{userInfo ? `, ${userInfo.name}` : ""}
         </h1>
 
         {userInfo && (
           <div className="mb-6 space-y-2">
-            <p>
+            <p className="text-gray-700">
               Email: <span className="font-semibold">{userInfo.email}</span>
             </p>
           </div>
         )}
 
-        <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-2 px-6 rounded-lg shadow"
-          >
-            ➕ Crear nueva competencia
-          </button>
-          <button
-            onClick={() => setShowJoinModal(true)}
-            className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold py-2 px-6 rounded-lg shadow"
-          >
-            🔗 Unirse a competencia
-          </button>
+        <div className="bg-gray-100 border rounded-lg p-6 mb-8 max-w-xl mx-auto">
+          <h2 className="text-lg font-semibold mb-4 text-center text-gray-700">Gestiona tus competencias</h2>
+          <div className="flex flex-col md:flex-row justify-center gap-4">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded shadow-sm transition duration-200"
+            >
+              Crear nueva competencia
+            </button>
+            <button
+              onClick={() => setShowJoinModal(true)}
+              className="bg-indigo-700 hover:bg-indigo-800 text-white font-medium py-2 px-4 rounded shadow-sm transition duration-200"
+            >
+              Unirse a competencia
+            </button>
+          </div>
         </div>
 
         <div className="mt-10 text-left max-w-xl mx-auto">
-          <h2 className="text-xl font-semibold mb-3">🏆 Tus competencias</h2>
+          <h2 className="text-xl font-semibold mb-3 text-gray-800">🏆 Tus competencias</h2>
           {userCompetitions.length === 0 ? (
             <p className="text-gray-600">Aún no perteneces a ninguna competencia.</p>
           ) : (
@@ -132,7 +135,7 @@ function Dashboard() {
                         className="w-12 h-12 object-contain"
                       />
                     )}
-                    <h3 className="text-xl font-bold">{comp.leagues.length > 0 ? comp.leagues[0].league_name : "Competencia"}</h3>
+                    <h3 className="text-2xl font-bold text-gray-800 text-center">{comp.leagues.length > 0 ? comp.leagues[0].league_name : "Competencia"}</h3>
                   </div>
                   <p className="text-lg font-semibold mb-1">{comp.name}</p>
                   {!comp.is_public && (
@@ -141,25 +144,17 @@ function Dashboard() {
                   <p><span className="font-bold">Miembros:</span> {comp.member_count}</p>
                   <p><span className="font-bold">Tus puntos:</span> {comp.my_points}</p>
                   <p><span className="font-bold">Tu posición:</span> {comp.my_ranking}</p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {comp.leagues.map((league, index) => (
-                      <div key={index} className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded text-sm">
-                        <span>{league.league_name}</span>
-                        <span className="text-gray-500">({league.league_season})</span>
-                      </div>
-                    ))}
-                  </div>
                   <div className="flex gap-2 mt-4 flex-wrap">
                     <button
                       onClick={() => navigate(`/ranking?competencia_id=${comp.id}`)}
-                      className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
+                      className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-1 rounded shadow-sm transition duration-200"
                     >
                       Ver Ranking
                     </button>
                     {comp.is_creator && (
                       <button
                         onClick={() => handleDeleteCompetition(comp.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition duration-200"
                       >
                         Eliminar competencia
                       </button>
