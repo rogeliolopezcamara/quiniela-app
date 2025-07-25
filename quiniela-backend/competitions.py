@@ -143,12 +143,14 @@ def get_my_competitions_with_stats(
 
         leagues = db.query(CompetitionLeague).filter(CompetitionLeague.competition_id == comp.id).all()
 
+        member_count = db.query(CompetitionMember).filter(CompetitionMember.competition_id == comp.id).count()
+
         result.append({
             "id": comp.id,
             "name": comp.name,
             "is_public": comp.is_public,
             "invite_code": comp.code,
-            "member_count": len(members),
+            "member_count": member_count,
             "my_ranking": user_ranking,
             "my_points": next((m.total_points for m in members if m.user_id == current_user.id), 0),
             "leagues": [{"league_name": l.league_name, "league_logo": l.league_logo} for l in leagues],
