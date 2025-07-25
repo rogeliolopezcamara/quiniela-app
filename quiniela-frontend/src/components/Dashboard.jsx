@@ -106,15 +106,15 @@ function Dashboard() {
           <div className="flex flex-col md:flex-row justify-center gap-4">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded shadow-sm transition duration-200"
+              className="bg-gradient-to-br from-blue-100 to-blue-300 hover:from-blue-200 hover:to-blue-400 text-blue-900 font-medium py-2 px-4 rounded shadow-md transition duration-300"
             >
-              Crear nueva competencia
+              Crear nueva
             </button>
             <button
               onClick={() => setShowJoinModal(true)}
-              className="bg-indigo-700 hover:bg-indigo-800 text-white font-medium py-2 px-4 rounded shadow-sm transition duration-200"
+              className="bg-gradient-to-br from-indigo-100 to-indigo-300 hover:from-indigo-200 hover:to-indigo-400 text-indigo-900 font-medium py-2 px-4 rounded shadow-md transition duration-300"
             >
-              Unirse a competencia
+              Unirse
             </button>
           </div>
         </div>
@@ -147,16 +147,16 @@ function Dashboard() {
                   <div className="flex gap-2 mt-4 flex-wrap">
                     <button
                       onClick={() => navigate(`/ranking?competencia_id=${comp.id}`)}
-                      className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-1 rounded shadow-sm transition duration-200"
+                      className="bg-gradient-to-br from-blue-100 to-blue-300 hover:from-blue-200 hover:to-blue-400 text-blue-900 px-3 py-1 rounded shadow-md transition duration-300"
                     >
                       Ver Ranking
                     </button>
                     {comp.is_creator && (
                       <button
                         onClick={() => handleDeleteCompetition(comp.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition duration-200"
+                        className="bg-gradient-to-br from-red-100 to-red-300 hover:from-red-200 hover:to-red-400 text-red-900 px-3 py-1 rounded shadow-md transition duration-300"
                       >
-                        Eliminar competencia
+                        Eliminar
                       </button>
                     )}
                   </div>
