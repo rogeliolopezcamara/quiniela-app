@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import axios from "../utils/axiosConfig";
+import CrearCompetencia from "./CrearCompetencia";
+import UnirseCompetencia from "./UnirseCompetencia";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -12,18 +14,12 @@ function Dashboard() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [userCompetitions, setUserCompetitions] = useState([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
-  };
-
-  const handleGoToCreateCompetition = () => {
-    navigate("/crear-competencia");
-  };
-
-  const handleGoToJoinCompetition = () => {
-    navigate("/unirse-a-competencia");
   };
 
   const handleDeleteCompetition = async (competitionId) => {
@@ -102,13 +98,13 @@ function Dashboard() {
 
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
           <button
-            onClick={handleGoToCreateCompetition}
+            onClick={() => setShowCreateModal(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
             Crear nueva competencia
           </button>
           <button
-            onClick={handleGoToJoinCompetition}
+            onClick={() => setShowJoinModal(true)}
             className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           >
             Unirse a competencia
@@ -156,6 +152,34 @@ function Dashboard() {
           )}
         </div>
       </div>
+
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-md max-w-2xl w-full relative overflow-y-auto max-h-[90vh]">
+            <button
+              onClick={() => setShowCreateModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+            >
+              ×
+            </button>
+            <CrearCompetencia />
+          </div>
+        </div>
+      )}
+
+      {showJoinModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-md max-w-2xl w-full relative overflow-y-auto max-h-[90vh]">
+            <button
+              onClick={() => setShowJoinModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+            >
+              ×
+            </button>
+            <UnirseCompetencia />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
