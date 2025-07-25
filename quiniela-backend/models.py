@@ -88,3 +88,41 @@ class GroupMember(Base):
 
     group = relationship("Group", back_populates="members")
     user = relationship("User", backref="group_memberships")
+class Competition(Base):
+    __tablename__ = "competitions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    code = Column(String, unique=True, nullable=False, index=True)
+    is_public = Column(Boolean, nullable=False, default=False)
+    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    creator = relationship("User", backref="created_competitions")
+    members = relationship("CompetitionMember", back_populates="competition", cascade="all, delete")
+    leagues = relationship("CompetitionLeague", back_populates="competition", cascade="all, delete")
+
+
+class CompetitionLeague(Base):
+    __tablename__ = "competition_leagues"
+
+    id = Column(Integer, primary_key=True, index=True)
+    competition_id = Column(Integer, ForeignKey("competitions.id", ondelete="CASCADE"), nullable=False)
+    league_id = Column(Integer, nullable=False)
+    league_name = Column(String, nullable=False)
+    league_logo = Column(String, nullable=True)
+    league_season = Column(Integer, nullable=False)
+
+    competition = relationship("Competition", back_populates="leagues")
+
+
+class CompetitionMember(Base):
+    __tablename__ = "competition_members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    competition_id = Column(Integer, ForeignKey("competitions.id", ondelete="CASCADE"), nullable=False)
+    joined_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    competition = relationship("Competition", back_populates="members")
+    user = relationship("User", backref="competition_memberships")

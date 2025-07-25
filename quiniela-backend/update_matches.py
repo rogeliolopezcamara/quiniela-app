@@ -18,16 +18,31 @@ HEADERS = {
 }
 BASE_URL = "https://v3.football.api-sports.io"
 
-def get_fixtures(league_id=262, season=2025):
-    url = f"{BASE_URL}/fixtures?league={league_id}&season={season}"
-    response = requests.get(url, headers=HEADERS)
-    data = response.json()
+def get_leagues_from_competitions(db: Session):
+    # Obtener ligas y temporadas desde la tabla competitions
+    result = db.execute(text("SELECT league_id, season FROM competitions"))
+    return result.fetchall()
 
-    if response.status_code != 200:
-        print("Error al obtener fixtures:", data)
-        return []
+def get_fixtures():
+    db = next(get_db())
+    league_entries = get_leagues_from_competitions(db)
+    all_fixtures = []
 
-    return data.get("response", [])
+    for entry in league_entries:
+        league_id = entry[0]
+        season = entry[1]
+        print(f"Obteniendo partidos de liga {league_id} temporada {season}")
+        url = f"{BASE_URL}/fixtures?league={league_id}&season={season}"
+        response = requests.get(url, headers=HEADERS)
+        data = response.json()
+
+        if response.status_code != 200:
+            print("Error al obtener fixtures:", data)
+            continue
+
+        all_fixtures.extend(data.get("response", []))
+
+    return all_fixtures
 
 def trigger_points_recalculation(match_id, score_home, score_away):
     url = f"{BACKEND_URL}/matches/{match_id}/result"

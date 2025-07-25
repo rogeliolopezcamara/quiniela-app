@@ -13,18 +13,42 @@ const Ranking = () => {
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "total_points", direction: "desc" });
+  const [competencias, setCompetencias] = useState([]);
+  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState(null);
 
   useEffect(() => {
-    const fetchAll = async () => {
+    const fetchUsuarioYCompetencias = async () => {
       try {
         if (authToken) {
           const res = await axios.get(`${baseUrl}/me`, {
             headers: { Authorization: `Bearer ${authToken}` },
           });
           setUserId(res.data.user_id);
-        }
 
-        const response = await axios.get(`${baseUrl}/ranking/`);
+          const comps = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          });
+
+          setCompetencias(comps.data);
+          if (comps.data.length > 0) {
+            setCompetenciaSeleccionada(comps.data[0].id);
+          }
+        }
+      } catch (error) {
+        console.error("Error cargando usuario o competencias:", error);
+      }
+    };
+
+    fetchUsuarioYCompetencias();
+  }, [authToken]);
+
+  useEffect(() => {
+    const fetchRanking = async () => {
+      if (!competenciaSeleccionada) return;
+
+      setLoading(true);
+      try {
+        const response = await axios.get(`${baseUrl}/ranking/?competition_id=${competenciaSeleccionada}`);
         setRounds(response.data.rounds);
         setRankingData(response.data.ranking);
       } catch (error) {
@@ -34,8 +58,8 @@ const Ranking = () => {
       }
     };
 
-    fetchAll();
-  }, [authToken]);
+    fetchRanking();
+  }, [competenciaSeleccionada]);
 
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -89,6 +113,22 @@ const Ranking = () => {
       <Sidebar />
       <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto overflow-y-auto h-[calc(100dvh-5rem)]">
         <h1 className="text-2xl font-bold mb-4 text-center">Ranking de Usuarios</h1>
+
+        <div className="mb-6 max-w-xs mx-auto">
+          <label className="block font-semibold mb-1 text-center">Selecciona una competencia:</label>
+          <select
+            value={competenciaSeleccionada || ""}
+            onChange={(e) => setCompetenciaSeleccionada(parseInt(e.target.value))}
+            className="w-full border rounded px-3 py-2 text-sm"
+          >
+            {competencias.map((comp) => (
+              <option key={comp.id} value={comp.id}>
+                {comp.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {loading ? (
           <p className="text-center text-gray-500">Cargando...</p>
         ) : (
@@ -101,16 +141,8 @@ const Ranking = () => {
               <table className="min-w-max table-fixed border border-gray-200 text-sm mx-auto">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
-                    <th
-                      className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-white text-center relative"
-                    >
-                      #
-                    </th>
-                    <th
-                      className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-white relative"
-                    >
-                      Nombre
-                    </th>
+                    <th className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-white text-center relative">#</th>
+                    <th className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-white relative">Nombre</th>
                     {rounds.map((r) => (
                       <th key={r} className="border border-gray-300 px-2 py-2 text-center whitespace-nowrap w-16">
                         <button
@@ -121,9 +153,7 @@ const Ranking = () => {
                         </button>
                       </th>
                     ))}
-                    <th
-                      className="border border-gray-300 px-3 py-2 text-center font-bold bg-white w-16"
-                    >
+                    <th className="border border-gray-300 px-3 py-2 text-center font-bold bg-white w-16">
                       <button
                         onClick={() => handleSort("total_points")}
                         className="hover:underline text-blue-600"
@@ -146,32 +176,20 @@ const Ranking = () => {
                           authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
                         }`}
                       >
-                        <td
-                          className={`border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 text-center relative ${
-                            pos === 1 ? "bg-yellow-100" :
-                            pos === 2 ? "bg-gray-200" :
-                            pos === 3 ? "bg-orange-100" :
-                            authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
-                          }`}
-                        >
-                          {pos === 1 ? (
-                            <span title="Primer lugar">🥇</span>
-                          ) : pos === 2 ? (
-                            <span title="Segundo lugar">🥈</span>
-                          ) : pos === 3 ? (
-                            <span title="Tercer lugar">🥉</span>
-                          ) : (
-                            pos
-                          )}
+                        <td className={`border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 text-center relative ${
+                          pos === 1 ? "bg-yellow-100" :
+                          pos === 2 ? "bg-gray-200" :
+                          pos === 3 ? "bg-orange-100" :
+                          authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
+                        }`}>
+                          {pos === 1 ? "🥇" : pos === 2 ? "🥈" : pos === 3 ? "🥉" : pos}
                         </td>
-                        <td
-                          className={`border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 relative ${
-                            pos === 1 ? "bg-yellow-100" :
-                            pos === 2 ? "bg-gray-200" :
-                            pos === 3 ? "bg-orange-100" :
-                            authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
-                          }`}
-                        >
+                        <td className={`border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 relative ${
+                          pos === 1 ? "bg-yellow-100" :
+                          pos === 2 ? "bg-gray-200" :
+                          pos === 3 ? "bg-orange-100" :
+                          authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
+                        }`}>
                           {user.name}
                         </td>
                         {rounds.map((r) => (
@@ -179,9 +197,7 @@ const Ranking = () => {
                             {user.rounds[r] ?? 0}
                           </td>
                         ))}
-                        <td
-                          className="border border-gray-300 px-3 py-2 text-center font-bold bg-inherit w-16"
-                        >
+                        <td className="border border-gray-300 px-3 py-2 text-center font-bold bg-inherit w-16">
                           {user.total_points}
                         </td>
                       </tr>

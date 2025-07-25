@@ -10,32 +10,63 @@ const AvailableMatches = () => {
   const [matches, setMatches] = useState([]);
   const { authToken } = useAuth();
 
+  const [competencias, setCompetencias] = useState([]);
+  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState("todas");
+
   useEffect(() => {
-    const fetchMatches = async () => {
+    const fetchCompetencias = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/available-matches/`, {
+        const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         });
-
-        const now = new Date();
-        const in8Days = new Date();
-        in8Days.setDate(now.getDate() + 8);
-
-        const filtered = response.data.filter((match) => {
-          const matchDate = new Date(match.match_date);
-          return matchDate <= in8Days;
-        });
-
-        setMatches(filtered);
+        setCompetencias(response.data);
       } catch (error) {
-        console.error("Error al obtener partidos disponibles:", error);
+        console.error("Error al obtener competencias:", error);
       }
     };
 
-    fetchMatches();
+    fetchCompetencias();
   }, [authToken]);
+
+  const fetchMatches = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/available-matches/`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      const now = new Date();
+      const in8Days = new Date();
+      in8Days.setDate(now.getDate() + 8);
+
+      let filtered = response.data.filter((match) => {
+        const matchDate = new Date(match.match_date);
+        return matchDate <= in8Days;
+      });
+
+      if (competenciaSeleccionada !== "todas") {
+        const selected = competencias.find((c) => c.id === parseInt(competenciaSeleccionada));
+        const ligaSet = new Set(selected.leagues.map((l) => `${l.league_name}-${l.league_season}`));
+
+        filtered = filtered.filter((match) =>
+          ligaSet.has(`${match.league_name}-${match.league_season}`)
+        );
+      }
+
+      setMatches(filtered);
+    } catch (error) {
+      console.error("Error al obtener partidos disponibles:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (authToken) {
+      fetchMatches();
+    }
+  }, [authToken, competenciaSeleccionada]);
 
   const handleSubmit = async (match_id, pred_home, pred_away) => {
     try {
@@ -86,6 +117,22 @@ const AvailableMatches = () => {
             * Las fechas y horas se muestran en tu horario local.
           </p>
         )}
+
+        <div className="max-w-xs mx-auto mb-6">
+          <label className="block font-semibold mb-1 text-center">Selecciona una competencia:</label>
+          <select
+            value={competenciaSeleccionada}
+            onChange={(e) => setCompetenciaSeleccionada(e.target.value)}
+            className="w-full border rounded px-3 py-2 text-sm"
+          >
+            <option value="todas">Todas</option>
+            {competencias.map((comp) => (
+              <option key={comp.id} value={comp.id}>
+                {comp.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {Object.entries(groupedMatches).map(([round, roundMatches]) => (
           <div key={round} className="mb-10">

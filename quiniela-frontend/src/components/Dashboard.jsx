@@ -12,36 +12,37 @@ function Dashboard() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [userGroups, setUserGroups] = useState([]);
+  const [userCompetitions, setUserCompetitions] = useState([]);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  const handleGoToCreateGroup = () => {
-    navigate("/crear-grupo");
+  const handleGoToCreateCompetition = () => {
+    navigate("/crear-competencia");
   };
 
-  const handleGoToJoinGroup = () => {
-    navigate("/unirse-a-grupo");
+  const handleGoToJoinCompetition = () => {
+    navigate("/unirse-a-competencia");
   };
 
-  const handleDeleteGroup = async (groupId) => {
-    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este grupo?");
+  const handleDeleteCompetition = async (competitionId) => {
+    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar esta competencia?");
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${baseUrl}/groups/${groupId}`, {
+      await axios.delete(`${baseUrl}/competitions/${competitionId}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
 
-      setUserGroups((prev) => prev.filter((g) => g.id !== groupId));
-      alert("Grupo eliminado correctamente");
+      setUserCompetitions((prev) => prev.filter((c) => c.id !== competitionId));
+      alert("Competencia eliminada correctamente");
     } catch (error) {
-      console.error("Error al eliminar grupo:", error);
-      alert("Hubo un error al eliminar el grupo");
+      console.error("Error al eliminar competencia:", error);
+      alert("Hubo un error al eliminar la competencia");
     }
   };
 
@@ -72,9 +73,23 @@ function Dashboard() {
       }
     };
 
+    const fetchUserCompetitions = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        setUserCompetitions(response.data);
+      } catch (error) {
+        console.error("Error al obtener competencias:", error);
+      }
+    };
+
     if (authToken) {
       fetchProfile();
       fetchUserGroups();
+      fetchUserCompetitions();
     }
   }, [authToken]);
 
@@ -97,25 +112,21 @@ function Dashboard() {
                 {new Date(userInfo.created_at).toLocaleDateString("es-ES")}
               </span>
             </p>
-            <p>
-              Puntos totales:{" "}
-              <span className="font-semibold">{userInfo.total_points}</span>
-            </p>
           </div>
         )}
 
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
           <button
-            onClick={handleGoToCreateGroup}
+            onClick={handleGoToCreateCompetition}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
-            Crear nuevo grupo
+            Crear nueva competencia
           </button>
           <button
-            onClick={handleGoToJoinGroup}
+            onClick={handleGoToJoinCompetition}
             className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           >
-            Unirse a grupo con código
+            Unirse a competencia
           </button>
         </div>
 
@@ -147,6 +158,47 @@ function Dashboard() {
                       </button>
                     )}
                   </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="mt-10 text-left max-w-xl mx-auto">
+          <h2 className="text-xl font-semibold mb-3">🏆 Tus competencias</h2>
+          {userCompetitions.length === 0 ? (
+            <p className="text-gray-600">Aún no perteneces a ninguna competencia.</p>
+          ) : (
+            <ul className="space-y-3">
+              {userCompetitions.map((comp) => (
+                <li key={comp.id} className="border p-3 rounded shadow text-left">
+                  <p><span className="font-bold">Nombre:</span> {comp.name}</p>
+                  {!comp.is_public && (
+                    <p><span className="font-bold">Código de invitación:</span> <span className="font-mono">{comp.invite_code}</span></p>
+                  )}
+                  <p><span className="font-bold">Miembros:</span> {comp.member_count}</p>
+                  <p><span className="font-bold">Tus puntos:</span> {comp.my_points}</p>
+                  <p><span className="font-bold">Tu posición:</span> {comp.my_ranking}</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {comp.leagues.map((league, index) => (
+                      <div key={index} className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded">
+                        {league.league_logo && (
+                          <img src={league.league_logo} alt="logo" className="w-6 h-6" />
+                        )}
+                        <span>{league.league_name}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {comp.is_creator && (
+                    <div className="mt-2">
+                      <button
+                        onClick={() => handleDeleteCompetition(comp.id)}
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      >
+                        Eliminar competencia
+                      </button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

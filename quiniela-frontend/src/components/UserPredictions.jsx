@@ -11,6 +11,25 @@ const UserPredictions = () => {
   const [predictions, setPredictions] = useState([]);
   const [editPredictionId, setEditPredictionId] = useState(null);
   const [editValues, setEditValues] = useState({ pred_home: '', pred_away: '' });
+  const [competencias, setCompetencias] = useState([]);
+  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState("todas");
+
+  useEffect(() => {
+    const fetchCompetencias = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        setCompetencias(response.data);
+      } catch (error) {
+        console.error("Error al obtener competencias:", error);
+      }
+    };
+
+    fetchCompetencias();
+  }, [authToken]);
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -20,7 +39,18 @@ const UserPredictions = () => {
             Authorization: `Bearer ${authToken}`,
           },
         });
-        const sorted = [...response.data].sort(
+
+        const filtered = competenciaSeleccionada === "todas"
+          ? response.data
+          : response.data.filter((p) =>
+              competencias.find((c) => c.id === parseInt(competenciaSeleccionada))?.leagues.some(
+                (l) =>
+                  l.league_name === p.league_name &&
+                  l.league_season === p.league_season
+              )
+            );
+
+        const sorted = [...filtered].sort(
           (a, b) => new Date(a.match_date) - new Date(b.match_date)
         );
         setPredictions(sorted);
@@ -32,7 +62,7 @@ const UserPredictions = () => {
     if (authToken) {
       fetchPredictions();
     }
-  }, [authToken]);
+  }, [authToken, competenciaSeleccionada]);
 
   const handleEditClick = (prediction) => {
     setEditPredictionId(prediction.prediction_id);
@@ -87,6 +117,23 @@ const UserPredictions = () => {
     <div className="flex">
     <div className="pt-6 px-4 w-full max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">Tus pronósticos</h2>
+
+      <div className="max-w-xs mx-auto mb-6">
+        <label className="block font-semibold mb-1 text-center">Selecciona una competencia:</label>
+        <select
+          value={competenciaSeleccionada}
+          onChange={(e) => setCompetenciaSeleccionada(e.target.value)}
+          className="w-full border rounded px-3 py-2 text-sm"
+        >
+          <option value="todas">Todas</option>
+          {competencias.map((comp) => (
+            <option key={comp.id} value={comp.id}>
+              {comp.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {predictions.length === 0 ? (
         <p className="text-center">No tienes pronósticos aún.</p>
       ) : (

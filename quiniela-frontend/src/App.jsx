@@ -20,6 +20,8 @@ import GroupRanking from "./components/GroupRanking";
 import Profile from "./pages/Profile";
 import HelpCenter from "./components/HelpCenter";
 import PredictionsCenter from "./components/PredictionsCenter";
+import CrearCompetencia from "./pages/CrearCompetencia";
+import UnirseCompetencia from "./pages/UnirseCompetencia";
 
 
 function App() {
@@ -58,6 +60,8 @@ function App() {
         <Route path="/unirse-a-grupo" element={<JoinGroupForm />} />
         <Route path="/ranking-grupo/:group_id" element={<GroupRanking />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/crear-competencia" element={<CrearCompetencia />} />
+        <Route path="/unirse-a-competencia" element={<UnirseCompetencia />} />
       </Routes>
     </Router>
   );

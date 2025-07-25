@@ -148,23 +148,49 @@ from sqlalchemy import func # type: ignore
 from sqlalchemy import func # type: ignore
 from collections import defaultdict
 
+from sqlalchemy import tuple_ # type: ignore
+
 @app.get("/ranking/")
-def get_ranking(db: Session = Depends(get_db)):
-    # 1. Obtener rondas activas (donde haya al menos un pronóstico)
+def get_ranking(
+    competition_id: int,
+    db: Session = Depends(get_db)
+):
+    # Obtener las ligas asociadas a la competencia
+    competition = db.query(models.Competition).filter(models.Competition.id == competition_id).first()
+    if not competition:
+        raise HTTPException(status_code=404, detail="Competencia no encontrada")
+
+    league_filters = db.query(models.CompetitionLeague.league_id, models.CompetitionLeague.league_season).filter(
+        models.CompetitionLeague.competition_id == competition_id
+    ).all()
+
+    if not league_filters:
+        return {"rounds": [], "ranking": []}
+
+    # 1. Obtener rondas activas en esas ligas
     active_rounds = (
         db.query(models.Match.league_round)
         .join(models.Prediction, models.Prediction.match_id == models.Match.id)
-        .filter(models.Match.league_round.isnot(None))
+        .filter(
+            tuple_(
+                models.Match.league_id,
+                models.Match.league_season
+            ).in_(league_filters)
+        )
         .distinct()
         .order_by(models.Match.league_round)
         .all()
     )
     rounds = [r[0] for r in active_rounds]
 
-    # 2. Obtener todos los usuarios
-    users = db.query(models.User).all()
+    # 2. Obtener usuarios inscritos en esta competencia
+    user_ids = db.query(models.CompetitionMember.user_id).filter(
+        models.CompetitionMember.competition_id == competition_id
+    ).all()
+    user_ids = [u[0] for u in user_ids]
+    users = db.query(models.User).filter(models.User.id.in_(user_ids)).all()
 
-    # 3. Obtener puntos por usuario y por ronda (solo para rondas activas)
+    # 3. Obtener puntos por usuario y ronda
     round_points = (
         db.query(
             models.User.id.label("user_id"),
@@ -173,40 +199,35 @@ def get_ranking(db: Session = Depends(get_db)):
         )
         .join(models.Prediction, models.User.id == models.Prediction.user_id)
         .join(models.Match, models.Prediction.match_id == models.Match.id)
-        .filter(models.Match.league_round.in_(rounds))
+        .filter(
+            models.User.id.in_(user_ids),
+            tuple_(models.Match.league_id, models.Match.league_season).in_(league_filters),
+            models.Match.league_round.in_(rounds)
+        )
         .group_by(models.User.id, models.Match.league_round)
         .all()
     )
 
-    # 4. Mapear puntos por (user_id, round)
-    points_by_user_round = {}
-    for row in round_points:
-        points_by_user_round[(row.user_id, row.league_round)] = row.points
+    points_by_user_round = {(rp.user_id, rp.league_round): rp.points for rp in round_points}
 
-    # 5. Construir estructura por usuario
     result = []
     for user in users:
-        user_entry = {
+        entry = {
             "user_id": user.id,
             "name": user.name,
             "email": user.email,
             "rounds": {},
             "total_points": 0
         }
-
         total = 0
         for rnd in rounds:
             pts = points_by_user_round.get((user.id, rnd), 0)
-            user_entry["rounds"][rnd] = pts
+            entry["rounds"][rnd] = pts
             total += pts
+        entry["total_points"] = total
+        result.append(entry)
 
-        user_entry["total_points"] = total
-        result.append(user_entry)
-
-    # 6. Ordenar por total de puntos
     result.sort(key=lambda x: x["total_points"], reverse=True)
-
-    # 7. Asignar posición basada en total_points
     for idx, entry in enumerate(result, start=1):
         entry["position"] = idx
 
@@ -265,17 +286,26 @@ def get_available_matches(
 ):
     now = datetime.utcnow()
 
-    subquery = (
-        db.query(models.Prediction.match_id)
-        .filter(models.Prediction.user_id == current_user.id)
-    )
+    # Obtener ligas de las competencias donde el usuario está inscrito
+    league_filters = db.query(
+        models.CompetitionLeague.league_id,
+        models.CompetitionLeague.league_season
+    ).join(models.Competition, models.Competition.id == models.CompetitionLeague.competition_id
+    ).join(models.CompetitionMember, models.CompetitionMember.competition_id == models.Competition.id
+    ).filter(models.CompetitionMember.user_id == current_user.id).all()
+
+    if not league_filters:
+        return []
+
+    subquery = db.query(models.Prediction.match_id).filter(models.Prediction.user_id == current_user.id)
 
     matches = (
         db.query(models.Match)
         .filter(
             and_(
                 models.Match.match_date > now,
-                ~models.Match.id.in_(subquery)
+                ~models.Match.id.in_(subquery),
+                tuple_(models.Match.league_id, models.Match.league_season).in_(league_filters)
             )
         )
         .order_by(models.Match.match_date.asc())
@@ -410,3 +440,6 @@ app.include_router(password_reset_router)
 
 from groups import router as groups_router
 app.include_router(groups_router)
+
+from competitions import router as competitions_router
+app.include_router(competitions_router)
