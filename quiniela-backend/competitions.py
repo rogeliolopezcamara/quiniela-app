@@ -9,6 +9,7 @@ from pydantic import BaseModel # type: ignore
 import random
 import string
 from auth import get_current_user
+from datetime import datetime
 
 router = APIRouter()
 
@@ -30,7 +31,7 @@ class CompetitionOut(BaseModel):
     name: str
     code: str
     is_public: bool
-    created_at: str
+    created_at: datetime
     class Config:
         orm_mode = True
 
