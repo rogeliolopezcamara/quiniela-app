@@ -34,23 +34,18 @@ const UserPredictions = () => {
   useEffect(() => {
     const fetchPredictions = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/my-predictions/`, {
+        const endpoint =
+          competenciaSeleccionada === "todas"
+            ? `${baseUrl}/my-predictions/`
+            : `${baseUrl}/my-predictions/${competenciaSeleccionada}`;
+
+        const response = await axios.get(endpoint, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         });
 
-        const filtered = competenciaSeleccionada === "todas"
-          ? response.data
-          : response.data.filter((p) =>
-              competencias.find((c) => c.id === parseInt(competenciaSeleccionada))?.leagues.some(
-                (l) =>
-                  l.league_name === p.league_name &&
-                  l.league_season === p.league_season
-              )
-            );
-
-        const sorted = [...filtered].sort(
+        const sorted = [...response.data].sort(
           (a, b) => new Date(a.match_date) - new Date(b.match_date)
         );
         setPredictions(sorted);

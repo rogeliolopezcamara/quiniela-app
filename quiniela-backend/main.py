@@ -331,6 +331,67 @@ def get_available_matches(
         for match in matches
     ]
 
+# Nuevo endpoint: /available-matches/{competition_id}
+@app.get("/available-matches/{competition_id}")
+def get_available_matches_by_competition(
+    competition_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    now = datetime.utcnow()
+
+    # Verificar que el usuario esté inscrito en la competencia
+    member = db.query(models.CompetitionMember).filter_by(
+        user_id=current_user.id,
+        competition_id=competition_id
+    ).first()
+
+    if not member:
+        raise HTTPException(status_code=403, detail="No estás inscrito en esta competencia")
+
+    # Obtener ligas de la competencia
+    league_filters = db.query(
+        models.CompetitionLeague.league_id,
+        models.CompetitionLeague.league_season
+    ).filter(models.CompetitionLeague.competition_id == competition_id).all()
+
+    if not league_filters:
+        return []
+
+    subquery = db.query(models.Prediction.match_id).filter(models.Prediction.user_id == current_user.id)
+
+    matches = (
+        db.query(models.Match)
+        .filter(
+            and_(
+                models.Match.match_date > now,
+                ~models.Match.id.in_(subquery),
+                tuple_(models.Match.league_id, models.Match.league_season).in_(league_filters)
+            )
+        )
+        .order_by(models.Match.match_date.asc())
+        .all()
+    )
+
+    return [
+        {
+            "match_id": match.id,
+            "home_team": match.home_team,
+            "away_team": match.away_team,
+            "match_date": match.match_date,
+            "score_home": match.score_home,
+            "score_away": match.score_away,
+            "league_id": match.league_id,
+            "league_name": match.league_name,
+            "league_logo": match.league_logo,
+            "league_season": match.league_season,
+            "league_round": match.league_round,
+            "home_team_logo": match.home_team_logo,
+            "away_team_logo": match.away_team_logo
+        }
+        for match in matches
+    ]
+
 @app.get("/my-predictions/")
 def get_user_predictions(
     current_user: models.User = Depends(auth.get_current_user),
@@ -340,6 +401,66 @@ def get_user_predictions(
         db.query(models.Prediction, models.Match)
         .join(models.Match, models.Prediction.match_id == models.Match.id)
         .filter(models.Prediction.user_id == current_user.id)
+        .order_by(models.Match.match_date)
+        .all()
+    )
+
+    result = []
+    for prediction, match in predictions:
+        result.append({
+            "prediction_id": prediction.id,
+            "match_id": match.id,
+            "home_team": match.home_team,
+            "away_team": match.away_team,
+            "match_date": match.match_date,
+            "pred_home": prediction.pred_home,
+            "pred_away": prediction.pred_away,
+            "score_home": match.score_home,
+            "score_away": match.score_away,
+            "points": prediction.points,
+            "league_id": match.league_id,
+            "league_name": match.league_name,
+            "league_logo": match.league_logo,
+            "league_season": match.league_season,
+            "league_round": match.league_round,
+            "home_team_logo": match.home_team_logo,
+            "away_team_logo": match.away_team_logo
+        })
+
+    return result
+
+# Nuevo endpoint: /my-predictions/{competition_id}
+@app.get("/my-predictions/{competition_id}")
+def get_user_predictions_by_competition(
+    competition_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Verificar que el usuario esté inscrito en la competencia
+    member = db.query(models.CompetitionMember).filter_by(
+        user_id=current_user.id,
+        competition_id=competition_id
+    ).first()
+
+    if not member:
+        raise HTTPException(status_code=403, detail="No estás inscrito en esta competencia")
+
+    # Obtener ligas asociadas a la competencia
+    league_filters = db.query(
+        models.CompetitionLeague.league_id,
+        models.CompetitionLeague.league_season
+    ).filter(models.CompetitionLeague.competition_id == competition_id).all()
+
+    if not league_filters:
+        return []
+
+    predictions = (
+        db.query(models.Prediction, models.Match)
+        .join(models.Match, models.Prediction.match_id == models.Match.id)
+        .filter(
+            models.Prediction.user_id == current_user.id,
+            tuple_(models.Match.league_id, models.Match.league_season).in_(league_filters)
+        )
         .order_by(models.Match.match_date)
         .all()
     )

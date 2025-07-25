@@ -11,7 +11,6 @@ function Dashboard() {
   const { authToken, logout } = useAuth();
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
-  const [userGroups, setUserGroups] = useState([]);
   const [userCompetitions, setUserCompetitions] = useState([]);
 
   const handleLogout = () => {
@@ -60,19 +59,6 @@ function Dashboard() {
       }
     };
 
-    const fetchUserGroups = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/groups/my-groups-with-stats`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setUserGroups(response.data);
-      } catch (error) {
-        console.error("Error al obtener grupos:", error);
-      }
-    };
-
     const fetchUserCompetitions = async () => {
       try {
         const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
@@ -88,7 +74,6 @@ function Dashboard() {
 
     if (authToken) {
       fetchProfile();
-      fetchUserGroups();
       fetchUserCompetitions();
     }
   }, [authToken]);
@@ -128,40 +113,6 @@ function Dashboard() {
           >
             Unirse a competencia
           </button>
-        </div>
-
-        <div className="mt-10 text-left max-w-xl mx-auto">
-          <h2 className="text-xl font-semibold mb-3">📋 Tus grupos</h2>
-          {userGroups.length === 0 ? (
-            <p className="text-gray-600">Aún no perteneces a ningún grupo.</p>
-          ) : (
-            <ul className="space-y-3">
-              {userGroups.map((group) => (
-                <li key={group.id} className="border p-3 rounded shadow text-left">
-                  <p><span className="font-bold">Nombre:</span> {group.name}</p>
-                  <p><span className="font-bold">Código de invitación:</span> <span className="font-mono">{group.invite_code}</span></p>
-                  <p><span className="font-bold">Miembros:</span> {group.member_count}</p>
-                  <p><span className="font-bold">Tu posición:</span> {group.my_ranking}</p>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={() => navigate(`/ranking-grupo/${group.id}`)}
-                      className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
-                    >
-                      Ver ranking del grupo
-                    </button>
-                    {group.is_creator && (
-                      <button
-                        onClick={() => handleDeleteGroup(group.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                      >
-                        Eliminar grupo
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
 
         <div className="mt-10 text-left max-w-xl mx-auto">

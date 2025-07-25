@@ -32,29 +32,30 @@ const AvailableMatches = () => {
 
   const fetchMatches = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/available-matches/`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      let response;
+
+      if (competenciaSeleccionada === "todas") {
+        response = await axios.get(`${baseUrl}/available-matches/`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+      } else {
+        response = await axios.get(`${baseUrl}/available-matches/${competenciaSeleccionada}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+      }
 
       const now = new Date();
       const in8Days = new Date();
       in8Days.setDate(now.getDate() + 8);
 
-      let filtered = response.data.filter((match) => {
+      const filtered = response.data.filter((match) => {
         const matchDate = new Date(match.match_date);
         return matchDate <= in8Days;
       });
-
-      if (competenciaSeleccionada !== "todas") {
-        const selected = competencias.find((c) => c.id === parseInt(competenciaSeleccionada));
-        const ligaSet = new Set(selected.leagues.map((l) => `${l.league_name}-${l.league_season}`));
-
-        filtered = filtered.filter((match) =>
-          ligaSet.has(`${match.league_name}-${match.league_season}`)
-        );
-      }
 
       setMatches(filtered);
     } catch (error) {
