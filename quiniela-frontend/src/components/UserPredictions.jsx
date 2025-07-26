@@ -58,9 +58,26 @@ const UserPredictions = () => {
         setPredictions(grouped);
         // Initialize collapsedRounds state for new rounds
         const initialCollapsed = {};
-        Object.keys(grouped).forEach(round => {
-          initialCollapsed[round] = false;
-        });
+        if (competenciaSeleccionada === "todas") {
+          const byLeague = {};
+          for (const [round, preds] of Object.entries(grouped)) {
+            const leagueId = preds[0].league_id;
+            if (!byLeague[leagueId]) byLeague[leagueId] = [];
+            byLeague[leagueId].push(round);
+          }
+          for (const [leagueId, rounds] of Object.entries(byLeague)) {
+            const lastRound = rounds[rounds.length - 1];
+            rounds.forEach(r => {
+              initialCollapsed[r] = r !== lastRound;
+            });
+          }
+        } else {
+          const rounds = Object.keys(grouped);
+          const lastRound = rounds[rounds.length - 1];
+          rounds.forEach(r => {
+            initialCollapsed[r] = r !== lastRound;
+          });
+        }
         setCollapsedRounds(initialCollapsed);
       } catch (error) {
         console.error("Error al obtener pronósticos:", error);
