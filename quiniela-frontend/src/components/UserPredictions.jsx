@@ -151,8 +151,7 @@ const UserPredictions = () => {
 
   return (
     <div className="flex">
-    <div className="pt-6 px-4 w-full max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center">Tus pronósticos</h2>
+    <div className="px-4 w-full max-w-7xl mx-auto">
 
       <div className="max-w-xs mx-auto mb-6">
         <label className="block font-semibold mb-1 text-center">Selecciona una competencia:</label>

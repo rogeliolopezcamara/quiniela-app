@@ -111,8 +111,7 @@ const AvailableMatches = () => {
 
   return (
     <div className="flex">
-      <div className="p-6 w-full px-4 sm:px-8">
-        <h1 className="text-2xl font-bold mb-4 text-center">Partidos Disponibles</h1>
+      <div className="w-full px-4 sm:px-8">
         {matches.length > 0 && (
           <p className="text-sm text-center text-gray-500 mb-6">
             * Las fechas y horas se muestran en tu horario local.
