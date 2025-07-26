@@ -1,5 +1,5 @@
 // src/components/AvailableMatches.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "../utils/axiosConfig";
 import { useAuth } from "../context/AuthContext";
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +8,12 @@ import Sidebar from "./Sidebar";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const AvailableMatches = () => {
-  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState("todas");
+  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState(() => {
+    return localStorage.getItem("availableMatchesCompetencia") || "todas";
+  });
+  useEffect(() => {
+    localStorage.setItem("availableMatchesCompetencia", competenciaSeleccionada);
+  }, [competenciaSeleccionada]);
   const { authToken } = useAuth();
 
   const {

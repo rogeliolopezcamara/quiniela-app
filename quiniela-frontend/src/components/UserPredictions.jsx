@@ -1,5 +1,5 @@
 // src/components/UserPredictions.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "../utils/axiosConfig";
 import { useAuth } from "../context/AuthContext";
@@ -11,8 +11,25 @@ const UserPredictions = () => {
   const { authToken } = useAuth();
   const [editPredictionId, setEditPredictionId] = useState(null);
   const [editValues, setEditValues] = useState({ pred_home: '', pred_away: '' });
-  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState("todas");
-  const [collapsedRounds, setCollapsedRounds] = useState({});
+  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState(() => {
+    return localStorage.getItem("userPredictionsCompetencia") || "todas";
+  });
+  const [collapsedRounds, setCollapsedRounds] = useState(() => {
+    try {
+      const stored = localStorage.getItem("collapsedRounds");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("userPredictionsCompetencia", competenciaSeleccionada);
+  }, [competenciaSeleccionada]);
+
+  useEffect(() => {
+    localStorage.setItem("collapsedRounds", JSON.stringify(collapsedRounds));
+  }, [collapsedRounds]);
 
   // useQuery for competencias
   const {

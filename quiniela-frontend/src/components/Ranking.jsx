@@ -13,7 +13,10 @@ const Ranking = () => {
 
   const { authToken } = useAuth();
   const [sortedData, setSortedData] = useState([]);
-  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState(null);
+  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState(() => {
+    const stored = localStorage.getItem("rankingCompetencia");
+    return stored ? parseInt(stored) : null;
+  });
   const [sortConfig, setSortConfig] = useState({ key: "total_points", direction: "desc" });
 
   const {
@@ -49,11 +52,17 @@ const Ranking = () => {
   });
 
   useEffect(() => {
-    if (competencias.length > 0) {
+    if (competencias.length > 0 && competenciaSeleccionada === null) {
       const match = competencias.find(c => c.id === parseInt(initialCompetenciaId));
       setCompetenciaSeleccionada(match ? match.id : competencias[0].id);
     }
-  }, [competencias]);
+  }, [competencias, initialCompetenciaId, competenciaSeleccionada]);
+
+  useEffect(() => {
+    if (competenciaSeleccionada !== null) {
+      localStorage.setItem("rankingCompetencia", competenciaSeleccionada.toString());
+    }
+  }, [competenciaSeleccionada]);
 
   const {
     data: rankingInfo,
