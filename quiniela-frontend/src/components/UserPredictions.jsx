@@ -73,29 +73,7 @@ const UserPredictions = () => {
         acc[round].push(curr);
         return acc;
       }, {});
-      // Initialize collapsedRounds state for new rounds
-      const initialCollapsed = {};
-      if (competenciaSeleccionada === "todas") {
-        const byLeague = {};
-        for (const [round, preds] of Object.entries(grouped)) {
-          const leagueId = preds[0].league_id;
-          if (!byLeague[leagueId]) byLeague[leagueId] = [];
-          byLeague[leagueId].push(round);
-        }
-        for (const [leagueId, rounds] of Object.entries(byLeague)) {
-          const lastRound = rounds[rounds.length - 1];
-          rounds.forEach(r => {
-            initialCollapsed[r] = r !== lastRound;
-          });
-        }
-      } else {
-        const rounds = Object.keys(grouped);
-        const lastRound = rounds[rounds.length - 1];
-        rounds.forEach(r => {
-          initialCollapsed[r] = r !== lastRound;
-        });
-      }
-      setCollapsedRounds(initialCollapsed);
+      // Removed collapsedRounds initialization here to preserve user state
       return grouped;
     },
     enabled: !!authToken,
