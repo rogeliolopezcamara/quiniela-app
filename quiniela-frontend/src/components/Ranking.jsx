@@ -51,12 +51,21 @@ const Ranking = () => {
     staleTime: 1000 * 60,
   });
 
-  useEffect(() => {
-    if (competencias.length > 0 && competenciaSeleccionada === null) {
+useEffect(() => {
+  if (competencias.length > 0) {
+    if (initialCompetenciaId) {
       const match = competencias.find(c => c.id === parseInt(initialCompetenciaId));
-      setCompetenciaSeleccionada(match ? match.id : competencias[0].id);
+      if (match) {
+        setCompetenciaSeleccionada(match.id);
+        localStorage.setItem("rankingCompetencia", match.id.toString());
+        return;
+      }
     }
-  }, [competencias, initialCompetenciaId, competenciaSeleccionada]);
+    if (competenciaSeleccionada === null) {
+      setCompetenciaSeleccionada(competencias[0].id);
+    }
+  }
+}, [competencias, initialCompetenciaId, competenciaSeleccionada]);
 
   useEffect(() => {
     if (competenciaSeleccionada !== null) {
