@@ -1,11 +1,15 @@
 // src/components/HelpCenter.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Instructions from "./Instructions";
 import Changelog from "./Changelog";
 
 const HelpCenter = () => {
-  const [activeTab, setActiveTab] = useState("instructions");
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem("helpTab") || "instructions");
+
+  useEffect(() => {
+    localStorage.setItem("helpTab", activeTab);
+  }, [activeTab]);
 
   return (
     <>

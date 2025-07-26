@@ -1,11 +1,15 @@
 // src/components/PredictionsCenter.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import AvailableMatches from "./AvailableMatches";
 import UserPredictions from "./UserPredictions";
 
 const PredictionsCenter = () => {
-  const [activeTab, setActiveTab] = useState("available");
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem("activeTab") || "available");
+
+  useEffect(() => {
+    localStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
 
   return (
     <>
