@@ -112,12 +112,6 @@ const AvailableMatches = () => {
   return (
     <div className="flex">
       <div className="w-full px-4 sm:px-8">
-        {matches.length > 0 && (
-          <p className="text-sm text-center text-gray-500 mb-6">
-            * Las fechas y horas se muestran en tu horario local.
-          </p>
-        )}
-
         <div className="max-w-xs mx-auto mb-6">
           <label className="block font-semibold mb-1 text-center">Selecciona una competencia:</label>
           <select
@@ -133,6 +127,16 @@ const AvailableMatches = () => {
             ))}
           </select>
         </div>
+
+        {matches.length === 0 ? (
+          <p className="text-sm text-center text-gray-500 mb-6">
+            No hay partidos disponibles para pronosticar en los próximos 8 días.
+          </p>
+        ) : (
+          <p className="text-sm text-center text-gray-500 mb-6">
+            * Las fechas y horas se muestran en tu horario local.
+          </p>
+        )}
 
         {Object.entries(groupedMatches).map(([round, roundMatches]) => (
           <div key={round} className="mb-10">
