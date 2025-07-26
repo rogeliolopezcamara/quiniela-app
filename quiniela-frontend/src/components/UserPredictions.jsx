@@ -165,8 +165,12 @@ const UserPredictions = () => {
           <div className="flex flex-col gap-4 md:hidden">
             {Object.entries(predictions).map(([round, preds]) => (
               <div key={round}>
-                <div className="flex items-center justify-between bg-white border border-gray-400 rounded px-4 py-2 mb-2 shadow-sm">
-                  <span className="font-semibold text-sm">{round}</span>
+                <div className="flex items-center justify-between border-b-4 border-t border-gray-300 px-1 py-2 mb-2">
+                  <span className="font-semibold text-sm">
+                    {competenciaSeleccionada === "todas" && preds.length > 0
+                      ? `${preds[0].league_name} - ${round}`
+                      : round}
+                  </span>
                   <button
                     onClick={() => toggleRoundCollapse(round)}
                     className={`transform transition-transform duration-200 ${
@@ -250,7 +254,12 @@ const UserPredictions = () => {
           <div className="hidden md:block">
             {Object.entries(predictions).map(([round, preds]) => (
               <div key={round} className="mb-6">
-                <div className="flex items-center justify-between bg-white border border-gray-400 rounded px-4 py-2 mb-2 shadow-sm font-semibold text-sm">
+                <div className="flex items-center justify-between border-b-4 border-t border-gray-300 px-1 py-2 mb-2 font-semibold text-sm">
+                  <span>
+                    {competenciaSeleccionada === "todas" && preds.length > 0
+                      ? `${preds[0].league_name} - ${round}`
+                      : round}
+                  </span>
                   <button
                     onClick={() => toggleRoundCollapse(round)}
                     className={`transform transition-transform duration-200 ${
@@ -261,7 +270,6 @@ const UserPredictions = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
-                  <span>{round}</span>
                 </div>
 
                 {!collapsedRounds[round] && (
