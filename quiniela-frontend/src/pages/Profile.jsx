@@ -1,5 +1,6 @@
 // src/pages/Profile.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -10,32 +11,30 @@ const Profile = () => {
   const { authToken, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [profile, setProfile] = useState(null);
+  const {
+    data: profile,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/me`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      return response.data;
+    },
+    enabled: !!authToken,
+    staleTime: 1000 * 60,
+  });
+
   const [editingField, setEditingField] = useState(null);
   const [newValue, setNewValue] = useState("");
   const [resetLink, setResetLink] = useState(null);
   const [message, setMessage] = useState("");
 
-useEffect(() => {
-  if (!authToken) {
-    setProfile(null);
-    return;
-  }
-  fetchProfile();
-}, [authToken]);
-
-const fetchProfile = async () => {
-  try {
-    const response = await axios.get(`${baseUrl}/me`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    });
-    setProfile(response.data);
-  } catch (err) {
-    console.error("Error al obtener el perfil:", err);
-  }
-};
 
   const handleEdit = (field) => {
     setEditingField(field);
@@ -56,7 +55,7 @@ const fetchProfile = async () => {
       );
       setMessage("✅ Actualización exitosa");
       setEditingField(null);
-      fetchProfile();
+      refetch();
     } catch (err) {
       console.error("Error al actualizar:", err);
       setMessage("❌ Error al actualizar");
@@ -83,8 +82,10 @@ const fetchProfile = async () => {
 
 // Show loading message below Sidebar and title
 let loadingMessage = null;
-if (authToken && !profile) {
+if (isLoading) {
   loadingMessage = <p className="text-gray-600 text-center mt-4">Cargando...</p>;
+} else if (error) {
+  loadingMessage = <p className="text-red-600 text-center mt-4">Error al cargar el perfil.</p>;
 }
 
   return (

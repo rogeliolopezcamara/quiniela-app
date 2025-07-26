@@ -2,38 +2,56 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "../utils/axiosConfig";
 import CrearCompetencia from "../pages/CrearCompetencia";
 import UnirseCompetencia from "../pages/UnirseCompetencia";
+import { useQuery } from '@tanstack/react-query';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   const { authToken, logout } = useAuth();
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState(null);
-  const [userCompetitions, setUserCompetitions] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
-  const [reloadTrigger, setReloadTrigger] = useState(false);
+
+  const {
+    data: userInfo,
+    isLoading: loadingUser,
+    error: userError,
+  } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: async () => {
+      const res = await axios.get(`${baseUrl}/me`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      return res.data;
+    },
+    enabled: !!authToken,
+    staleTime: 1000 * 60, // 1 minuto
+  });
+
+  const {
+    data: userCompetitions = [],
+    isLoading: loadingCompetitions,
+    error: competitionsError,
+    refetch: refetchCompetitions,
+  } = useQuery({
+    queryKey: ['userCompetitions'],
+    queryFn: async () => {
+      const res = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      return res.data;
+    },
+    enabled: !!authToken,
+    refetchInterval: 10000, // actualiza cada 10s
+  });
 
   const handleLogout = () => {
     logout();
     navigate("/");
-  };
-
-  const reloadCompetitions = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      setUserCompetitions(response.data);
-    } catch (error) {
-      console.error("Error al obtener competencias:", error);
-    }
   };
 
   const handleDeleteCompetition = async (competitionId) => {
@@ -47,7 +65,7 @@ function Dashboard() {
         },
       });
 
-      setUserCompetitions((prev) => prev.filter((c) => c.id !== competitionId));
+      refetchCompetitions();
       alert("Competencia eliminada correctamente");
     } catch (error) {
       console.error("Error al eliminar competencia:", error);
@@ -57,33 +75,21 @@ function Dashboard() {
 
   const handleCloseCreate = () => {
     setShowCreateModal(false);
-    reloadCompetitions();
+    refetchCompetitions();
   };
 
   const handleCloseJoin = () => {
     setShowJoinModal(false);
-    reloadCompetitions();
+    refetchCompetitions();
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/me`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setUserInfo(response.data);
-      } catch (error) {
-        console.error("Error al obtener perfil:", error);
-      }
-    };
+  if (loadingUser || loadingCompetitions) {
+    return <div className="text-center mt-10 text-gray-600">Cargando...</div>;
+  }
 
-    if (authToken) {
-      fetchProfile();
-      reloadCompetitions();
-    }
-  }, [authToken, reloadTrigger]);
+  if (userError || competitionsError) {
+    return <div className="text-center mt-10 text-red-600">Error al cargar la información.</div>;
+  }
 
   return (
     <div className="flex">

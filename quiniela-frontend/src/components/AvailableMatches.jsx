@@ -1,50 +1,48 @@
 // src/components/AvailableMatches.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "../utils/axiosConfig";
 import { useAuth } from "../context/AuthContext";
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from "./Sidebar";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const AvailableMatches = () => {
-  const [matches, setMatches] = useState([]);
+  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState("todas");
   const { authToken } = useAuth();
 
-  const [competencias, setCompetencias] = useState([]);
-  const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState("todas");
+  const {
+    data: competencias = [],
+    isLoading: loadingCompetencias,
+    error: errorCompetencias,
+  } = useQuery({
+    queryKey: ['userCompetitions'],
+    queryFn: async () => {
+      const res = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      return res.data;
+    },
+    enabled: !!authToken,
+    staleTime: 1000 * 60,
+  });
 
-  useEffect(() => {
-    const fetchCompetencias = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setCompetencias(response.data);
-      } catch (error) {
-        console.error("Error al obtener competencias:", error);
-      }
-    };
-
-    fetchCompetencias();
-  }, [authToken]);
-
-  const fetchMatches = async () => {
-    try {
+  const {
+    data: matches = [],
+    isLoading: loadingMatches,
+    error: errorMatches,
+    refetch,
+  } = useQuery({
+    queryKey: ['availableMatches', competenciaSeleccionada],
+    queryFn: async () => {
       let response;
-
       if (competenciaSeleccionada === "todas") {
         response = await axios.get(`${baseUrl}/available-matches/`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+          headers: { Authorization: `Bearer ${authToken}` },
         });
       } else {
         response = await axios.get(`${baseUrl}/available-matches/${competenciaSeleccionada}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+          headers: { Authorization: `Bearer ${authToken}` },
         });
       }
 
@@ -52,22 +50,22 @@ const AvailableMatches = () => {
       const in8Days = new Date();
       in8Days.setDate(now.getDate() + 8);
 
-      const filtered = response.data.filter((match) => {
+      return response.data.filter((match) => {
         const matchDate = new Date(match.match_date);
         return matchDate <= in8Days;
       });
+    },
+    enabled: !!authToken,
+    refetchInterval: 10000,
+  });
 
-      setMatches(filtered);
-    } catch (error) {
-      console.error("Error al obtener partidos disponibles:", error);
-    }
-  };
+  if (loadingCompetencias || loadingMatches) {
+    return <div className="text-center mt-10 text-gray-600">Cargando...</div>;
+  }
 
-  useEffect(() => {
-    if (authToken) {
-      fetchMatches();
-    }
-  }, [authToken, competenciaSeleccionada]);
+  if (errorCompetencias || errorMatches) {
+    return <div className="text-center mt-10 text-red-600">Error al cargar la información.</div>;
+  }
 
   const handleSubmit = async (match_id, pred_home, pred_away) => {
     try {
@@ -81,7 +79,7 @@ const AvailableMatches = () => {
         }
       );
       alert("Pronóstico enviado correctamente");
-      setMatches((prev) => prev.filter((m) => m.match_id !== match_id));
+      refetch();
     } catch (error) {
       console.error("Error al enviar el pronóstico:", error);
       alert("Hubo un error al enviar el pronóstico");

@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../context/AuthContext";
+import { useQuery } from '@tanstack/react-query';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -11,60 +12,62 @@ const Ranking = () => {
   const initialCompetenciaId = searchParams.get("competencia_id");
 
   const { authToken } = useAuth();
-  const [rankingData, setRankingData] = useState([]);
   const [sortedData, setSortedData] = useState([]);
-  const [rounds, setRounds] = useState([]);
-  const [userId, setUserId] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: "total_points", direction: "desc" });
-  const [competencias, setCompetencias] = useState([]);
   const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ key: "total_points", direction: "desc" });
+
+  const {
+    data: userInfo,
+    isLoading: loadingUser,
+    error: userError,
+  } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: async () => {
+      const res = await axios.get(`${baseUrl}/me`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      return res.data;
+    },
+    enabled: !!authToken,
+    staleTime: 1000 * 60,
+  });
+
+  const {
+    data: competencias = [],
+    isLoading: loadingCompetencias,
+    error: competenciasError,
+  } = useQuery({
+    queryKey: ['userCompetitions'],
+    queryFn: async () => {
+      const res = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      return res.data;
+    },
+    enabled: !!authToken,
+    staleTime: 1000 * 60,
+  });
 
   useEffect(() => {
-    const fetchUsuarioYCompetencias = async () => {
-      try {
-        if (authToken) {
-          const res = await axios.get(`${baseUrl}/me`, {
-            headers: { Authorization: `Bearer ${authToken}` },
-          });
-          setUserId(res.data.user_id);
+    if (competencias.length > 0) {
+      const match = competencias.find(c => c.id === parseInt(initialCompetenciaId));
+      setCompetenciaSeleccionada(match ? match.id : competencias[0].id);
+    }
+  }, [competencias]);
 
-          const comps = await axios.get(`${baseUrl}/my-competitions-with-stats`, {
-            headers: { Authorization: `Bearer ${authToken}` },
-          });
-
-          setCompetencias(comps.data);
-          if (comps.data.length > 0) {
-            const match = comps.data.find(c => c.id === parseInt(initialCompetenciaId));
-            setCompetenciaSeleccionada(match ? match.id : comps.data[0].id);
-          }
-        }
-      } catch (error) {
-        console.error("Error cargando usuario o competencias:", error);
-      }
-    };
-
-    fetchUsuarioYCompetencias();
-  }, [authToken]);
-
-  useEffect(() => {
-    const fetchRanking = async () => {
-      if (!competenciaSeleccionada) return;
-
-      setLoading(true);
-      try {
-        const response = await axios.get(`${baseUrl}/ranking/?competition_id=${competenciaSeleccionada}`);
-        setRounds(response.data.rounds);
-        setRankingData(response.data.ranking);
-      } catch (error) {
-        console.error("Error cargando ranking:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRanking();
-  }, [competenciaSeleccionada]);
+  const {
+    data: rankingInfo,
+    isLoading: loadingRanking,
+    error: rankingError,
+  } = useQuery({
+    queryKey: ['ranking', competenciaSeleccionada],
+    queryFn: async () => {
+      const res = await axios.get(`${baseUrl}/ranking/?competition_id=${competenciaSeleccionada}`);
+      return res.data;
+    },
+    enabled: !!competenciaSeleccionada,
+    refetchInterval: 10000,
+  });
 
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -74,7 +77,7 @@ const Ranking = () => {
   }, [sortedData]);
 
   useEffect(() => {
-    let sorted = [...rankingData];
+    let sorted = [...(rankingInfo?.ranking || [])];
     if (sortConfig.key === "total_points") {
       sorted.sort((a, b) =>
         sortConfig.direction === "asc"
@@ -89,7 +92,7 @@ const Ranking = () => {
       );
     }
     setSortedData(sorted);
-  }, [rankingData, sortConfig]);
+  }, [rankingInfo, sortConfig]);
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
@@ -97,6 +100,28 @@ const Ranking = () => {
       direction: prev.key === key && prev.direction === "desc" ? "asc" : "desc",
     }));
   };
+
+  if (loadingUser || loadingCompetencias) {
+    return (
+      <>
+        <Sidebar />
+        <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto text-center">
+          <p className="text-gray-500">Cargando usuario y competencias...</p>
+        </div>
+      </>
+    );
+  }
+
+  if (userError || competenciasError) {
+    return (
+      <>
+        <Sidebar />
+        <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto text-center">
+          <p className="text-red-500">Error cargando usuario o competencias.</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -134,8 +159,10 @@ const Ranking = () => {
           </select>
         </div>
 
-        {loading ? (
+        {loadingRanking ? (
           <p className="text-center text-gray-500">Cargando...</p>
+        ) : rankingError ? (
+          <p className="text-center text-red-500">Error cargando ranking.</p>
         ) : (
           <div className="min-h-[300px] overflow-y-auto">
             <div
@@ -148,7 +175,7 @@ const Ranking = () => {
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-white text-center relative">#</th>
                     <th className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-white relative">Nombre</th>
-                    {rounds.map((r) => (
+                    {(rankingInfo?.rounds || []).map((r) => (
                       <th key={r} className="border border-gray-300 px-2 py-2 text-center whitespace-nowrap w-16">
                         <button
                           onClick={() => handleSort(r)}
@@ -178,14 +205,14 @@ const Ranking = () => {
                           pos === 1 ? "bg-yellow-100 font-semibold" :
                           pos === 2 ? "bg-gray-200 font-semibold" :
                           pos === 3 ? "bg-orange-100 font-semibold" :
-                          authToken && userId === user.user_id ? "bg-green-100 font-semibold" : ""
+                          authToken && userInfo?.user_id === user.user_id ? "bg-green-100 font-semibold" : ""
                         }`}
                       >
                         <td className={`border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 text-center relative ${
                           pos === 1 ? "bg-yellow-100" :
                           pos === 2 ? "bg-gray-200" :
                           pos === 3 ? "bg-orange-100" :
-                          authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
+                          authToken && userInfo?.user_id === user.user_id ? "bg-green-100" : "bg-white"
                         }`}>
                           {pos === 1 ? "🥇" : pos === 2 ? "🥈" : pos === 3 ? "🥉" : pos}
                         </td>
@@ -193,11 +220,11 @@ const Ranking = () => {
                           pos === 1 ? "bg-yellow-100" :
                           pos === 2 ? "bg-gray-200" :
                           pos === 3 ? "bg-orange-100" :
-                          authToken && userId === user.user_id ? "bg-green-100" : "bg-white"
+                          authToken && userInfo?.user_id === user.user_id ? "bg-green-100" : "bg-white"
                         }`}>
                           {user.name}
                         </td>
-                        {rounds.map((r) => (
+                        {(rankingInfo?.rounds || []).map((r) => (
                           <td key={r} className="border border-gray-300 px-2 py-2 text-center w-16">
                             {user.rounds[r] ?? 0}
                           </td>
