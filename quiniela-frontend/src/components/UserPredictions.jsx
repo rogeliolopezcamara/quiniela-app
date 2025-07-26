@@ -165,12 +165,12 @@ const UserPredictions = () => {
           <div className="flex flex-col gap-4 md:hidden">
             {Object.entries(predictions).map(([round, preds]) => (
               <div key={round}>
-                <div className="flex items-center justify-center mb-2 gap-2">
-                  <h3 className="font-semibold text-center">{round}</h3>
+                <div className="flex items-center justify-between bg-white border border-gray-400 rounded px-4 py-2 mb-2 shadow-sm">
+                  <span className="font-semibold text-sm">{round}</span>
                   <button
                     onClick={() => toggleRoundCollapse(round)}
                     className={`transform transition-transform duration-200 ${
-                      collapsedRounds[round] ? "-rotate-90" : "rotate-0"
+                      collapsedRounds[round] ? "rotate-0" : "rotate-90"
                     }`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -250,7 +250,7 @@ const UserPredictions = () => {
           <div className="hidden md:block">
             {Object.entries(predictions).map(([round, preds]) => (
               <div key={round} className="mb-6">
-                <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 font-semibold text-sm">
+                <div className="flex items-center justify-between bg-white border border-gray-400 rounded px-4 py-2 mb-2 shadow-sm font-semibold text-sm">
                   <button
                     onClick={() => toggleRoundCollapse(round)}
                     className={`transform transition-transform duration-200 ${
