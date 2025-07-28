@@ -145,29 +145,28 @@ const UserPredictions = () => {
   return (
     <div className="flex">
       <div className="px-4 w-full max-w-7xl mx-auto">
-        <div className="max-w-xs mx-auto mb-6">
-          <label className="block font-semibold mb-1 text-center">Selecciona una competencia:</label>
-          <select
-            value={competenciaSeleccionada}
-            onChange={(e) => setCompetenciaSeleccionada(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm"
-          >
-            <option value="todas">Todas</option>
-            {competencias.map((comp) => (
-              <option key={comp.id} value={comp.id}>
-                {comp.name}
-              </option>
-            ))}
-          </select>
+        <div className="bg-white border rounded-md p-3 shadow-sm mb-6 max-w-md mx-auto">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-sm">Competencia:</span>
+            <select
+              value={competenciaSeleccionada}
+              onChange={(e) => setCompetenciaSeleccionada(e.target.value)}
+              className="border rounded px-2 py-1 text-sm"
+            >
+              <option value="todas">Todas</option>
+              {competencias.map((comp) => (
+                <option key={comp.id} value={comp.id}>
+                  {comp.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {Object.keys(predictions).length === 0 ? (
           <p className="text-center">No tienes pronósticos aún.</p>
         ) : (
           <>
-            <p className="text-sm text-gray-500 text-center mb-4">
-              * Las fechas y horas se muestran en tu horario local.
-            </p>
 
             {/* Versión mobile (tarjetas) */}
             <div className="flex flex-col gap-4 md:hidden">
