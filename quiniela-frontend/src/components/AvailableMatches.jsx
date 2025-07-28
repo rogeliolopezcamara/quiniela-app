@@ -75,16 +75,13 @@ const AvailableMatches = () => {
   } = useQuery({
     queryKey: ['userPredictionsFlat', competenciaSeleccionada],
     queryFn: async () => {
-      let response;
-      if (competenciaSeleccionada === "todas") {
-        response = await axios.get(`${baseUrl}/my-predictions/`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-      } else {
-        response = await axios.get(`${baseUrl}/my-predictions/${competenciaSeleccionada}`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-      }
+      const endpoint =
+        competenciaSeleccionada === "todas"
+          ? `${baseUrl}/my-predictions/`
+          : `${baseUrl}/my-predictions/${competenciaSeleccionada}`;
+      const response = await axios.get(endpoint, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
 
       // Filter only predictions where status_short is NS
       const filtered = Array.isArray(response.data)
