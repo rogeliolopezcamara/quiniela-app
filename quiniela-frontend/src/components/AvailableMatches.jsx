@@ -76,12 +76,16 @@ const AvailableMatches = () => {
     queryKey: ['userPredictionsFlat', competenciaSeleccionada],
     queryFn: async () => {
       let response;
-      if (competenciaSeleccionada === "todas" || competenciaSeleccionada === "") {
+      if (
+        competenciaSeleccionada === "todas" ||
+        competenciaSeleccionada === "" ||
+        isNaN(Number(competenciaSeleccionada))
+      ) {
         response = await axios.get(`${baseUrl}/my-predictions/`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
       } else {
-        response = await axios.get(`${baseUrl}/my-predictions/${Number(competenciaSeleccionada)}`, {
+        response = await axios.get(`${baseUrl}/my-predictions/${competenciaSeleccionada}`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
       }
