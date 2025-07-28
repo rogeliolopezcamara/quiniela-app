@@ -85,15 +85,19 @@ const AvailableMatches = () => {
           headers: { Authorization: `Bearer ${authToken}` },
         });
       }
-      // Garantiza que siempre se devuelva un arreglo
-      return Array.isArray(response.data)
+
+      // Filter only predictions where status_short is NS
+      const filtered = Array.isArray(response.data)
         ? response.data.filter(pred => pred.status_short === "NS")
         : [];
+
+      // Sort by match_date
+      filtered.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+
+      return filtered;
     },
     enabled: !!authToken,
     refetchInterval: 10000,
-    // Asegura que el valor por defecto sea un arreglo
-    // (ya está cubierto en data: userPredictions = [])
   });
 
   const handleSubmit = async (match_id, pred_home, pred_away) => {
