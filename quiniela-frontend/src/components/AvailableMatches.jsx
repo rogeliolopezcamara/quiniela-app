@@ -294,22 +294,18 @@ const AvailableMatches = () => {
                         <button type="button" onClick={() => setEditPredictionId(null)} className="text-sm text-gray-500 underline">Cancelar</button>
                       </form>
                     ) : (
-                      <>
-                        <div className="flex justify-center items-center gap-2 text-lg font-semibold text-gray-800 mb-2">
-                          <span>{pred.pred_home}</span>
-                          <span>-</span>
-                          <span>{pred.pred_away}</span>
-                        </div>
+                      <div className="flex justify-center items-center gap-4 text-lg font-semibold text-gray-800 mb-2">
+                        <span>{pred.pred_home} - {pred.pred_away}</span>
                         <button
                           onClick={() => {
                             setEditPredictionId(pred.prediction_id);
                             setEditValues({ pred_home: pred.pred_home, pred_away: pred.pred_away });
                           }}
-                          className="mt-2 bg-yellow-500 text-white px-3 py-1 rounded text-sm shadow"
+                          className="bg-yellow-500 text-white px-3 py-1 rounded text-sm shadow"
                         >
                           Editar
                         </button>
-                      </>
+                      </div>
                     )}
                   </div>
                 ))}
