@@ -35,9 +35,7 @@ const PredictionsCenter = () => {
         </div>
       </div>
       <div className="pt-28 px-4 pb-28 max-w-5xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          {activeTab === "available" ? <AvailableMatches embedded /> : <UserPredictions embedded />}
-        </div>
+        {activeTab === "available" ? <AvailableMatches embedded /> : <UserPredictions embedded />}
       </div>
     </>
   );
