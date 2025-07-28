@@ -73,7 +73,7 @@ const AvailableMatches = () => {
     error: errorUserPredictions,
     refetch: refetchUserPredictions,
   } = useQuery({
-    queryKey: ['userPredictionsFlat', competenciaSeleccionada],
+    queryKey: ['userPredictionsAvailable', competenciaSeleccionada],
     queryFn: async () => {
       const endpoint =
         competenciaSeleccionada === "todas"
@@ -83,15 +83,12 @@ const AvailableMatches = () => {
         headers: { Authorization: `Bearer ${authToken}` },
       });
 
-      // Filter only predictions where status_short is NS
-      const filtered = Array.isArray(response.data)
-        ? response.data.filter(pred => pred.status_short === "NS")
+      const now = new Date();
+      const upcoming = Array.isArray(response.data)
+        ? response.data.filter(pred => new Date(pred.match_date) > now)
         : [];
-
-      // Sort by match_date
-      filtered.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
-
-      return filtered;
+      upcoming.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+      return upcoming;
     },
     enabled: !!authToken,
     refetchInterval: 10000,
