@@ -16,7 +16,6 @@ const AvailableMatches = () => {
   }, [competenciaSeleccionada]);
   const { authToken } = useAuth();
 
-  const [userPredictions, setUserPredictions] = useState([]);
   const [editPredictionId, setEditPredictionId] = useState(null);
   const [editValues, setEditValues] = useState({ pred_home: 0, pred_away: 0 });
 
@@ -68,39 +67,34 @@ const AvailableMatches = () => {
     refetchInterval: 10000,
   });
 
-  const fetchUserPredictions = async () => {
-    let response;
-    if (competenciaSeleccionada === "todas") {
-      response = await axios.get(`${baseUrl}/my-predictions/`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-    } else {
-      response = await axios.get(`${baseUrl}/my-predictions/${competenciaSeleccionada}`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-    }
-
-    const now = new Date();
-    const upcoming = response.data.filter(pred => {
-      return pred.status_short === "NS";
-    });
-
-    setUserPredictions(upcoming);
-  };
-
-  useEffect(() => {
-    if (authToken) {
-      fetchUserPredictions();
-    }
-  }, [competenciaSeleccionada, authToken]);
-
-  if (loadingCompetencias || loadingMatches) {
-    return <div className="text-center mt-10 text-gray-600">Cargando...</div>;
-  }
-
-  if (errorCompetencias || errorMatches) {
-    return <div className="text-center mt-10 text-red-600">Error al cargar la información.</div>;
-  }
+  const {
+    data: userPredictions = [],
+    isLoading: loadingUserPredictions,
+    error: errorUserPredictions,
+    refetch: refetchUserPredictions,
+  } = useQuery({
+    queryKey: ['userPredictionsFlat', competenciaSeleccionada],
+    queryFn: async () => {
+      let response;
+      if (competenciaSeleccionada === "todas") {
+        response = await axios.get(`${baseUrl}/my-predictions/`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+      } else {
+        response = await axios.get(`${baseUrl}/my-predictions/${competenciaSeleccionada}`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+      }
+      // Garantiza que siempre se devuelva un arreglo
+      return Array.isArray(response.data)
+        ? response.data.filter(pred => pred.status_short === "NS")
+        : [];
+    },
+    enabled: !!authToken,
+    refetchInterval: 10000,
+    // Asegura que el valor por defecto sea un arreglo
+    // (ya está cubierto en data: userPredictions = [])
+  });
 
   const handleSubmit = async (match_id, pred_home, pred_away) => {
     try {
@@ -115,6 +109,7 @@ const AvailableMatches = () => {
       );
       alert("Pronóstico enviado correctamente");
       refetch();
+      refetchUserPredictions();
     } catch (error) {
       console.error("Error al enviar el pronóstico:", error);
       alert("Hubo un error al enviar el pronóstico");
@@ -127,7 +122,7 @@ const AvailableMatches = () => {
       await axios.put(`${baseUrl}/predictions/${prediction_id}`, editValues, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      fetchUserPredictions();
+      refetchUserPredictions();
       setEditPredictionId(null);
     } catch (error) {
       console.error("Error al editar el pronóstico:", error);
@@ -156,6 +151,14 @@ const AvailableMatches = () => {
     return acc;
   }, {});
 
+  if (loadingCompetencias || loadingMatches || loadingUserPredictions) {
+    return <div className="text-center mt-10 text-gray-600">Cargando...</div>;
+  }
+
+  if (errorCompetencias || errorMatches || errorUserPredictions) {
+    return <div className="text-center mt-10 text-red-600">Error al cargar la información.</div>;
+  }
+
   return (
     <div className="flex">
       <div className="w-full px-4 sm:px-8">
@@ -175,8 +178,8 @@ const AvailableMatches = () => {
               ))}
             </select>
           </div>
-          <h2 className="text-lg font-semibold mb-4 mt-6">Partidos sin pronóstico</h2>
         </div>
+        <h2 className="text-lg font-semibold mb-4 mt-6">Partidos sin pronóstico</h2>
 
         {matches.length === 0 ? (
           <p className="text-sm text-center text-gray-500 mb-6">
@@ -186,8 +189,7 @@ const AvailableMatches = () => {
 
         {Object.entries(groupedMatches).map(([round, roundMatches]) => (
           <div key={round} className="mb-10">
-            <h2 className="text-lg font-semibold mb-4">{round}</h2>
-
+            <h3 className="text-base font-medium mb-3">{round}</h3>
             {roundMatches.map((match) => (
               <div key={match.match_id} className="bg-gray-100 p-4 mb-6 rounded">
                 <div className="flex items-center justify-between mb-2">
@@ -245,57 +247,75 @@ const AvailableMatches = () => {
             No tienes pronósticos enviados para partidos próximos.
           </p>
         ) : (
-          userPredictions.map(pred => (
-            <div key={pred.prediction_id} className="bg-gray-100 p-4 mb-4 rounded">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2">
-                  <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6" />
-                  <span className="font-semibold">{pred.home_team}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold">{pred.away_team}</span>
-                  <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6" />
-                </div>
+          (() => {
+            // Agrupa por ronda
+            const groupedUserPredictions = userPredictions.reduce((acc, pred) => {
+              const round = pred.league_round || "Otros";
+              if (!acc[round]) acc[round] = [];
+              acc[round].push(pred);
+              return acc;
+            }, {});
+            return Object.entries(groupedUserPredictions).map(([round, preds]) => (
+              <div key={round} className="mb-8">
+                <h3 className="text-base font-medium mb-3">{round}</h3>
+                {preds.map(pred => (
+                  <div key={pred.prediction_id} className="bg-gray-100 p-4 mb-4 rounded">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center gap-2">
+                        <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6" />
+                        <span className="font-semibold">{pred.home_team}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{pred.away_team}</span>
+                        <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6" />
+                      </div>
+                    </div>
+                    <p className="text-sm text-center text-gray-600 mb-2">{formatDate(pred.match_date)}</p>
+                    {editPredictionId === pred.prediction_id ? (
+                      <form onSubmit={(e) => handleEditSubmit(e, pred.prediction_id)} className="flex gap-2 justify-center">
+                        <input
+                          type="number"
+                          value={editValues.pred_home}
+                          onChange={(e) => setEditValues({ ...editValues, pred_home: parseInt(e.target.value) })}
+                          className="border rounded px-2 py-1 w-16"
+                          min="0"
+                          required
+                        />
+                        <span>-</span>
+                        <input
+                          type="number"
+                          value={editValues.pred_away}
+                          onChange={(e) => setEditValues({ ...editValues, pred_away: parseInt(e.target.value) })}
+                          className="border rounded px-2 py-1 w-16"
+                          min="0"
+                          required
+                        />
+                        <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">Guardar</button>
+                        <button type="button" onClick={() => setEditPredictionId(null)} className="text-sm text-gray-500 underline">Cancelar</button>
+                      </form>
+                    ) : (
+                      <>
+                        <div className="flex justify-center items-center gap-2 text-lg font-semibold text-gray-800 mb-2">
+                          <span>{pred.pred_home}</span>
+                          <span>-</span>
+                          <span>{pred.pred_away}</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setEditPredictionId(pred.prediction_id);
+                            setEditValues({ pred_home: pred.pred_home, pred_away: pred.pred_away });
+                          }}
+                          className="mt-2 bg-yellow-500 text-white px-3 py-1 rounded text-sm shadow"
+                        >
+                          Editar
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
               </div>
-              <p className="text-sm text-center text-gray-600 mb-2">{formatDate(pred.match_date)}</p>
-              {editPredictionId === pred.prediction_id ? (
-                <form onSubmit={(e) => handleEditSubmit(e, pred.prediction_id)} className="flex gap-2 justify-center">
-                  <input
-                    type="number"
-                    value={editValues.pred_home}
-                    onChange={(e) => setEditValues({ ...editValues, pred_home: parseInt(e.target.value) })}
-                    className="border rounded px-2 py-1 w-16"
-                    min="0"
-                    required
-                  />
-                  <span>-</span>
-                  <input
-                    type="number"
-                    value={editValues.pred_away}
-                    onChange={(e) => setEditValues({ ...editValues, pred_away: parseInt(e.target.value) })}
-                    className="border rounded px-2 py-1 w-16"
-                    min="0"
-                    required
-                  />
-                  <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">Guardar</button>
-                  <button type="button" onClick={() => setEditPredictionId(null)} className="text-sm text-gray-500 underline">Cancelar</button>
-                </form>
-              ) : (
-                <div className="text-center">
-                  <span className="font-medium">{pred.pred_home} - {pred.pred_away}</span>
-                  <button
-                    onClick={() => {
-                      setEditPredictionId(pred.prediction_id);
-                      setEditValues({ pred_home: pred.pred_home, pred_away: pred.pred_away });
-                    }}
-                    className="ml-4 text-sm text-blue-600 underline"
-                  >
-                    Editar
-                  </button>
-                </div>
-              )}
-            </div>
-          ))
+            ));
+          })()
         )}
       </div>
     </div>
