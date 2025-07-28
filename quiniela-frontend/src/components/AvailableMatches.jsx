@@ -16,6 +16,10 @@ const AvailableMatches = () => {
   }, [competenciaSeleccionada]);
   const { authToken } = useAuth();
 
+  const [userPredictions, setUserPredictions] = useState([]);
+  const [editPredictionId, setEditPredictionId] = useState(null);
+  const [editValues, setEditValues] = useState({ pred_home: 0, pred_away: 0 });
+
   const {
     data: competencias = [],
     isLoading: loadingCompetencias,
@@ -64,6 +68,32 @@ const AvailableMatches = () => {
     refetchInterval: 10000,
   });
 
+  const fetchUserPredictions = async () => {
+    let response;
+    if (competenciaSeleccionada === "todas") {
+      response = await axios.get(`${baseUrl}/my-predictions/`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+    } else {
+      response = await axios.get(`${baseUrl}/my-predictions/${competenciaSeleccionada}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+    }
+
+    const now = new Date();
+    const upcoming = response.data.filter(pred => {
+      return pred.status_short === "NS";
+    });
+
+    setUserPredictions(upcoming);
+  };
+
+  useEffect(() => {
+    if (authToken) {
+      fetchUserPredictions();
+    }
+  }, [competenciaSeleccionada, authToken]);
+
   if (loadingCompetencias || loadingMatches) {
     return <div className="text-center mt-10 text-gray-600">Cargando...</div>;
   }
@@ -88,6 +118,20 @@ const AvailableMatches = () => {
     } catch (error) {
       console.error("Error al enviar el pronóstico:", error);
       alert("Hubo un error al enviar el pronóstico");
+    }
+  };
+
+  const handleEditSubmit = async (e, prediction_id) => {
+    e.preventDefault();
+    try {
+      await axios.put(`${baseUrl}/predictions/${prediction_id}`, editValues, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      fetchUserPredictions();
+      setEditPredictionId(null);
+    } catch (error) {
+      console.error("Error al editar el pronóstico:", error);
+      alert("Hubo un error al editar el pronóstico");
     }
   };
 
@@ -131,6 +175,7 @@ const AvailableMatches = () => {
               ))}
             </select>
           </div>
+          <h2 className="text-lg font-semibold mb-4 mt-6">Partidos sin pronóstico</h2>
         </div>
 
         {matches.length === 0 ? (
@@ -193,6 +238,65 @@ const AvailableMatches = () => {
             ))}
           </div>
         ))}
+
+        <h2 className="text-lg font-semibold mb-4 mt-10">Tus pronósticos enviados</h2>
+        {userPredictions.length === 0 ? (
+          <p className="text-sm text-center text-gray-500 mb-6">
+            No tienes pronósticos enviados para partidos próximos.
+          </p>
+        ) : (
+          userPredictions.map(pred => (
+            <div key={pred.prediction_id} className="bg-gray-100 p-4 mb-4 rounded">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6" />
+                  <span className="font-semibold">{pred.home_team}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">{pred.away_team}</span>
+                  <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6" />
+                </div>
+              </div>
+              <p className="text-sm text-center text-gray-600 mb-2">{formatDate(pred.match_date)}</p>
+              {editPredictionId === pred.prediction_id ? (
+                <form onSubmit={(e) => handleEditSubmit(e, pred.prediction_id)} className="flex gap-2 justify-center">
+                  <input
+                    type="number"
+                    value={editValues.pred_home}
+                    onChange={(e) => setEditValues({ ...editValues, pred_home: parseInt(e.target.value) })}
+                    className="border rounded px-2 py-1 w-16"
+                    min="0"
+                    required
+                  />
+                  <span>-</span>
+                  <input
+                    type="number"
+                    value={editValues.pred_away}
+                    onChange={(e) => setEditValues({ ...editValues, pred_away: parseInt(e.target.value) })}
+                    className="border rounded px-2 py-1 w-16"
+                    min="0"
+                    required
+                  />
+                  <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">Guardar</button>
+                  <button type="button" onClick={() => setEditPredictionId(null)} className="text-sm text-gray-500 underline">Cancelar</button>
+                </form>
+              ) : (
+                <div className="text-center">
+                  <span className="font-medium">{pred.pred_home} - {pred.pred_away}</span>
+                  <button
+                    onClick={() => {
+                      setEditPredictionId(pred.prediction_id);
+                      setEditValues({ pred_home: pred.pred_home, pred_away: pred.pred_away });
+                    }}
+                    className="ml-4 text-sm text-blue-600 underline"
+                  >
+                    Editar
+                  </button>
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

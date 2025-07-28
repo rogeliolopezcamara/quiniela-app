@@ -428,7 +428,11 @@ def get_user_predictions(
             "league_season": match.league_season,
             "league_round": match.league_round,
             "home_team_logo": match.home_team_logo,
-            "away_team_logo": match.away_team_logo
+            "away_team_logo": match.away_team_logo,
+            "status_long": match.status_long,
+            "status_short": match.status_short,
+            "status_elapsed": match.status_elapsed,
+            "status_extra": match.status_extra
         })
 
     return result
