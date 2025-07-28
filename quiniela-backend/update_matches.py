@@ -44,11 +44,15 @@ def get_fixtures():
 
     return all_fixtures
 
-def trigger_points_recalculation(match_id, score_home, score_away):
+def trigger_points_recalculation(match_id, score_home, score_away, status_long, status_short, status_elapsed, status_extra):
     url = f"{BACKEND_URL}/matches/{match_id}/result"
     payload = {
         "score_home": score_home,
-        "score_away": score_away
+        "score_away": score_away,
+        "status_long": status_long,
+        "status_short": status_short,
+        "status_elapsed": status_elapsed,
+        "status_extra": status_extra
     }
     try:
         response = requests.put(url, json=payload)
@@ -82,6 +86,12 @@ def upsert_matches_to_db(fixtures, db: Session):
         home_team_logo = teams["home"]["logo"]
         away_team_logo = teams["away"]["logo"]
 
+        status = fixture["status"]
+        status_long = status.get("long")
+        status_short = status.get("short")
+        status_elapsed = status.get("elapsed")
+        status_extra = status.get("extra")
+
         existing_match = db.query(Match).filter_by(id=match_id).first()
 
         if existing_match:
@@ -97,6 +107,10 @@ def upsert_matches_to_db(fixtures, db: Session):
             existing_match.league_round = league_round
             existing_match.home_team_logo = home_team_logo
             existing_match.away_team_logo = away_team_logo
+            existing_match.status_long = status_long
+            existing_match.status_short = status_short
+            existing_match.status_elapsed = status_elapsed
+            existing_match.status_extra = status_extra
         else:
             new_match = Match(
                 id=match_id,
@@ -111,12 +125,16 @@ def upsert_matches_to_db(fixtures, db: Session):
                 league_season=league_season,
                 league_round=league_round,
                 home_team_logo=home_team_logo,
-                away_team_logo=away_team_logo
+                away_team_logo=away_team_logo,
+                status_long=status_long,
+                status_short=status_short,
+                status_elapsed=status_elapsed,
+                status_extra=status_extra
             )
             db.add(new_match)
 
         if score_home is not None and score_away is not None:
-            trigger_points_recalculation(match_id, score_home, score_away)
+            trigger_points_recalculation(match_id, score_home, score_away, status_long, status_short, status_elapsed, status_extra)
 
     db.commit()
 

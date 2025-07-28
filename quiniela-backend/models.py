@@ -31,6 +31,10 @@ class Match(Base):
     league_round = Column(String, nullable=True)
     home_team_logo = Column(String, nullable=True)
     away_team_logo = Column(String, nullable=True)
+    status_long = Column(String, nullable=True)
+    status_short = Column(String, nullable=True)
+    status_elapsed = Column(Integer, nullable=True)
+    status_extra = Column(Integer, nullable=True)
 
 
 class Prediction(Base):

@@ -13,6 +13,18 @@ class PredictionCreate(BaseModel):
 class MatchResultUpdate(BaseModel):
     score_home: int
     score_away: int
+    status_long: str | None = None
+    status_short: str | None = None
+    status_elapsed: int | None = None
+    status_extra: int | None = None
+
+class MatchResult(BaseModel):
+    score_home: int
+    score_away: int
+    status_long: str | None = None
+    status_short: str | None = None
+    status_elapsed: int | None = None
+    status_extra: int | None = None
 
 class UserRanking(BaseModel):
     user_id: int

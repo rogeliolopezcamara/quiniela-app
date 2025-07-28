@@ -115,9 +115,13 @@ def update_match_result(
     if not match:
         raise HTTPException(status_code=404, detail="Partido no encontrado")
 
-    # Actualizar los resultados
+    # Actualizar los resultados y los nuevos campos de status
     match.score_home = result.score_home
     match.score_away = result.score_away
+    match.status_long = result.status_long
+    match.status_short = result.status_short
+    match.status_elapsed = result.status_elapsed
+    match.status_extra = result.status_extra
     db.commit()
 
     # Obtener todos los pronósticos de ese partido
