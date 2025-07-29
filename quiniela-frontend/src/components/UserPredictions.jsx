@@ -334,11 +334,10 @@ const UserPredictions = () => {
                     <table className="min-w-full bg-white border border-gray-300">
                       <thead>
                         <tr>
-                          <th className="py-2 px-4 border-b">Partido</th>
-                          <th className="py-2 px-4 border-b">Pronóstico</th>
-                          <th className="py-2 px-4 border-b">Marcador real</th>
-                          <th className="py-2 px-4 border-b">Puntos</th>
-                          <th className="py-2 px-4 border-b">Acciones</th>
+                          <th className="py-2 px-4 border-b text-left">Partido</th>
+                          <th className="py-2 px-4 border-b text-left">Pronóstico</th>
+                          <th className="py-2 px-4 border-b text-left">Marcador real</th>
+                          <th className="py-2 px-4 border-b text-left">Puntos</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -398,16 +397,6 @@ const UserPredictions = () => {
                               {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
                             </td>
                             <td className="py-2 px-4 border-b">{pred.points ?? "-"}</td>
-                            <td className="py-2 px-4 border-b">
-                              {isEditable(pred.match_date) && editPredictionId !== pred.prediction_id && (
-                                <button
-                                  onClick={() => handleEditClick(pred)}
-                                  className="bg-yellow-500 text-white px-3 py-1 rounded"
-                                >
-                                  Editar
-                                </button>
-                              )}
-                            </td>
                           </tr>
                         ))}
                       </tbody>
