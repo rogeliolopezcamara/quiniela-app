@@ -3,6 +3,16 @@
 
 const changelogEntries = [
   {
+    date: "2025-07-29",
+    items: [
+      "Mejora visual en la sección de pronósticos: nuevo diseño más limpio y profesional.",
+      "Indicadores visuales para partidos en vivo y finalizados.",
+      "Nuevos colores para destacar los puntos obtenidos en cada pronóstico.",
+      "Reordenamiento de rondas para priorizar los partidos en vivo.",
+      "Corrección de errores.",
+    ],
+  },
+  {
     date: "2025-07-25",
     items: [
       "Se añadió la funcionalidad de crear y unirse a nuevas competencias tanto públicas como privadas.",
