@@ -7,9 +7,9 @@ import Sidebar from "./Sidebar";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-// Pulsating green dot style
+// Pulsating dot style (animation duration will be set via CSS class)
 const pulsatingDotStyle = {
-  animation: "pulse 1s infinite",
+  // Deprecated: now handled by CSS class
 };
 
 const UserPredictions = () => {
@@ -150,13 +150,22 @@ const UserPredictions = () => {
 
   // Replaced by getMatchStatus below
 
-  // Helper for match status
+  // Helper for match status, returning also color and animation classes
   const getMatchStatus = (match) => {
     const ended = ["FT", "AET", "PEN"].includes(match.status_short);
-    if (ended) return { text: "⚪ Terminado", isLive: false };
+    if (ended) {
+      return {
+        text: "Terminado",
+        isLive: false,
+        dotClass: "bg-gray-400",
+        animate: "",
+      };
+    }
     return {
-      text: `🟢 En vivo - ${match.status_elapsed ?? 0}’`,
+      text: `En vivo - ${match.status_elapsed ?? 0}’`,
       isLive: true,
+      dotClass: "bg-green-400",
+      animate: "animate-pulse-custom",
     };
   };
 
@@ -183,6 +192,9 @@ const UserPredictions = () => {
           0% { opacity: 1; }
           50% { opacity: 0.2; }
           100% { opacity: 1; }
+        }
+        .animate-pulse-custom {
+          animation: pulse 2s infinite;
         }
       ` }} />
       <div className="flex">
@@ -249,7 +261,15 @@ const UserPredictions = () => {
                             const status = getMatchStatus(pred);
                             return (
                               <span className="flex items-center gap-1">
-                                <span style={status.isLive ? pulsatingDotStyle : {}}>{status.text}</span>
+                                <div
+                                  className={
+                                    "w-2.5 h-2.5 rounded-full " +
+                                    status.dotClass +
+                                    (status.animate ? " " + status.animate : "")
+                                  }
+                                  style={{ display: "inline-block" }}
+                                ></div>
+                                <span>{status.text}</span>
                               </span>
                             );
                           })()}
@@ -363,7 +383,15 @@ const UserPredictions = () => {
                                   const status = getMatchStatus(pred);
                                   return (
                                     <span className="flex items-center gap-1">
-                                      <span style={status.isLive ? pulsatingDotStyle : {}}>{status.text}</span>
+                                      <div
+                                        className={
+                                          "w-2.5 h-2.5 rounded-full " +
+                                          status.dotClass +
+                                          (status.animate ? " " + status.animate : "")
+                                        }
+                                        style={{ display: "inline-block" }}
+                                      ></div>
+                                      <span>{status.text}</span>
                                     </span>
                                   );
                                 })()}
