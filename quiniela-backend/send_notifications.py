@@ -36,8 +36,20 @@ def notify_upcoming_matches(db: Session):  # 👈 recibe db como argumento
                 models.Prediction.match_id == match.id
             ).subquery()
 
+            # Subquery para competencias relacionadas con la liga del partido
+            competencias_con_liga = db.query(models.CompetitionLeague.competition_id).filter(
+                models.CompetitionLeague.league_id == match.league_id
+            ).subquery()
+
+            # Subquery para usuarios inscritos en esas competencias
+            usuarios_en_competencias = db.query(models.CompetitionMember.user_id).filter(
+                models.CompetitionMember.competition_id.in_(select(competencias_con_liga.c.competition_id))
+            ).subquery()
+
+            # Filtrar usuarios sin pronóstico y que están en una competencia con la liga del partido
             users = db.query(models.User).filter(
-                ~models.User.id.in_(select(predicted_users.c.user_id))
+                ~models.User.id.in_(select(predicted_users.c.user_id)),
+                models.User.id.in_(select(usuarios_en_competencias.c.user_id))
             ).all()
 
             notif_type = "1h" if time_until_match <= 3600 else "24h"
