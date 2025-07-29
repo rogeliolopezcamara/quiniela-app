@@ -103,9 +103,10 @@ const UserPredictions = () => {
       if (sortedLive.length > 0) {
         result["En vivo"] = sortedLive;
       }
-      // El resto de las rondas, en cualquier orden (puedes ordenar las claves si lo necesitas)
-      for (const [round, matches] of Object.entries(groupedRounds)) {
-        result[round] = matches;
+      // El resto de las rondas, ordenadas alfabéticamente en orden inverso
+      const sortedRounds = Object.keys(groupedRounds).sort().reverse();
+      for (const round of sortedRounds) {
+        result[round] = groupedRounds[round];
       }
       return result;
     },
