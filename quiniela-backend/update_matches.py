@@ -138,6 +138,50 @@ def upsert_matches_to_db(fixtures, db: Session):
 
     db.commit()
 
+def update_live_matches_from_api(db: Session):
+    league_entries = get_leagues_from_competitions(db)
+    league_ids = [str(entry[0]) for entry in league_entries]
+    league_ids_str = "-".join(league_ids)
+
+    url = f"{BASE_URL}/fixtures?live={league_ids_str}"
+    response = requests.get(url, headers=HEADERS)
+    data = response.json()
+
+    if response.status_code != 200:
+        print("❌ Error al obtener partidos en vivo:", data)
+        return
+
+    fixtures = data.get("response", [])
+
+    for match in fixtures:
+        fixture = match["fixture"]
+        goals = match["goals"]
+
+        match_id = fixture["id"]
+        score_home = goals["home"]
+        score_away = goals["away"]
+
+        status = fixture["status"]
+        status_long = status.get("long")
+        status_short = status.get("short")
+        status_elapsed = status.get("elapsed")
+        status_extra = status.get("extra")
+
+        existing_match = db.query(Match).filter_by(id=match_id).first()
+
+        if existing_match:
+            existing_match.score_home = score_home
+            existing_match.score_away = score_away
+            existing_match.status_long = status_long
+            existing_match.status_short = status_short
+            existing_match.status_elapsed = status_elapsed
+            existing_match.status_extra = status_extra
+
+            if score_home is not None and score_away is not None:
+                trigger_points_recalculation(match_id, score_home, score_away, status_long, status_short, status_elapsed, status_extra)
+
+    db.commit()
+
 if __name__ == "__main__":
     fixtures = get_fixtures()
     db = next(get_db())

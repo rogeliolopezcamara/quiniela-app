@@ -596,41 +596,13 @@ async def update_live_matches(
     if secret != os.getenv("UPDATE_SECRET"):
         raise HTTPException(status_code=403, detail="No autorizado")
 
-    from update_matches import get_fixtures, trigger_points_recalculation
+    from update_matches import update_live_matches_from_api
     from database import SessionLocal
-    from models import Match
-    from datetime import datetime
-    from sqlalchemy import not_ # type: ignore
 
     def run_live_update():
         db_session = SessionLocal()
         try:
-            now = datetime.utcnow()
-            live_matches = db_session.query(Match).filter(
-                Match.match_date <= now,
-                not_(Match.status_short.in_(["FT", "AET", "PEN"]))
-            ).all()
-
-            if not live_matches:
-                print("No hay partidos en vivo para actualizar.")
-                return
-
-            live_match_ids = [m.id for m in live_matches]
-            all_fixtures = get_fixtures()
-            fixtures_dict = {f["match_id"]: f for f in all_fixtures if f["match_id"] in live_match_ids}
-
-            for match in live_matches:
-                updated = fixtures_dict.get(match.id)
-                if updated:
-                    match.score_home = updated["score_home"]
-                    match.score_away = updated["score_away"]
-                    match.status_long = updated["status_long"]
-                    match.status_short = updated["status_short"]
-                    match.status_elapsed = updated["status_elapsed"]
-                    match.status_extra = updated["status_extra"]
-                    trigger_points_recalculation(match.id, db_session)
-
-            db_session.commit()
+            update_live_matches_from_api(db_session)
         except Exception as e:
             db_session.rollback()
             print("❌ Error en actualización de partidos en vivo:", e)
