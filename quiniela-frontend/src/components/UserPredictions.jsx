@@ -7,6 +7,11 @@ import Sidebar from "./Sidebar";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
+// Pulsating green dot style
+const pulsatingDotStyle = {
+  animation: "pulse 1s infinite",
+};
+
 const UserPredictions = () => {
   const { authToken } = useAuth();
   const [editPredictionId, setEditPredictionId] = useState(null);
@@ -69,16 +74,24 @@ const UserPredictions = () => {
       const started = Array.isArray(response.data)
         ? response.data.filter(pred => new Date(pred.match_date) <= now)
         : [];
-      const sorted = [...started].sort(
-        (a, b) => new Date(a.match_date) - new Date(b.match_date)
-      );
+
+      // Separate into live and ended
+      const live = started.filter(p => !["FT", "AET", "PEN"].includes(p.status_short));
+      const ended = started.filter(p => ["FT", "AET", "PEN"].includes(p.status_short));
+
+      // Sort each group by date ascending
+      const sorted = [
+        ...live.sort((a, b) => new Date(a.match_date) - new Date(b.match_date)),
+        ...ended.sort((a, b) => new Date(a.match_date) - new Date(b.match_date)),
+      ];
+
+      // Group by round
       const grouped = sorted.reduce((acc, curr) => {
         const round = curr.league_round || 'Sin ronda';
         if (!acc[round]) acc[round] = [];
         acc[round].push(curr);
         return acc;
       }, {});
-      // Removed collapsedRounds initialization here to preserve user state
       return grouped;
     },
     enabled: !!authToken,
@@ -119,17 +132,16 @@ const UserPredictions = () => {
     return localMatchDate > now;
   };
 
-  const formatDate = (isoString) => {
-    const s = normalizeISOString(isoString);
-    const date = new Date(s);
-    return date.toLocaleString("es-MX", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
+  // Replaced by getMatchStatus below
+
+  // Helper for match status
+  const getMatchStatus = (match) => {
+    const ended = ["FT", "AET", "PEN"].includes(match.status_short);
+    if (ended) return { text: "⚪ Terminado", isLive: false };
+    return {
+      text: `🟢 En vivo - ${match.status_elapsed ?? 0}’`,
+      isLive: true,
+    };
   };
 
   const toggleRoundCollapse = (round) => {
@@ -148,7 +160,16 @@ const UserPredictions = () => {
   }
 
   return (
-    <div className="flex">
+    <>
+      {/* Pulsating dot keyframes style */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.2; }
+          100% { opacity: 1; }
+        }
+      ` }} />
+      <div className="flex">
       <div className="px-4 w-full max-w-7xl mx-auto">
         <div className="bg-white border rounded-md p-3 shadow-sm mb-6 max-w-md mx-auto">
           <div className="flex items-center gap-2">
@@ -207,7 +228,16 @@ const UserPredictions = () => {
                             <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6" />
                           </div>
                         </div>
-                        <div className="text-xs text-gray-500 mb-2">{formatDate(pred.match_date)}</div>
+                        <div className="text-xs text-gray-500 mb-2">
+                          {(() => {
+                            const status = getMatchStatus(pred);
+                            return (
+                              <span className="flex items-center gap-1">
+                                <span style={status.isLive ? pulsatingDotStyle : {}}>{status.text}</span>
+                              </span>
+                            );
+                          })()}
+                        </div>
                         <div className="text-sm mb-1">
                           <strong>Pronóstico:</strong>{" "}
                           {editPredictionId === pred.prediction_id ? (
@@ -306,7 +336,16 @@ const UserPredictions = () => {
                                 <span>{pred.away_team}</span>
                                 <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6 object-contain" />
                               </div>
-                              <div className="text-sm text-gray-500">{formatDate(pred.match_date)}</div>
+                              <div className="text-sm text-gray-500">
+                                {(() => {
+                                  const status = getMatchStatus(pred);
+                                  return (
+                                    <span className="flex items-center gap-1">
+                                      <span style={status.isLive ? pulsatingDotStyle : {}}>{status.text}</span>
+                                    </span>
+                                  );
+                                })()}
+                              </div>
                             </td>
                             <td className="py-2 px-4 border-b">
                               {editPredictionId === pred.prediction_id ? (
@@ -365,7 +404,8 @@ const UserPredictions = () => {
         )}
       </div>
     </div>
+    </>
   );
-};
+}
 
 export default UserPredictions;
