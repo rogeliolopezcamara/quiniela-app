@@ -290,7 +290,14 @@ const UserPredictions = () => {
                           <strong>Marcador real:</strong> {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
                         </div>
                         <div className="text-sm mb-2">
-                          <strong>Puntos:</strong> {pred.points ?? "-"}
+                          <strong>Puntos:</strong>{" "}
+                          <span className={
+                            pred.points === 3 ? "text-green-600 font-semibold" :
+                            pred.points === 1 ? "text-yellow-600 font-medium" :
+                            "text-gray-500"
+                          }>
+                            {pred.points ?? "-"}
+                          </span>
                         </div>
                         {isEditable(pred.match_date) && editPredictionId !== pred.prediction_id && (
                           <button
@@ -396,7 +403,15 @@ const UserPredictions = () => {
                             <td className="py-2 px-4 border-b">
                               {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
                             </td>
-                            <td className="py-2 px-4 border-b">{pred.points ?? "-"}</td>
+                            <td className="py-2 px-4 border-b">
+                              <span className={
+                                pred.points === 3 ? "text-green-600 font-semibold" :
+                                pred.points === 1 ? "text-yellow-600 font-medium" :
+                                "text-gray-500"
+                              }>
+                                {pred.points ?? "-"}
+                              </span>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
