@@ -72,7 +72,7 @@ const UserPredictions = () => {
       // Filter only started matches
       const now = new Date();
       const started = Array.isArray(response.data)
-        ? response.data.filter(pred => new Date(pred.match_date) <= now)
+        ? response.data.filter(pred => new Date(normalizeISOString(pred.match_date)) <= now)
         : [];
 
       // 1. Crear ronda especial "En vivo" con partidos en vivo

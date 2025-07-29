@@ -59,8 +59,8 @@ const AvailableMatches = () => {
       in8Days.setDate(now.getDate() + 8);
 
       return response.data.filter((match) => {
-        const matchDate = new Date(match.match_date);
-        return matchDate <= in8Days;
+        const matchDate = new Date(normalizeISOString(match.match_date));
+        return matchDate <= in8Days && matchDate > now;
       });
     },
     enabled: !!authToken,
