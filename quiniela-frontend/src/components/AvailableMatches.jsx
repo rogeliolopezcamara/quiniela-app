@@ -60,7 +60,7 @@ const AvailableMatches = () => {
 
       return response.data.filter((match) => {
         const matchDate = new Date(normalizeISOString(match.match_date));
-        return matchDate <= in8Days && matchDate < now;
+        return matchDate <= in8Days && matchDate > now;
       });
     },
     enabled: !!authToken,
@@ -85,7 +85,7 @@ const AvailableMatches = () => {
 
       const now = new Date();
       const upcoming = Array.isArray(response.data)
-        ? response.data.filter(pred => new Date(pred.match_date) > now)
+        ? response.data.filter(pred => new Date(normalizeISOString(pred.match_date)) > now)
         : [];
       upcoming.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
       return upcoming;
