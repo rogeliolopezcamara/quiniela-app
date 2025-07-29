@@ -75,24 +75,39 @@ const UserPredictions = () => {
         ? response.data.filter(pred => new Date(pred.match_date) <= now)
         : [];
 
-      // Separate into live and ended
-      const live = started.filter(p => !["FT", "AET", "PEN"].includes(p.status_short));
-      const ended = started.filter(p => ["FT", "AET", "PEN"].includes(p.status_short));
+      // 1. Crear ronda especial "En vivo" con partidos en vivo
+      const isLive = (p) => !["FT", "AET", "PEN"].includes(p.status_short);
+      const liveMatches = started.filter(isLive);
+      // Ordenar partidos en vivo por fecha ascendente
+      const sortedLive = [...liveMatches].sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
 
-      // Sort each group by date ascending
-      const sorted = [
-        ...live.sort((a, b) => new Date(a.match_date) - new Date(b.match_date)),
-        ...ended.sort((a, b) => new Date(a.match_date) - new Date(b.match_date)),
-      ];
+      // 2. Agrupar el resto por league_round, excluyendo partidos en vivo
+      // Para evitar duplicados, usar prediction_id para filtrar los que están en live
+      const liveIds = new Set(liveMatches.map(p => p.prediction_id));
+      const notLiveMatches = started.filter(p => !liveIds.has(p.prediction_id));
 
-      // Group by round
-      const grouped = sorted.reduce((acc, curr) => {
+      // 3. Agrupar por league_round
+      const groupedRounds = notLiveMatches.reduce((acc, curr) => {
         const round = curr.league_round || 'Sin ronda';
         if (!acc[round]) acc[round] = [];
         acc[round].push(curr);
         return acc;
       }, {});
-      return grouped;
+      // Ordenar partidos en cada ronda por match_date ascendente
+      for (const round in groupedRounds) {
+        groupedRounds[round].sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+      }
+
+      // 4. Asegurar que "En vivo" va primero
+      const result = {};
+      if (sortedLive.length > 0) {
+        result["En vivo"] = sortedLive;
+      }
+      // El resto de las rondas, en cualquier orden (puedes ordenar las claves si lo necesitas)
+      for (const [round, matches] of Object.entries(groupedRounds)) {
+        result[round] = matches;
+      }
+      return result;
     },
     enabled: !!authToken,
     refetchInterval: 10000,
