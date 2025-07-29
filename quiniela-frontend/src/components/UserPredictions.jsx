@@ -293,8 +293,8 @@ const UserPredictions = () => {
                           <strong>Puntos:</strong>{" "}
                           <span className={
                             pred.points === 3 ? "text-green-600 font-semibold" :
-                            pred.points === 1 ? "text-yellow-600 font-medium" :
-                            "text-gray-500"
+                            pred.points === 1 ? "text-yellow-500 font-medium" :
+                            "text-red-500 font-medium"
                           }>
                             {pred.points ?? "-"}
                           </span>
@@ -406,8 +406,8 @@ const UserPredictions = () => {
                             <td className="py-2 px-4 border-b">
                               <span className={
                                 pred.points === 3 ? "text-green-600 font-semibold" :
-                                pred.points === 1 ? "text-yellow-600 font-medium" :
-                                "text-gray-500"
+                                pred.points === 1 ? "text-yellow-500 font-medium" :
+                                "text-red-500 font-medium"
                               }>
                                 {pred.points ?? "-"}
                               </span>
