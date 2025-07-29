@@ -211,7 +211,7 @@ const UserPredictions = () => {
 
             {/* Versión mobile (tarjetas) */}
             <div className="flex flex-col gap-4 md:hidden">
-              {Object.entries(predictions).slice().reverse().map(([round, preds]) => (
+              {Object.entries(predictions).map(([round, preds]) => (
                 <div key={round}>
                   <div className="flex items-center justify-between border-b-4 border-gray-300 px-1 py-2 mb-2">
                     <span className="font-semibold text-sm">
@@ -309,7 +309,7 @@ const UserPredictions = () => {
 
             {/* Versión desktop (bloques por ronda, tabla parcial) */}
             <div className="hidden md:block">
-              {Object.entries(predictions).slice().reverse().map(([round, preds]) => (
+              {Object.entries(predictions).map(([round, preds]) => (
                 <div key={round} className="mb-6">
                   <div className="flex items-center justify-between border-b-4 border-gray-300 px-1 py-2 mb-2 font-semibold text-sm">
                     <span>
