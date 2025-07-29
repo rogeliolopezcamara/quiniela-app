@@ -60,7 +60,7 @@ const AvailableMatches = () => {
 
       return response.data.filter((match) => {
         const matchDate = new Date(normalizeISOString(match.match_date));
-        return matchDate <= in8Days && matchDate > now;
+        return matchDate <= in8Days && matchDate < now;
       });
     },
     enabled: !!authToken,
