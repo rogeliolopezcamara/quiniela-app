@@ -94,7 +94,7 @@ useEffect(() => {
   } = useQuery({
     queryKey: ['roundMatrixInfo', competenciaSeleccionada],
     queryFn: async () => {
-      const res = await axios.get(`${baseUrl}/round-matrix/?competition_id=${competenciaSeleccionada}&league_round=placeholder`);
+      const res = await axios.get(`${baseUrl}/round-matrix/?competition_id=${competenciaSeleccionada}`);
       return res.data;
     },
     enabled: !!competenciaSeleccionada,
