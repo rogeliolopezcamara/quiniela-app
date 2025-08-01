@@ -562,6 +562,7 @@ async def notify_upcoming(
     return {"message": "🔔 Notificación iniciada en segundo plano"}
 
 
+
 # Nuevo endpoint: actualización completa de partidos
 @app.post("/update-all-matches")
 async def update_all_matches(
@@ -615,6 +616,94 @@ async def update_live_matches(
 
     background_tasks.add_task(run_live_update)
     return {"message": "⏱️ Actualización de partidos en vivo iniciada en segundo plano"}
+
+
+# Nuevo endpoint: matriz de enfrentamientos por ronda
+@app.get("/round-matrix/")
+def get_round_matrix(
+    competition_id: int,
+    league_round: str,
+    db: Session = Depends(get_db)
+):
+    # Obtener ligas y temporadas asociadas a la competencia
+    league_filters = db.query(
+        models.CompetitionLeague.league_id,
+        models.CompetitionLeague.league_season
+    ).filter(models.CompetitionLeague.competition_id == competition_id).all()
+    if not league_filters:
+        return {"rounds": [], "users": [], "matrix": [], "matches": []}
+
+    # Solo considerar la ronda específica proporcionada
+    rounds = [league_round]
+
+    # Obtener usuarios inscritos
+    user_ids = db.query(models.CompetitionMember.user_id).filter(
+        models.CompetitionMember.competition_id == competition_id
+    ).all()
+    user_ids = [u[0] for u in user_ids]
+    users = db.query(models.User).filter(models.User.id.in_(user_ids)).all()
+
+    # Obtener puntos por usuario SOLO para la ronda específica
+    round_points = (
+        db.query(
+            models.User.id.label("user_id"),
+            models.Match.league_round,
+            func.sum(models.Prediction.points).label("points")
+        )
+        .join(models.Prediction, models.User.id == models.Prediction.user_id)
+        .join(models.Match, models.Prediction.match_id == models.Match.id)
+        .filter(
+            models.User.id.in_(user_ids),
+            tuple_(models.Match.league_id, models.Match.league_season).in_(league_filters),
+            models.Match.league_round == league_round
+        )
+        .group_by(models.User.id, models.Match.league_round)
+        .all()
+    )
+    points_by_user_round = {(rp.user_id, rp.league_round): rp.points for rp in round_points}
+
+    matrix = []
+    for user in users:
+        row = {
+            "user_id": user.id,
+            "name": user.name,
+            # "email": user.email,  # Eliminado según instrucciones
+            "points": []
+        }
+        for rnd in rounds:
+            pts = points_by_user_round.get((user.id, rnd), 0)
+            row["points"].append(pts)
+        matrix.append(row)
+
+    # Obtener partidos de la ronda y ligas filtradas
+    matches = (
+        db.query(models.Match)
+        .filter(
+            models.Match.league_round == league_round,
+            tuple_(models.Match.league_id, models.Match.league_season).in_(league_filters)
+        )
+        .all()
+    )
+    matches_result = []
+    for match in matches:
+        matches_result.append({
+            "id": match.id,
+            "home_team": match.home_team,
+            "away_team": match.away_team,
+            "home_team_logo": match.home_team_logo,
+            "away_team_logo": match.away_team_logo,
+            "score_home": match.score_home,
+            "score_away": match.score_away,
+            "status_short": match.status_short,
+            "match_date": match.match_date
+        })
+
+    return {
+        "rounds": rounds,
+        "users": [{"user_id": u.id, "name": u.name} for u in users],  # email eliminado
+        "matrix": matrix,
+        "matches": matches_result
+    }
 
 
 @app.post("/update-matches")
