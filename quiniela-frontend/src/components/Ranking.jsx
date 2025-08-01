@@ -89,19 +89,6 @@ useEffect(() => {
     refetchInterval: 10000,
   });
 
-  const {
-    data: matrixInfo,
-  } = useQuery({
-    queryKey: ['roundMatrixInfo', competenciaSeleccionada],
-    queryFn: async () => {
-      const res = await axios.get(`${baseUrl}/round-matrix/?competition_id=${competenciaSeleccionada}`);
-      return res.data;
-    },
-    enabled: !!competenciaSeleccionada,
-    select: (data) => ({
-      rounds: data.rounds,
-    })
-  });
 
   const {
     data: matrixData,
@@ -138,6 +125,13 @@ useEffect(() => {
     }
     setSortedData(sorted);
   }, [rankingInfo, sortConfig]);
+
+  // Inicializar selectedRonda con la última ronda disponible de rankingInfo si no está establecida
+  useEffect(() => {
+    if (!selectedRonda && rankingInfo?.rounds?.length > 0) {
+      setSelectedRonda(rankingInfo.rounds[rankingInfo.rounds.length - 1]);
+    }
+  }, [rankingInfo, selectedRonda]);
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
@@ -286,7 +280,7 @@ useEffect(() => {
           </div>
         )}
 
-        {matrixInfo?.rounds?.length > 0 && (
+        {rankingInfo?.rounds?.length > 0 && (
           <div className="mt-8">
             <label className="block font-semibold mb-1 text-center">Selecciona una ronda:</label>
             <select
@@ -294,7 +288,7 @@ useEffect(() => {
               onChange={(e) => setSelectedRonda(e.target.value)}
               className="w-full max-w-xs mx-auto border rounded px-3 py-2 text-sm block"
             >
-              {matrixInfo.rounds.map((r) => (
+              {rankingInfo.rounds.map((r) => (
                 <option key={r} value={r}>{r}</option>
               ))}
             </select>
