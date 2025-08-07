@@ -19,8 +19,6 @@ const Ranking = () => {
   });
   const [sortConfig, setSortConfig] = useState({ key: "total_points", direction: "desc" });
 
-  const [selectedRonda, setSelectedRonda] = useState("");
-
   const {
     data: userInfo,
     isLoading: loadingUser,
@@ -89,18 +87,6 @@ useEffect(() => {
     refetchInterval: 10000,
   });
 
-
-  const {
-    data: matrixData,
-  } = useQuery({
-    queryKey: ['roundMatrixData', competenciaSeleccionada, selectedRonda],
-    queryFn: async () => {
-      const res = await axios.get(`${baseUrl}/round-matrix/?competition_id=${competenciaSeleccionada}&league_round=${selectedRonda}`);
-      return res.data;
-    },
-    enabled: !!competenciaSeleccionada && !!selectedRonda,
-  });
-
   const scrollRef = useRef(null);
   useEffect(() => {
     if (scrollRef.current) {
@@ -125,13 +111,6 @@ useEffect(() => {
     }
     setSortedData(sorted);
   }, [rankingInfo, sortConfig]);
-
-  // Inicializar selectedRonda con la última ronda disponible de rankingInfo si no está establecida
-  useEffect(() => {
-    if (!selectedRonda && rankingInfo?.rounds?.length > 0) {
-      setSelectedRonda(rankingInfo.rounds[rankingInfo.rounds.length - 1]);
-    }
-  }, [rankingInfo, selectedRonda]);
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
@@ -277,63 +256,6 @@ useEffect(() => {
                 </tbody>
               </table>
             </div>
-          </div>
-        )}
-
-        {rankingInfo?.rounds?.length > 0 && (
-          <div className="mt-8">
-            <label className="block font-semibold mb-1 text-center">Selecciona una ronda:</label>
-            <select
-              value={selectedRonda}
-              onChange={(e) => setSelectedRonda(e.target.value)}
-              className="w-full max-w-xs mx-auto border rounded px-3 py-2 text-sm block"
-            >
-              {rankingInfo.rounds.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {selectedRonda && matrixData?.matches?.length > 0 && (
-          <div className="mt-6 overflow-x-auto text-sm">
-            <table className="table-auto border border-gray-300 w-full">
-              <thead>
-                <tr>
-                  <th className="border px-2 py-1 bg-gray-100 text-left">Usuario</th>
-                  {matrixData.matches.map((match) => (
-                    <th key={match.id} className="border px-2 py-1 text-center">
-                      <div>{match.home_team} vs {match.away_team}</div>
-                      <div className="text-xs text-gray-500">{match.status_short === "NS" ? "No iniciado" : match.status_short === "FT" ? `${match.score_home}-${match.score_away}` : "En vivo"}</div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {sortedData.map((user) => (
-                  <tr key={user.user_id}>
-                    <td className="border px-2 py-1">{user.name}</td>
-                    {matrixData.matches.map((match) => {
-                      const pred = matrixData.predictions.find(p => p.user_id === user.user_id && p.match_id === match.id);
-                      const points = pred?.points ?? null;
-                      let color = "bg-gray-200";
-                      if (points === 3) color = "bg-green-500";
-                      else if (points === 1) color = "bg-yellow-400";
-                      else if (points === 0) color = "bg-red-500";
-                      return (
-                        <td key={match.id} className="border px-2 py-1 text-center">
-                          {points != null ? (
-                            <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
-                          ) : (
-                            "-"
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
       </div>
