@@ -1,3 +1,10 @@
+const [selectedRonda, setSelectedRonda] = useState("");
+
+useEffect(() => {
+  if (!selectedRonda && rankingInfo?.rounds?.length > 0) {
+    setSelectedRonda(rankingInfo.rounds[rankingInfo.rounds.length - 1]);
+  }
+}, [rankingInfo, selectedRonda]);
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
@@ -259,6 +266,20 @@ useEffect(() => {
           </div>
         )}
       </div>
+      {rankingInfo?.rounds?.length > 0 && (
+        <div className="mt-8 max-w-xs mx-auto">
+          <label className="block font-semibold mb-1 text-center">Selecciona una ronda:</label>
+          <select
+            value={selectedRonda}
+            onChange={(e) => setSelectedRonda(e.target.value)}
+            className="w-full border rounded px-3 py-2 text-sm"
+          >
+            {rankingInfo.rounds.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        </div>
+      )}
     </>
   );
 };
