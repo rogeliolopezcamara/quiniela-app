@@ -1,10 +1,3 @@
-const [selectedRonda, setSelectedRonda] = useState("");
-
-useEffect(() => {
-  if (!selectedRonda && rankingInfo?.rounds?.length > 0) {
-    setSelectedRonda(rankingInfo.rounds[rankingInfo.rounds.length - 1]);
-  }
-}, [rankingInfo, selectedRonda]);
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
@@ -25,6 +18,7 @@ const Ranking = () => {
     return stored ? parseInt(stored) : null;
   });
   const [sortConfig, setSortConfig] = useState({ key: "total_points", direction: "desc" });
+  const [selectedRonda, setSelectedRonda] = useState("");
 
   const {
     data: userInfo,
@@ -118,6 +112,12 @@ useEffect(() => {
     }
     setSortedData(sorted);
   }, [rankingInfo, sortConfig]);
+
+  useEffect(() => {
+    if (!selectedRonda && rankingInfo?.rounds?.length > 0) {
+      setSelectedRonda(rankingInfo.rounds[rankingInfo.rounds.length - 1]);
+    }
+  }, [rankingInfo, selectedRonda]);
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
