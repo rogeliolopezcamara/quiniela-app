@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
 import Sidebar from "./Sidebar";
@@ -132,6 +132,30 @@ const Ranking = () => {
     },
     enabled: !!competenciaSeleccionada && !!selectedRonda,
   });
+
+  const normalizeISOString = (s) => (typeof s === "string" && s.endsWith("Z")) ? s : `${s}Z`;
+  const formatDateTimeLocal = (isoString) => {
+    try {
+      const d = new Date(normalizeISOString(isoString));
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      const hh = String(d.getHours()).padStart(2, "0");
+      const min = String(d.getMinutes()).padStart(2, "0");
+      return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+    } catch {
+      return isoString;
+    }
+  };
+
+  const matchesSorted = useMemo(() => {
+    if (!roundMatrix?.matches) return [];
+    return [...roundMatrix.matches].sort((a, b) => {
+      const da = new Date(normalizeISOString(a.match_date)).getTime();
+      const db = new Date(normalizeISOString(b.match_date)).getTime();
+      return da - db;
+    });
+  }, [roundMatrix]);
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
@@ -302,13 +326,17 @@ const Ranking = () => {
                   <thead>
                     <tr>
                       <th className="border px-2 py-1 bg-gray-100 text-left">Usuario</th>
-                      {roundMatrix.matches.map((match) => (
-                        <th key={match.id} className="border px-2 py-1 text-center whitespace-nowrap">
-                          <div className="text-xs font-medium">{match.home_team} vs {match.away_team}</div>
-                          <div className="text-xs text-gray-500">
-                            {match.status_short === "NS" ? "No iniciado" :
-                              match.status_short === "FT" ? `${match.score_home}-${match.score_away}` :
-                              "En vivo"}
+                      {matchesSorted.map((match) => (
+                        <th key={match.id} className="border px-2 py-1 text-center whitespace-nowrap align-bottom">
+                          <div className="flex items-center justify-center gap-1">
+                            <img src={match.home_team_logo} alt={match.home_team} className="w-5 h-5 object-contain" />
+                            <span className="text-xs text-gray-500">vs</span>
+                            <img src={match.away_team_logo} alt={match.away_team} className="w-5 h-5 object-contain" />
+                          </div>
+                          <div className="text-[10px] text-gray-600 mt-1">
+                            {match.status_short === "NS"
+                              ? formatDateTimeLocal(match.match_date)
+                              : `${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
                           </div>
                         </th>
                       ))}
@@ -318,19 +346,28 @@ const Ranking = () => {
                     {sortedData.map((user) => (
                       <tr key={user.user_id}>
                         <td className="border px-2 py-1">{user.name}</td>
-                        {roundMatrix.matches.map((match) => {
+                        {matchesSorted.map((match) => {
                           const pred = roundMatrix.predictions?.find(p => p.user_id === user.user_id && p.match_id === match.id);
                           const points = pred?.points ?? null;
-                          let color = "bg-gray-300";
-                          if (points === 3) color = "bg-green-500";
-                          else if (points === 1) color = "bg-yellow-400";
-                          else if (points === 0) color = "bg-red-500";
+                          let color = "bg-gray-300"; // default
+                          if (match.status_short === "NS") {
+                            color = "bg-gray-300"; // not started -> always gray
+                          } else {
+                            if (points === 3) color = "bg-green-500";
+                            else if (points === 1) color = "bg-yellow-400";
+                            else if (points === 0) color = "bg-red-500";
+                            else color = "bg-gray-300"; // started but sin predicción -> keep "-" below
+                          }
                           return (
                             <td key={match.id} className="border px-2 py-1 text-center">
-                              {points != null ? (
-                                <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
+                              {(match.status_short === "NS") ? (
+                                <div className={`w-4 h-4 mx-auto rounded-full ${color}`} title="No iniciado"></div>
                               ) : (
-                                "-"
+                                points != null ? (
+                                  <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
+                                ) : (
+                                  "-"
+                                )
                               )}
                             </td>
                           );
