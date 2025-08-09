@@ -147,6 +147,18 @@ const Ranking = () => {
       return isoString;
     }
   };
+  const formatDateTimeNoYear = (isoString) => {
+    try {
+      const d = new Date(normalizeISOString(isoString));
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const hh = String(d.getHours()).padStart(2, "0");
+      const min = String(d.getMinutes()).padStart(2, "0");
+      return `${dd}/${mm} ${hh}:${min}`;
+    } catch {
+      return isoString;
+    }
+  };
 
   const matchesSorted = useMemo(() => {
     if (!roundMatrix?.matches) return [];
@@ -321,61 +333,65 @@ const Ranking = () => {
 
             {/* Tabla tipo matriz de usuarios vs partidos */}
             {!loadingMatrix && roundMatrix?.matches?.length > 0 && (
-              <div className="mt-6 overflow-x-auto text-sm">
-                <table className="table-auto border border-gray-300 w-full">
-                  <thead>
-                    <tr>
-                      <th className="border px-2 py-1 bg-gray-100 text-left">Usuario</th>
-                      {matchesSorted.map((match) => (
-                        <th key={match.id} className="border px-2 py-1 text-center whitespace-nowrap align-bottom">
-                          <div className="flex items-center justify-center gap-1">
-                            <img src={match.home_team_logo} alt={match.home_team} className="w-5 h-5 object-contain" />
-                            <span className="text-xs text-gray-500">vs</span>
-                            <img src={match.away_team_logo} alt={match.away_team} className="w-5 h-5 object-contain" />
-                          </div>
-                          <div className="text-[10px] text-gray-600 mt-1">
-                            {match.status_short === "NS"
-                              ? formatDateTimeLocal(match.match_date)
-                              : `${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedData.map((user) => (
-                      <tr key={user.user_id}>
-                        <td className="border px-2 py-1">{user.name}</td>
-                        {matchesSorted.map((match) => {
-                          const pred = roundMatrix.predictions?.find(p => p.user_id === user.user_id && p.match_id === match.id);
-                          const points = pred?.points ?? null;
-                          let color = "bg-gray-300"; // default
-                          if (match.status_short === "NS") {
-                            color = "bg-gray-300"; // not started -> always gray
-                          } else {
-                            if (points === 3) color = "bg-green-500";
-                            else if (points === 1) color = "bg-yellow-400";
-                            else if (points === 0) color = "bg-red-500";
-                            else color = "bg-gray-300"; // started but sin predicción -> keep "-" below
-                          }
-                          return (
-                            <td key={match.id} className="border px-2 py-1 text-center">
-                              {(match.status_short === "NS") ? (
-                                <div className={`w-4 h-4 mx-auto rounded-full ${color}`} title="No iniciado"></div>
-                              ) : (
-                                points != null ? (
-                                  <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
-                                ) : (
-                                  "-"
-                                )
-                              )}
-                            </td>
-                          );
-                        })}
+              <div className="mt-6 min-h-[300px] overflow-y-auto">
+                <div className="overflow-auto scroll-smooth" style={{ maxWidth: "100%", overflowX: "auto" }}>
+                  <table className="min-w-max table-fixed border border-gray-300 text-sm mx-auto">
+                    <thead>
+                      <tr>
+                        <th className="border px-2 py-1 bg-gray-100 text-left sticky-cell sticky left-0 z-30 bg-white">Usuario</th>
+                        {matchesSorted.map((match) => (
+                          <th key={match.id} className="border px-2 py-1 text-center whitespace-nowrap align-bottom">
+                            <div className="flex items-center justify-center gap-1">
+                              <img src={match.home_team_logo} alt={match.home_team} className="w-5 h-5 object-contain" />
+                              <span className="text-xs text-gray-500">vs</span>
+                              <img src={match.away_team_logo} alt={match.away_team} className="w-5 h-5 object-contain" />
+                            </div>
+                            <div className="text-[10px] text-gray-600 mt-1">
+                              {match.status_short === "NS"
+                                ? formatDateTimeNoYear(match.match_date)
+                                : `${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
+                            </div>
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {sortedData.map((user) => (
+                        <tr key={user.user_id} className={(authToken && userInfo?.user_id === user.user_id) ? "bg-green-100 font-semibold" : ""}>
+                          <td className={`border px-2 py-1 sticky-cell sticky left-0 z-20 ${
+                            (authToken && userInfo?.user_id === user.user_id) ? "bg-green-100 font-semibold" : "bg-white"
+                          }`}>{user.name}</td>
+                          {matchesSorted.map((match) => {
+                            const pred = roundMatrix.predictions?.find(p => p.user_id === user.user_id && p.match_id === match.id);
+                            const points = pred?.points ?? null;
+                            let color = "bg-gray-300"; // default
+                            if (match.status_short === "NS") {
+                              color = "bg-gray-300"; // not started -> always gray
+                            } else {
+                              if (points === 3) color = "bg-green-500";
+                              else if (points === 1) color = "bg-yellow-400";
+                              else if (points === 0) color = "bg-red-500";
+                              else color = "bg-gray-300"; // started but sin predicción -> keep "-" below
+                            }
+                            return (
+                              <td key={match.id} className="border px-2 py-1 text-center">
+                                {(match.status_short === "NS") ? (
+                                  <div className={`w-4 h-4 mx-auto rounded-full ${color}`} title="No iniciado"></div>
+                                ) : (
+                                  points != null ? (
+                                    <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
+                                  ) : (
+                                    "-"
+                                  )
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </>
