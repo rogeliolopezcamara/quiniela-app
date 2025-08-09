@@ -631,7 +631,7 @@ def get_round_matrix(
         models.CompetitionLeague.league_season
     ).filter(models.CompetitionLeague.competition_id == competition_id).all()
     if not league_filters:
-        return {"rounds": [], "users": [], "matrix": [], "matches": []}
+        return {"rounds": [], "users": [], "matrix": [], "matches": [], "predictions": []}
 
     # Solo considerar la ronda específica proporcionada
     rounds = [league_round]
@@ -698,11 +698,35 @@ def get_round_matrix(
             "match_date": match.match_date
         })
 
+    # IDs de partidos de la ronda
+    match_ids = [m.id for m in matches]
+
+    # Obtener predicciones por usuario-partido para esta ronda
+    predictions = []
+    if match_ids and user_ids:
+        preds = (
+            db.query(models.Prediction)
+            .filter(
+                models.Prediction.match_id.in_(match_ids),
+                models.Prediction.user_id.in_(user_ids)
+            )
+            .all()
+        )
+        predictions = [
+            {
+                "user_id": p.user_id,
+                "match_id": p.match_id,
+                "points": p.points,
+            }
+            for p in preds
+        ]
+
     return {
         "rounds": rounds,
         "users": [{"user_id": u.id, "name": u.name} for u in users],  # email eliminado
         "matrix": matrix,
-        "matches": matches_result
+        "matches": matches_result,
+        "predictions": predictions,
     }
 
 
