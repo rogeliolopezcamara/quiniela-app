@@ -143,6 +143,12 @@ def update_live_matches_from_api(db: Session):
     league_ids = [str(entry[0]) for entry in league_entries]
     league_ids_str = "-".join(league_ids)
 
+    # Obtener partidos que aún están marcados como "en vivo"
+    in_play_matches = db.query(Match).filter(Match.status_short.in_([
+        "1H", "2H", "LIVE", "ET", "P", "BT", "HT", "INT"
+    ])).all()
+    in_play_ids = [m.id for m in in_play_matches]
+
     url = f"{BASE_URL}/fixtures?live={league_ids_str}"
     response = requests.get(url, headers=HEADERS)
     data = response.json()
@@ -152,6 +158,26 @@ def update_live_matches_from_api(db: Session):
         return
 
     fixtures = data.get("response", [])
+    api_ids = [match["fixture"]["id"] for match in fixtures]
+
+    just_finished_ids = set(in_play_ids) - set(api_ids)
+
+    for match_id in just_finished_ids:
+        url = f"{BASE_URL}/fixtures?id={match_id}"
+        response = requests.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            data = response.json().get("response", [])
+            if data:
+                match_data = data[0]
+                fixture = match_data["fixture"]
+                status = fixture["status"]
+
+                match = db.query(Match).filter_by(id=match_id).first()
+                if match:
+                    match.status_long = status.get("long")
+                    match.status_short = status.get("short")
+                    match.status_elapsed = status.get("elapsed")
+                    match.status_extra = status.get("extra")
 
     for match in fixtures:
         fixture = match["fixture"]
