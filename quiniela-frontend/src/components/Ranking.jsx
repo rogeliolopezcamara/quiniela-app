@@ -184,6 +184,13 @@ const Ranking = () => {
     }
   };
 
+  const isLiveStatus = (s) => {
+    if (!s) return false;
+    const finished = ["FT", "AET", "PEN"];
+    if (s === "NS" || finished.includes(s)) return false;
+    return true; // cualquier otro status lo tratamos como en vivo
+  };
+  
   const matchesSorted = useMemo(() => {
     if (!roundMatrix?.matches) return [];
     return [...roundMatrix.matches].sort((a, b) => {
@@ -225,20 +232,37 @@ const Ranking = () => {
   return (
     <>
       <style>
-        {`
-          .sticky-cell::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background-color: #D1D5DB; /* Tailwind gray-300 */
-            z-index: 30;
-            pointer-events: none;
-          }
-        `}
-      </style>
+      {`
+        .sticky-cell::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 1px;
+          height: 100%;
+          background-color: #D1D5DB; /* Tailwind gray-300 */
+          z-index: 30;
+          pointer-events: none;
+        }
+        @keyframes liveBlink {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 1; }
+        }
+        .live-dot {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 9999px;
+          background-color: #22c55e; /* Tailwind green-500 */
+          animation: liveBlink 2s infinite;
+          margin-left: 4px;
+          vertical-align: middle;
+        }
+        .live-pulse {
+          animation: liveBlink 2s infinite;
+        }
+      `}
+    </style>
       <Sidebar />
       <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto overflow-y-auto h-[calc(100dvh-5rem)]">
         <h1 className="text-2xl font-bold mb-4 text-center">Ranking de Usuarios</h1>
@@ -370,10 +394,19 @@ const Ranking = () => {
                               <span className="text-xs text-gray-500">vs</span>
                               <img src={match.away_team_logo} alt={match.away_team} className="w-5 h-5 object-contain" />
                             </div>
-                            <div className="text-[10px] text-gray-600 mt-1">
-                              {match.status_short === "NS"
-                                ? formatDateTimeNoYear(match.match_date)
-                                : `${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
+                            <div className="text-[10px] text-gray-600 mt-1 flex items-center justify-center gap-1">
+                              {match.status_short === "NS" ? (
+                                formatDateTimeNoYear(match.match_date)
+                              ) : isLiveStatus(match.status_short) ? (
+                                <>
+                                  {`${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
+                                  <span>·</span>
+                                  {typeof match.elapsed === 'number' ? `${match.elapsed}'` : 'En vivo'}
+                                  <span className="live-dot" aria-label="En vivo" />
+                                </>
+                              ) : (
+                                `${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`
+                              )}
                             </div>
                           </th>
                         ))}
@@ -411,7 +444,7 @@ const Ranking = () => {
                             return (
                               <td key={match.id} className="border px-2 py-1 text-center">
                                 {points != null ? (
-                                  <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
+                                  <div className={`w-4 h-4 mx-auto rounded-full ${color} ${isLiveStatus(match.status_short) ? 'live-pulse' : ''}`}></div>
                                 ) : (
                                   "-"
                                 )}
