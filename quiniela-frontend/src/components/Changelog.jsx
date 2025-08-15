@@ -3,6 +3,14 @@
 
 const changelogEntries = [
   {
+    date: "2025-08-15",
+    items: [
+      "Se añadió una nueva gráfica que muestra en tiempo real los resultados de los pronósticos por jornada, mejorando la transparencia de los resultados.",
+      "Se corrigieron errores relacionados con el almacenamiento en caché de competencias que ya habían sido eliminadas.",
+      "Se solucionó un problema que impedía actualizar el estado de los partidos recién finalizados.",
+    ],
+  },
+  {
     date: "2025-07-29",
     items: [
       "Mejora visual en la sección de pronósticos: nuevo diseño más limpio y profesional.",
