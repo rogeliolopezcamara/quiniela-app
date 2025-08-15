@@ -401,7 +401,7 @@ const Ranking = () => {
                                 <>
                                   {`${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
                                   <span>·</span>
-                                  {typeof match.elapsed === 'number' ? `${match.elapsed}'` : 'En vivo'}
+                                  {Number.isFinite(Number(match.status_elapsed)) ? `${Number(match.status_elapsed)}'` : 'En vivo'}
                                   <span className="live-dot" aria-label="En vivo" />
                                 </>
                               ) : (
