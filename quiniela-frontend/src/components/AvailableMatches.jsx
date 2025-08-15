@@ -16,9 +16,6 @@ const AvailableMatches = () => {
   }, [competenciaSeleccionada]);
   const { authToken } = useAuth();
 
-  const [editPredictionId, setEditPredictionId] = useState(null);
-  const [editValues, setEditValues] = useState({ pred_home: 0, pred_away: 0 });
-
   const {
     data: competencias = [],
     isLoading: loadingCompetencias,
@@ -35,35 +32,64 @@ const AvailableMatches = () => {
     staleTime: 1000 * 60,
   });
 
+  useEffect(() => {
+    if (!authToken) return;
+    // Si la competencia seleccionada no existe en la lista actual, volver a "todas"
+    if (
+      competenciaSeleccionada !== "todas" &&
+      Array.isArray(competencias) && competencias.length > 0 &&
+      !competencias.some(c => String(c.id) === String(competenciaSeleccionada))
+    ) {
+      setCompetenciaSeleccionada("todas");
+      localStorage.setItem("availableMatchesCompetencia", "todas");
+    }
+  }, [authToken, competencias, competenciaSeleccionada]);
+
+  const [editPredictionId, setEditPredictionId] = useState(null);
+  const [editValues, setEditValues] = useState({ pred_home: 0, pred_away: 0 });
+
   const {
     data: matches = [],
     isLoading: loadingMatches,
     error: errorMatches,
     refetch,
   } = useQuery({
-    queryKey: ['availableMatches', competenciaSeleccionada],
+    queryKey: ['availableMatches', competenciaSeleccionada, (competencias || []).map(c => c.id).join(',')],
     queryFn: async () => {
-      let response;
-      if (competenciaSeleccionada === "todas") {
-        response = await axios.get(`${baseUrl}/available-matches/`, {
-          headers: { Authorization: `Bearer ${authToken}` },
+      try {
+        let response;
+        if (competenciaSeleccionada === "todas") {
+          response = await axios.get(`${baseUrl}/available-matches/`, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          });
+        } else {
+          response = await axios.get(`${baseUrl}/available-matches/${competenciaSeleccionada}`, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          });
+        }
+
+        const now = new Date();
+        const in8Days = new Date();
+        in8Days.setDate(now.getDate() + 8);
+
+        return response.data.filter((match) => {
+          const matchDate = new Date(normalizeISOString(match.match_date));
+          return matchDate <= in8Days && matchDate > now;
         });
-      } else {
-        response = await axios.get(`${baseUrl}/available-matches/${competenciaSeleccionada}`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
+      } catch (err) {
+        if (err?.response?.status === 403) {
+          // reset a una selección válida si el backend dice Forbidden
+          setCompetenciaSeleccionada("todas");
+          localStorage.setItem("availableMatchesCompetencia", "todas");
+          return [];
+        }
+        throw err;
       }
-
-      const now = new Date();
-      const in8Days = new Date();
-      in8Days.setDate(now.getDate() + 8);
-
-      return response.data.filter((match) => {
-        const matchDate = new Date(normalizeISOString(match.match_date));
-        return matchDate <= in8Days && matchDate > now;
-      });
     },
-    enabled: !!authToken,
+    enabled: !!authToken && (
+      competenciaSeleccionada === 'todas' ||
+      (Array.isArray(competencias) && competencias.some(c => String(c.id) === String(competenciaSeleccionada)))
+    ),
     refetchInterval: 10000,
   });
 
@@ -73,24 +99,36 @@ const AvailableMatches = () => {
     error: errorUserPredictions,
     refetch: refetchUserPredictions,
   } = useQuery({
-    queryKey: ['userPredictionsAvailable', competenciaSeleccionada],
+    queryKey: ['userPredictionsAvailable', competenciaSeleccionada, (competencias || []).map(c => c.id).join(',')],
     queryFn: async () => {
-      const endpoint =
-        competenciaSeleccionada === "todas"
-          ? `${baseUrl}/my-predictions/`
-          : `${baseUrl}/my-predictions/${competenciaSeleccionada}`;
-      const response = await axios.get(endpoint, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      try {
+        const endpoint =
+          competenciaSeleccionada === "todas"
+            ? `${baseUrl}/my-predictions/`
+            : `${baseUrl}/my-predictions/${competenciaSeleccionada}`;
+        const response = await axios.get(endpoint, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
 
-      const now = new Date();
-      const upcoming = Array.isArray(response.data)
-        ? response.data.filter(pred => new Date(normalizeISOString(pred.match_date)) > now)
-        : [];
-      upcoming.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
-      return upcoming;
+        const now = new Date();
+        const upcoming = Array.isArray(response.data)
+          ? response.data.filter(pred => new Date(normalizeISOString(pred.match_date)) > now)
+          : [];
+        upcoming.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+        return upcoming;
+      } catch (err) {
+        if (err?.response?.status === 403) {
+          setCompetenciaSeleccionada("todas");
+          localStorage.setItem("availableMatchesCompetencia", "todas");
+          return [];
+        }
+        throw err;
+      }
     },
-    enabled: !!authToken,
+    enabled: !!authToken && (
+      competenciaSeleccionada === 'todas' ||
+      (Array.isArray(competencias) && competencias.some(c => String(c.id) === String(competenciaSeleccionada)))
+    ),
     refetchInterval: 10000,
   });
 

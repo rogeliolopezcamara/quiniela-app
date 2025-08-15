@@ -53,64 +53,88 @@ const UserPredictions = () => {
     staleTime: 1000 * 60,
   });
 
-  // useQuery for predictions
+  // Normalizar la selección cacheada y evitar 403 por competencias inválidas
+  useEffect(() => {
+    if (!authToken) return;
+    if (
+      competenciaSeleccionada !== "todas" &&
+      Array.isArray(competencias) && competencias.length > 0 &&
+      !competencias.some(c => String(c.id) === String(competenciaSeleccionada))
+    ) {
+      setCompetenciaSeleccionada("todas");
+      localStorage.setItem("userPredictionsCompetencia", "todas");
+    }
+  }, [authToken, competencias, competenciaSeleccionada]);
+
+  // useQuery for predictions (guarded, handle 403, prevent invalid selection)
   const {
     data: predictions = {},
     isLoading: loadingPredictions,
     error: errorPredictions,
     refetch: refetchPredictions,
   } = useQuery({
-    queryKey: ['userPredictions', competenciaSeleccionada],
+    queryKey: ['userPredictions', competenciaSeleccionada, (competencias || []).map(c => c.id).join(',')],
     queryFn: async () => {
-      const endpoint =
-        competenciaSeleccionada === "todas"
-          ? `${baseUrl}/my-predictions/`
-          : `${baseUrl}/my-predictions/${competenciaSeleccionada}`;
-      const response = await axios.get(endpoint, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      // Filter only started matches
-      const now = new Date();
-      const started = Array.isArray(response.data)
-        ? response.data.filter(pred => new Date(normalizeISOString(pred.match_date)) <= now)
-        : [];
+      try {
+        const endpoint =
+          competenciaSeleccionada === "todas"
+            ? `${baseUrl}/my-predictions/`
+            : `${baseUrl}/my-predictions/${competenciaSeleccionada}`;
+        const response = await axios.get(endpoint, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        // Filter only started matches
+        const now = new Date();
+        const started = Array.isArray(response.data)
+          ? response.data.filter(pred => new Date(normalizeISOString(pred.match_date)) <= now)
+          : [];
 
-      // 1. Crear ronda especial "En vivo" con partidos en vivo
-      const isLive = (p) => !["FT", "AET", "PEN"].includes(p.status_short);
-      const liveMatches = started.filter(isLive);
-      // Ordenar partidos en vivo por fecha ascendente
-      const sortedLive = [...liveMatches].sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+        // 1. Crear ronda especial "En vivo" con partidos en vivo
+        const isLive = (p) => !["FT", "AET", "PEN"].includes(p.status_short);
+        const liveMatches = started.filter(isLive);
+        // Ordenar partidos en vivo por fecha ascendente
+        const sortedLive = [...liveMatches].sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
 
-      // 2. Agrupar el resto por league_round, excluyendo partidos en vivo
-      // Para evitar duplicados, usar prediction_id para filtrar los que están en live
-      const liveIds = new Set(liveMatches.map(p => p.prediction_id));
-      const notLiveMatches = started.filter(p => !liveIds.has(p.prediction_id));
+        // 2. Agrupar el resto por league_round, excluyendo partidos en vivo
+        const liveIds = new Set(liveMatches.map(p => p.prediction_id));
+        const notLiveMatches = started.filter(p => !liveIds.has(p.prediction_id));
 
-      // 3. Agrupar por league_round
-      const groupedRounds = notLiveMatches.reduce((acc, curr) => {
-        const round = curr.league_round || 'Sin ronda';
-        if (!acc[round]) acc[round] = [];
-        acc[round].push(curr);
-        return acc;
-      }, {});
-      // Ordenar partidos en cada ronda por match_date ascendente
-      for (const round in groupedRounds) {
-        groupedRounds[round].sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+        // 3. Agrupar por league_round
+        const groupedRounds = notLiveMatches.reduce((acc, curr) => {
+          const round = curr.league_round || 'Sin ronda';
+          if (!acc[round]) acc[round] = [];
+          acc[round].push(curr);
+          return acc;
+        }, {});
+        // Ordenar partidos en cada ronda por match_date ascendente
+        for (const round in groupedRounds) {
+          groupedRounds[round].sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+        }
+
+        // 4. Asegurar que "En vivo" va primero
+        const result = {};
+        if (sortedLive.length > 0) {
+          result["En vivo"] = sortedLive;
+        }
+        // El resto de las rondas, ordenadas alfabéticamente en orden inverso
+        const sortedRounds = Object.keys(groupedRounds).sort().reverse();
+        for (const round of sortedRounds) {
+          result[round] = groupedRounds[round];
+        }
+        return result;
+      } catch (err) {
+        if (err?.response?.status === 403) {
+          setCompetenciaSeleccionada("todas");
+          localStorage.setItem("userPredictionsCompetencia", "todas");
+          return {};
+        }
+        throw err;
       }
-
-      // 4. Asegurar que "En vivo" va primero
-      const result = {};
-      if (sortedLive.length > 0) {
-        result["En vivo"] = sortedLive;
-      }
-      // El resto de las rondas, ordenadas alfabéticamente en orden inverso
-      const sortedRounds = Object.keys(groupedRounds).sort().reverse();
-      for (const round of sortedRounds) {
-        result[round] = groupedRounds[round];
-      }
-      return result;
     },
-    enabled: !!authToken,
+    enabled: !!authToken && (
+      competenciaSeleccionada === 'todas' ||
+      (Array.isArray(competencias) && competencias.some(c => String(c.id) === String(competenciaSeleccionada)))
+    ),
     refetchInterval: 10000,
   });
 
