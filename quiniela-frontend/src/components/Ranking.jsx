@@ -388,25 +388,32 @@ const Ranking = () => {
                           {matchesSorted.map((match) => {
                             const pred = roundMatrix.predictions?.find(p => p.user_id === user.user_id && p.match_id === match.id);
                             const points = pred?.points ?? null;
-                            let color = "bg-gray-300"; // default
+
+                            // Partidos NO iniciados: mostrar bolita gris solo si hay pronóstico; si no, mostrar "-"
                             if (match.status_short === "NS") {
-                              color = "bg-gray-300"; // not started -> always gray
-                            } else {
-                              if (points === 3) color = "bg-green-500";
-                              else if (points === 1) color = "bg-yellow-400";
-                              else if (points === 0) color = "bg-red-500";
-                              else color = "bg-gray-300"; // started but sin predicción -> keep "-" below
-                            }
-                            return (
-                              <td key={match.id} className="border px-2 py-1 text-center">
-                                {(match.status_short === "NS") ? (
-                                  <div className={`w-4 h-4 mx-auto rounded-full ${color}`} title="No iniciado"></div>
-                                ) : (
-                                  points != null ? (
-                                    <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
+                              return (
+                                <td key={match.id} className="border px-2 py-1 text-center">
+                                  {pred ? (
+                                    <div className="w-4 h-4 mx-auto rounded-full bg-gray-300" title="Pronóstico enviado"></div>
                                   ) : (
                                     "-"
-                                  )
+                                  )}
+                                </td>
+                              );
+                            }
+
+                            // Partidos iniciados o finalizados: bolita por puntos; si no hay predicción, "-"
+                            let color = "bg-gray-300";
+                            if (points === 3) color = "bg-green-500";
+                            else if (points === 1) color = "bg-yellow-400";
+                            else if (points === 0) color = "bg-red-500";
+
+                            return (
+                              <td key={match.id} className="border px-2 py-1 text-center">
+                                {points != null ? (
+                                  <div className={`w-4 h-4 mx-auto rounded-full ${color}`}></div>
+                                ) : (
+                                  "-"
                                 )}
                               </td>
                             );
