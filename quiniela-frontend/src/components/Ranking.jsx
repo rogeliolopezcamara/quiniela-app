@@ -400,8 +400,12 @@ const Ranking = () => {
                               ) : isLiveStatus(match.status_short) ? (
                                 <>
                                   {`${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
-                                  <span>·</span>
-                                  {Number.isFinite(Number(match.status_elapsed)) ? `${Number(match.status_elapsed)}'` : 'En vivo'}
+                                  {Number.isFinite(Number(match.status_elapsed)) && (
+                                    <>
+                                      <span>·</span>
+                                      {`${Number(match.status_elapsed)}'`}
+                                    </>
+                                  )}
                                   <span className="live-dot" aria-label="En vivo" />
                                 </>
                               ) : (
