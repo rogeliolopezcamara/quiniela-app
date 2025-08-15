@@ -191,14 +191,11 @@ const Ranking = () => {
     return true; // cualquier otro status lo tratamos como en vivo
   };
 
-  // Helper para construir etiqueta de tiempo transcurrido robusta (acepta número o texto como "45+2")
-  const getElapsedLabel = (match) => {
-    const raw = match?.status_elapsed ?? match?.elapsed ?? match?.status_extra;
-    if (raw === null || raw === undefined) return null;
-    const s = String(raw).trim();
-    if (s === "") return null;
-    const endsWithApostrophe = s.endsWith("'") || s.endsWith("’");
-    return endsWithApostrophe ? s : `${s}'`;
+  // Helper para leer minutos transcurridos de forma robusta
+  const getElapsedMinutes = (match) => {
+    const raw = match?.status_elapsed ?? match?.elapsed; // fallback por si algún backend envía 'elapsed'
+    const num = Number.parseInt(raw, 10);
+    return Number.isFinite(num) ? num : null;
   };
   
   const matchesSorted = useMemo(() => {
@@ -399,6 +396,7 @@ const Ranking = () => {
                         <th className="border px-2 py-1 bg-gray-100 text-left sticky-cell sticky left-0 z-30 bg-white">Usuario</th>
                         {matchesSorted.map((match) => (
                           <th key={match.id} className="border px-2 py-1 text-center whitespace-nowrap align-bottom">
+                            {(() => { console.log('Ranking match', match); return null; })()}
                             <div className="flex items-center justify-center gap-1">
                               <img src={match.home_team_logo} alt={match.home_team} className="w-5 h-5 object-contain" />
                               <span className="text-xs text-gray-500">vs</span>
@@ -410,7 +408,7 @@ const Ranking = () => {
                               ) : isLiveStatus(match.status_short) ? (
                                 <>
                                   {`${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
-                                  {(() => { const lbl = getElapsedLabel(match); return lbl ? (<><span>·</span>{lbl}</>) : null; })()}
+                                  {(() => { const em = getElapsedMinutes(match); return em !== null ? (<><span>·</span>{`${em}'`}</>) : null; })()}
                                   <span className="live-dot" aria-label="En vivo" />
                                 </>
                               ) : (
