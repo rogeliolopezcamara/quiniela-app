@@ -396,7 +396,6 @@ const Ranking = () => {
                         <th className="border px-2 py-1 bg-gray-100 text-left sticky-cell sticky left-0 z-30 bg-white">Usuario</th>
                         {matchesSorted.map((match) => (
                           <th key={match.id} className="border px-2 py-1 text-center whitespace-nowrap align-bottom">
-                            {(() => { console.log('Ranking match', match); return null; })()}
                             <div className="flex items-center justify-center gap-1">
                               <img src={match.home_team_logo} alt={match.home_team} className="w-5 h-5 object-contain" />
                               <span className="text-xs text-gray-500">vs</span>
