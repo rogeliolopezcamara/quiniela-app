@@ -79,14 +79,38 @@ const Ranking = () => {
     isLoading: loadingRanking,
     error: rankingError,
   } = useQuery({
-    queryKey: ['ranking', competenciaSeleccionada],
+    queryKey: ['ranking', competenciaSeleccionada, (competencias || []).map(c => c.id).join(',')],
     queryFn: async () => {
-      const res = await axios.get(`${baseUrl}/ranking/?competition_id=${competenciaSeleccionada}`);
-      return res.data;
+      try {
+        const res = await axios.get(`${baseUrl}/ranking/?competition_id=${competenciaSeleccionada}`);
+        return res.data;
+      } catch (err) {
+        if (err?.response?.status === 403) {
+          // Fallback a una competencia válida si la actual no es accesible
+          const fallback = (competencias && competencias.length > 0) ? competencias[0].id : null;
+          if (fallback && competenciaSeleccionada !== fallback) {
+            setCompetenciaSeleccionada(fallback);
+            localStorage.setItem("rankingCompetencia", String(fallback));
+          }
+          return { ranking: [], rounds: [] };
+        }
+        throw err;
+      }
     },
-    enabled: !!competenciaSeleccionada,
+    enabled: !!competenciaSeleccionada && (competencias && competencias.length > 0),
     refetchInterval: 10000,
   });
+  useEffect(() => {
+    if (!competencias || competencias.length === 0) return;
+    if (
+      competenciaSeleccionada === null ||
+      !competencias.some(c => c.id === competenciaSeleccionada)
+    ) {
+      const fallback = competencias[0].id;
+      setCompetenciaSeleccionada(fallback);
+      localStorage.setItem("rankingCompetencia", String(fallback));
+    }
+  }, [competencias, competenciaSeleccionada]);
 
   const scrollRef = useRef(null);
   useEffect(() => {
