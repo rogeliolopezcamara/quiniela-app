@@ -190,6 +190,13 @@ const Ranking = () => {
     if (s === "NS" || finished.includes(s)) return false;
     return true; // cualquier otro status lo tratamos como en vivo
   };
+
+  // Helper para leer minutos transcurridos de forma robusta
+  const getElapsedMinutes = (match) => {
+    const raw = match?.status_elapsed ?? match?.elapsed; // fallback por si algún backend envía 'elapsed'
+    const num = Number.parseInt(raw, 10);
+    return Number.isFinite(num) ? num : null;
+  };
   
   const matchesSorted = useMemo(() => {
     if (!roundMatrix?.matches) return [];
@@ -400,12 +407,7 @@ const Ranking = () => {
                               ) : isLiveStatus(match.status_short) ? (
                                 <>
                                   {`${match.score_home ?? ""}${(match.score_home != null && match.score_away != null) ? "-" : ""}${match.score_away ?? ""}`}
-                                  {Number.isFinite(Number(match.status_elapsed)) && (
-                                    <>
-                                      <span>·</span>
-                                      {`${Number(match.status_elapsed)}'`}
-                                    </>
-                                  )}
+                                  {(() => { const em = getElapsedMinutes(match); return em !== null ? (<><span>·</span>{`${em}'`}</>) : null; })()}
                                   <span className="live-dot" aria-label="En vivo" />
                                 </>
                               ) : (
