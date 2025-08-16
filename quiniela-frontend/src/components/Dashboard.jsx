@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import axios from "../utils/axiosConfig";
 import CrearCompetencia from "../pages/CrearCompetencia";
 import UnirseCompetencia from "../pages/UnirseCompetencia";
@@ -11,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 const baseUrl = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
+  const { t } = useTranslation();
   const { authToken, logout } = useAuth();
   const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -93,7 +95,7 @@ function Dashboard() {
       ) : (
         <div className="mt-4 mb-24 w-full text-center px-4 md:mt-20">
           <h1 className="text-3xl font-bold mb-4 text-gray-900">
-            Bienvenido{userInfo ? `, ${userInfo.name}` : ""}
+            {t('welcome')}{userInfo ? `, ${userInfo.name}` : ""}
           </h1>
 
           {userInfo && (
