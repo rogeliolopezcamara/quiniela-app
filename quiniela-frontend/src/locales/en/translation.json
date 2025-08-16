@@ -101,65 +101,89 @@
   "join_success": "You have successfully joined the competition.",
   "join_failed_code": "Could not join competition. Please check the code.",
   "join_failed": "Could not join competition.",
-  "changelog_entries": {
-    "2025-08-15": [
-      "A new chart was added to show prediction results per matchday in real time, improving transparency.",
-      "Fixed issues related to cache memory from deleted competitions.",
-      "Solved a bug preventing the update of recently finished matches."
-    ],
-    "2025-07-29": [
-      "Visual improvements to the prediction section: cleaner and more professional layout.",
-      "Visual indicators for live and finished matches.",
-      "New colors to highlight points earned per prediction.",
-      "Rounds reordered to prioritize live matches.",
-      "Bug fixes."
-    ],
-    "2025-07-25": [
-      "Added functionality to create and join both public and private competitions.",
-      "Now the app supports La Liga (Spain) and the Premier League (England).",
-      "Minor design changes.",
-      "Bug fixes."
-    ],
-    "2024-06-18": [
-      "Design improvements.",
-      "Fixed database connection errors.",
-      "Fixed notification system issues."
-    ],
-    "2025-06-27": [
-      "Implemented private group creation with unique invitation codes.",
-      "Added password recovery flow via reset link.",
-      "Fixed page reload issues.",
-      "Created a new Instructions page and set it as the homepage.",
-      "Updated the Sidebar to show login button when no session is active.",
-      "Changed date format to dd/mm/yyyy across the Dashboard.",
-      "Ranking table now highlights the current user in green.",
-      "Removed email column from the ranking table.",
-      "Match data now updates automatically every 30 minutes.",
-      "Added a changelog page.",
-      "Sidebar now overlays content and opens with a button.",
-      "Fixed registration success message display bug.",
-      "Logout button is now always visible on mobile.",
-      "Dashboard now displays name, email, and points."
-    ],
-    "2025-07-10": [
-      "Implemented push notification system to remind users to make predictions before each match.",
-      "Backend sends notifications if less than 24 or 1 hour remain and the user hasn’t predicted yet.",
-      "Auto-registered the Service Worker to enable push notifications.",
-      "Updated Instructions to include steps for adding the app to iOS home screen.",
-      "Mobile compatibility improvements including PWA setup for Safari."
-    ],
-    "2025-07-07": [
-      "Session is automatically closed if token expires and user is notified.",
-      "Date format changed to 'dd/mm/yyyy, HH:mm' and displayed in user's local time.",
-      "Team logos added to the Available Matches and User Predictions pages.",
-      "New columns added to 'matches' table: league_id, league_name, league_logo, league_season, league_round, home_team_logo, away_team_logo.",
-      "Ranking table now shows columns by round ('league_round') with user points.",
-      "Ranking table is now sortable by any column including rounds and total points.",
-      "User Predictions view is now responsive: matches are shown as cards on mobile."
-    ],
-    "2025-06-25": [
-      "Sidebar integrated into all pages.",
-      "Matches disappear after making a prediction."
-    ]
-  }
+  "changelog_entries": [
+    {
+      "date": "2025-08-15",
+      "items": [
+        "A new chart was added to show prediction results per matchday in real time, improving transparency.",
+        "Fixed issues related to cache memory from deleted competitions.",
+        "Solved a bug preventing the update of recently finished matches."
+      ]
+    },
+    {
+      "date": "2025-07-29",
+      "items": [
+        "Visual improvements to the prediction section: cleaner and more professional layout.",
+        "Visual indicators for live and finished matches.",
+        "New colors to highlight points earned per prediction.",
+        "Rounds reordered to prioritize live matches.",
+        "Bug fixes."
+      ]
+    },
+    {
+      "date": "2025-07-25",
+      "items": [
+        "Added functionality to create and join both public and private competitions.",
+        "Now the app supports La Liga (Spain) and the Premier League (England).",
+        "Minor design changes.",
+        "Bug fixes."
+      ]
+    },
+    {
+      "date": "2024-06-18",
+      "items": [
+        "Design improvements.",
+        "Fixed database connection errors.",
+        "Fixed notification system issues."
+      ]
+    },
+    {
+      "date": "2025-06-27",
+      "items": [
+        "Implemented private group creation with unique invitation codes.",
+        "Added password recovery flow via reset link.",
+        "Fixed page reload issues.",
+        "Created a new Instructions page and set it as the homepage.",
+        "Updated the Sidebar to show login button when no session is active.",
+        "Changed date format to dd/mm/yyyy across the Dashboard.",
+        "Ranking table now highlights the current user in green.",
+        "Removed email column from the ranking table.",
+        "Match data now updates automatically every 30 minutes.",
+        "Added a changelog page.",
+        "Sidebar now overlays content and opens with a button.",
+        "Fixed registration success message display bug.",
+        "Logout button is now always visible on mobile.",
+        "Dashboard now displays name, email, and points."
+      ]
+    },
+    {
+      "date": "2025-07-10",
+      "items": [
+        "Implemented push notification system to remind users to make predictions before each match.",
+        "Backend sends notifications if less than 24 or 1 hour remain and the user hasn’t predicted yet.",
+        "Auto-registered the Service Worker to enable push notifications.",
+        "Updated Instructions to include steps for adding the app to iOS home screen.",
+        "Mobile compatibility improvements including PWA setup for Safari."
+      ]
+    },
+    {
+      "date": "2025-07-07",
+      "items": [
+        "Session is automatically closed if token expires and user is notified.",
+        "Date format changed to 'dd/mm/yyyy, HH:mm' and displayed in user's local time.",
+        "Team logos added to the Available Matches and User Predictions pages.",
+        "New columns added to 'matches' table: league_id, league_name, league_logo, league_season, league_round, home_team_logo, away_team_logo.",
+        "Ranking table now shows columns by round ('league_round') with user points.",
+        "Ranking table is now sortable by any column including rounds and total points.",
+        "User Predictions view is now responsive: matches are shown as cards on mobile."
+      ]
+    },
+    {
+      "date": "2025-06-25",
+      "items": [
+        "Sidebar integrated into all pages.",
+        "Matches disappear after making a prediction."
+      ]
+    }
+  ]
 }
