@@ -155,6 +155,7 @@ const Ranking = () => {
       return res.data;
     },
     enabled: !!competenciaSeleccionada && !!selectedRonda,
+    refetchInterval: 10000,
   });
 
   const normalizeISOString = (s) => (typeof s === "string" && s.endsWith("Z")) ? s : `${s}Z`;
