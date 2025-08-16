@@ -103,6 +103,12 @@
   "join_failed": "Could not join competition.",
   "changelog_entries": [
     {
+      "date": "2025-08-16",
+      "items": [
+        "Added multilingual support: the app now detects the browser language and automatically displays the interface in Spanish or English."
+      ]
+    },
+    {
       "date": "2025-08-15",
       "items": [
         "A new chart was added to show prediction results per matchday in real time, improving transparency.",

@@ -44,6 +44,12 @@
   "profile": "Perfil",
   "changelog_entries": [
     {
+      "date": "2025-08-16",
+      "items": [
+        "Se añadió soporte multilenguaje: la app ahora detecta el idioma del navegador y muestra la interfaz en español o inglés automáticamente."
+      ]
+    },
+    {
       "date": "2025-08-15",
       "items": [
         "Se añadió una nueva gráfica que muestra en tiempo real los resultados de los pronósticos por jornada, mejorando la transparencia de los resultados.",
