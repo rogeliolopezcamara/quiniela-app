@@ -1,10 +1,12 @@
 // src/components/PredictionsCenter.jsx
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import Sidebar from "./Sidebar";
 import AvailableMatches from "./AvailableMatches";
 import UserPredictions from "./UserPredictions";
 
 const PredictionsCenter = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem("activeTab") || "available");
 
   useEffect(() => {
@@ -22,7 +24,7 @@ const PredictionsCenter = () => {
             }`}
             onClick={() => setActiveTab("available")}
           >
-            Próximos partidos
+            {t('upcoming_matches')}
           </button>
           <button
             className={`px-4 py-2 font-semibold transition-all duration-200 ${
@@ -30,7 +32,7 @@ const PredictionsCenter = () => {
             }`}
             onClick={() => setActiveTab("predictions")}
           >
-            Mis pronósticos
+            {t('my_predictions')}
           </button>
         </div>
       </div>

@@ -3,12 +3,14 @@ import { useAuth } from "../context/AuthContext";
 import axios from "../utils/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import { useTranslation } from "react-i18next";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 function CrearCompetencia({ onSuccess }) {
   const { authToken } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [nombre, setNombre] = useState("");
   const [isPublic, setIsPublic] = useState(true);
@@ -32,7 +34,7 @@ function CrearCompetencia({ onSuccess }) {
     e.preventDefault();
 
     if (!ligaSeleccionada) {
-      alert("Selecciona una liga para la competencia");
+      alert(t('select_league_alert'));
       return;
     }
 
@@ -50,13 +52,13 @@ function CrearCompetencia({ onSuccess }) {
           }
         }
       );
-      alert("Competencia creada con éxito");
+      alert(t('competition_created_success'));
       setTimeout(() => {
         if (onSuccess) onSuccess();
       }, 0);
     } catch (error) {
       console.error("Error al crear competencia:", error);
-      alert("Hubo un error al crear la competencia");
+      alert(t('competition_create_error'));
     }
   };
 
@@ -64,10 +66,10 @@ function CrearCompetencia({ onSuccess }) {
     <div className="flex">
       <Sidebar />
       <div className="max-w-xl mx-auto mt-10 px-4 w-full">
-        <h1 className="text-2xl font-bold mb-6">Crear nueva competencia</h1>
+        <h1 className="text-2xl font-bold mb-6">{t('create_new_competition')}</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block font-semibold mb-1">Nombre:</label>
+            <label className="block font-semibold mb-1">{t('name')}:</label>
             <input
               type="text"
               value={nombre}
@@ -77,18 +79,18 @@ function CrearCompetencia({ onSuccess }) {
             />
           </div>
           <div>
-            <label className="block font-semibold mb-1">Privacidad:</label>
+            <label className="block font-semibold mb-1">{t('privacy')}:</label>
             <select
               value={isPublic ? "publica" : "privada"}
               onChange={(e) => setIsPublic(e.target.value === "publica")}
               className="w-full border rounded px-3 py-2"
             >
-              <option value="publica">Pública</option>
-              <option value="privada">Privada (requiere código)</option>
+              <option value="publica">{t('public')}</option>
+              <option value="privada">{t('private_requires_code')}</option>
             </select>
           </div>
           <div>
-            <label className="block font-semibold mb-1">Liga:</label>
+            <label className="block font-semibold mb-1">{t('league')}:</label>
             <select
               value={ligaSeleccionada?.league_id || ""}
               onChange={(e) => {
@@ -98,7 +100,7 @@ function CrearCompetencia({ onSuccess }) {
               className="w-full border rounded px-3 py-2"
               required
             >
-              <option value="">Selecciona una liga</option>
+              <option value="">{t('select_league')}</option>
               {ligas.map((liga) => (
                 <option key={`${liga.league_id}-${liga.league_season}`} value={liga.league_id}>
                   {liga.league_name} ({liga.league_season})
@@ -110,7 +112,7 @@ function CrearCompetencia({ onSuccess }) {
             type="submit"
             className="bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700"
           >
-            Crear competencia
+            {t('create_competition')}
           </button>
         </form>
       </div>

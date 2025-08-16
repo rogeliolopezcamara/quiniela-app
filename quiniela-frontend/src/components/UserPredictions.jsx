@@ -1,5 +1,6 @@
 // src/components/UserPredictions.jsx
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { useQuery } from "@tanstack/react-query";
 import axios from "../utils/axiosConfig";
 import { useAuth } from "../context/AuthContext";
@@ -13,6 +14,7 @@ const pulsatingDotStyle = {
 };
 
 const UserPredictions = () => {
+  const { t } = useTranslation();
   const { authToken } = useAuth();
   const [editPredictionId, setEditPredictionId] = useState(null);
   const [editValues, setEditValues] = useState({ pred_home: '', pred_away: '' });
@@ -202,10 +204,10 @@ const UserPredictions = () => {
 
   // Loading and error messages
   if (loadingCompetencias || loadingPredictions) {
-    return <div className="text-center mt-10 text-gray-600">Cargando...</div>;
+    return <div className="text-center mt-10 text-gray-600">{t('loading')}</div>;
   }
   if (errorCompetencias || errorPredictions) {
-    return <div className="text-center mt-10 text-red-600">Error al cargar la información.</div>;
+    return <div className="text-center mt-10 text-red-600">{t('error_loading_data')}</div>;
   }
 
   return (
@@ -225,13 +227,13 @@ const UserPredictions = () => {
       <div className="px-4 w-full max-w-7xl mx-auto">
         <div className="bg-white border rounded-md p-3 shadow-sm mb-6 max-w-md mx-auto">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">Competencia:</span>
+            <span className="font-semibold text-sm">{t('competition')}:</span>
             <select
               value={competenciaSeleccionada}
               onChange={(e) => setCompetenciaSeleccionada(e.target.value)}
               className="border rounded px-2 py-1 text-sm"
             >
-              <option value="todas">Todas</option>
+              <option value="todas">{t('all')}</option>
               {competencias.map((comp) => (
                 <option key={comp.id} value={comp.id}>
                   {comp.name}
@@ -242,7 +244,7 @@ const UserPredictions = () => {
         </div>
 
         {Object.keys(predictions).length === 0 ? (
-          <p className="text-center">No tienes pronósticos aún.</p>
+          <p className="text-center">{t('no_predictions')}</p>
         ) : (
           <>
 
@@ -275,7 +277,7 @@ const UserPredictions = () => {
                           <div className="flex items-center gap-2">
                             <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6" />
                             <span>{pred.home_team}</span>
-                            <span className="font-semibold text-sm">vs</span>
+                            <span className="font-semibold text-sm">{t('vs')}</span>
                             <span>{pred.away_team}</span>
                             <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6" />
                           </div>
@@ -299,7 +301,7 @@ const UserPredictions = () => {
                           })()}
                         </div>
                         <div className="text-sm mb-1">
-                          <strong>Pronóstico:</strong>{" "}
+                          <strong>{t('prediction')}:</strong>{" "}
                           {editPredictionId === pred.prediction_id ? (
                             <form
                               className="flex items-center gap-2 mt-1"
@@ -323,7 +325,7 @@ const UserPredictions = () => {
                                 required
                               />
                               <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded text-xs">
-                                Guardar
+                                {t('save')}
                               </button>
                             </form>
                           ) : (
@@ -331,10 +333,10 @@ const UserPredictions = () => {
                           )}
                         </div>
                         <div className="text-sm mb-1">
-                          <strong>Marcador real:</strong> {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
+                          <strong>{t('real_score')}:</strong> {pred.score_home ?? "-"} - {pred.score_away ?? "-"}
                         </div>
                         <div className="text-sm mb-2">
-                          <strong>Puntos:</strong>{" "}
+                          <strong>{t('points')}:</strong>{" "}
                           <span className={
                             pred.points === 3 ? "text-green-600 font-semibold" :
                             pred.points === 1 ? "text-yellow-500 font-medium" :
@@ -348,7 +350,7 @@ const UserPredictions = () => {
                             onClick={() => handleEditClick(pred)}
                             className="bg-yellow-500 text-white px-3 py-1 rounded text-sm"
                           >
-                            Editar
+                            {t('edit')}
                           </button>
                         )}
                       </div>
@@ -398,7 +400,7 @@ const UserPredictions = () => {
                               <div className="flex items-center gap-2">
                                 <img src={pred.home_team_logo} alt={pred.home_team} className="w-6 h-6 object-contain" />
                                 <span>{pred.home_team}</span>
-                                <span>vs</span>
+                                <span>{t('vs')}</span>
                                 <span>{pred.away_team}</span>
                                 <img src={pred.away_team_logo} alt={pred.away_team} className="w-6 h-6 object-contain" />
                               </div>
@@ -445,7 +447,7 @@ const UserPredictions = () => {
                                     required
                                   />
                                   <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">
-                                    Guardar
+                                    {t('save')}
                                   </button>
                                 </form>
                               ) : (

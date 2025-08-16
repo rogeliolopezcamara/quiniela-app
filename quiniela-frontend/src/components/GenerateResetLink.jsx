@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const GenerateResetLink = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [secret, setSecret] = useState("");
   const [resetLink, setResetLink] = useState(null);
@@ -36,11 +38,11 @@ const GenerateResetLink = () => {
 
   return (
     <div className="pt-20 px-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">🔐 Generar enlace de restablecimiento</h1>
+      <h1 className="text-2xl font-bold mb-4">{t('reset_link_title')}</h1>
 
       <input
         type="email"
-        placeholder="Correo del usuario"
+        placeholder={t('user_email_placeholder')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="w-full p-2 border mb-4"
@@ -59,12 +61,12 @@ const GenerateResetLink = () => {
         className="bg-blue-600 text-white px-4 py-2 rounded"
         disabled={loading}
       >
-        {loading ? "Generando..." : "Generar enlace"}
+        {loading ? t('generating') : t('generate_link')}
       </button>
 
       {resetLink && (
         <div className="mt-4 p-2 bg-green-100 border border-green-400 rounded">
-          <p className="font-semibold">✅ Enlace generado:</p>
+          <p className="font-semibold">{t('link_generated')}</p>
           <a
             href={resetLink}
             target="_blank"

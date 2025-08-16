@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "../utils/axiosConfig";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -11,6 +12,7 @@ function Login() {
   const [error, setError] = useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ function Login() {
 
     if (!baseUrl) {
       console.error("❌ VITE_API_URL no está definido");
-      setError("Error interno de configuración");
+      setError(t('config_error'));
       return;
     }
 
@@ -45,22 +47,22 @@ function Login() {
     } catch (err) {
       console.error("Error al hacer login:", err);
       if (err.response?.status === 400) {
-        setError("Credenciales inválidas");
+        setError(t('invalid_credentials'));
       } else if (err.message === "Token no recibido") {
-        setError("Error al recibir token del servidor");
+        setError(t('token_error'));
       } else {
-        setError("Error de conexión con el servidor");
+        setError(t('server_connection_error'));
       }
     }
   };
 
   return (
     <form onSubmit={handleLogin} className="max-w-sm mx-auto mt-20">
-      <h1 className="text-2xl mb-4">Iniciar sesión</h1>
+      <h1 className="text-2xl mb-4">{t('login')}</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       <input
         type="email"
-        placeholder="Email"
+        placeholder={t('email')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="block w-full p-2 mb-4 border"
@@ -68,23 +70,23 @@ function Login() {
       />
       <input
         type="password"
-        placeholder="Contraseña"
+        placeholder={t('password')}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         className="block w-full p-2 mb-4 border"
         required
       />
       <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-        Entrar
+        {t('login_button')}
       </button>
 
       <p className="text-center mt-4 text-sm">
-        ¿No tienes cuenta?{" "}
+        {t('no_account')}{" "}
         <span
           className="text-blue-500 hover:underline cursor-pointer"
           onClick={() => navigate("/register")}
         >
-          Regístrate
+          {t('register')}
         </span>
       </p>
     </form>

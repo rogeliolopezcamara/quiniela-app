@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { Menu, Home, Info, Trophy, CalendarDays, User } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,7 +62,7 @@ function Sidebar() {
                 }`}
               >
                 <Info className="w-5 h-5" />
-                Guía
+                {t('guide')}
               </button>
               {authToken && (
                 <>
@@ -71,7 +73,7 @@ function Sidebar() {
                     }`}
                   >
                     <Home className="w-5 h-5" />
-                    Inicio
+                    {t('home')}
                   </button>
                   <button
                     onClick={() => navigate("/ranking")}
@@ -80,7 +82,7 @@ function Sidebar() {
                     }`}
                   >
                     <Trophy className="w-5 h-5" />
-                    Ranking
+                    {t('ranking')}
                   </button>
                   <button
                     onClick={() => navigate("/matches")}
@@ -89,7 +91,7 @@ function Sidebar() {
                     }`}
                   >
                     <CalendarDays className="w-5 h-5" />
-                    Pronósticos
+                    {t('predictions')}
                   </button>
                 </>
               )}
@@ -100,7 +102,7 @@ function Sidebar() {
                 }`}
               >
                 <User className="w-5 h-5" />
-                Perfil
+                {t('profile')}
               </button>
             </div>
 
@@ -111,14 +113,14 @@ function Sidebar() {
                   onClick={handleLogout}
                   className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                 >
-                  Cerrar sesión
+                  {t('logout')}
                 </button>
               ) : (
                 <button
                   onClick={handleLogin}
                   className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                  Iniciar sesión
+                  {t('login')}
                 </button>
               )}
             </div>
@@ -133,7 +135,7 @@ function Sidebar() {
             className="flex flex-col items-center text-xs w-1/5"
           >
             <Info className={`w-6 h-6 mb-1 ${location.pathname === "/" ? "text-blue-600" : "text-gray-700"}`} />
-            <span className="text-gray-700">Guía</span>
+            <span className="text-gray-700">{t('guide')}</span>
           </button>
           {authToken && (
             <>
@@ -142,21 +144,21 @@ function Sidebar() {
                 className="flex flex-col items-center text-xs w-1/5"
               >
                 <Home className={`w-6 h-6 mb-1 ${location.pathname === "/dashboard" ? "text-blue-600" : "text-gray-700"}`} />
-                <span className="text-gray-700">Inicio</span>
+                <span className="text-gray-700">{t('home')}</span>
               </button>
               <button
                 onClick={() => navigate("/ranking")}
                 className="flex flex-col items-center text-xs w-1/5"
               >
                 <Trophy className={`w-6 h-6 mb-1 ${location.pathname === "/ranking" ? "text-blue-600" : "text-gray-700"}`} />
-                <span className="text-gray-700">Ranking</span>
+                <span className="text-gray-700">{t('ranking')}</span>
               </button>
               <button
                 onClick={() => navigate("/matches")}
                 className="flex flex-col items-center text-xs w-1/5"
               >
                 <CalendarDays className={`w-6 h-6 mb-1 ${location.pathname === "/matches" ? "text-blue-600" : "text-gray-700"}`} />
-                <span className="text-gray-700">Pronósticos</span>
+                <span className="text-gray-700">{t('predictions')}</span>
               </button>
             </>
           )}
@@ -165,7 +167,7 @@ function Sidebar() {
             className="flex flex-col items-center text-xs w-1/5"
           >
             <User className={`w-6 h-6 mb-1 ${location.pathname === "/profile" ? "text-blue-600" : "text-gray-700"}`} />
-            <span className="text-gray-700">Perfil</span>
+            <span className="text-gray-700">{t('profile')}</span>
           </button>
         </nav>
       )}

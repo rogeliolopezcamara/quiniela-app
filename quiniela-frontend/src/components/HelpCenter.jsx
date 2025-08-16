@@ -1,11 +1,13 @@
 // src/components/HelpCenter.jsx
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import Sidebar from "./Sidebar";
 import Instructions from "./Instructions";
 import Changelog from "./Changelog";
 
 const HelpCenter = () => {
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem("helpTab") || "instructions");
+  const { t } = useTranslation();
 
   useEffect(() => {
     localStorage.setItem("helpTab", activeTab);
@@ -23,7 +25,7 @@ const HelpCenter = () => {
               }`}
               onClick={() => setActiveTab("instructions")}
             >
-              Instrucciones
+              {t('instructions_tab')}
             </button>
             <button
               className={`px-4 py-2 rounded-r-lg font-semibold border-t border-b border-r border-gray-300 transition-all duration-200 hover:bg-gray-100 ${
@@ -31,7 +33,7 @@ const HelpCenter = () => {
               }`}
               onClick={() => setActiveTab("changelog")}
             >
-              Novedades
+              {t('changelog_tab')}
             </button>
           </div>
         </div>

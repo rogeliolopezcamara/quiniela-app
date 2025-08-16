@@ -1,5 +1,6 @@
 // src/pages/Profile.jsx
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -10,6 +11,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 const Profile = () => {
   const { authToken, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     data: profile,
@@ -83,22 +85,22 @@ const Profile = () => {
 // Show loading message below Sidebar and title
 let loadingMessage = null;
 if (isLoading) {
-  loadingMessage = <p className="text-gray-600 text-center mt-4">Cargando...</p>;
+  loadingMessage = <p className="text-gray-600 text-center mt-4">{t('loading')}</p>;
 } else if (error) {
-  loadingMessage = <p className="text-red-600 text-center mt-4">Error al cargar el perfil.</p>;
+  loadingMessage = <p className="text-red-600 text-center mt-4">{t('error_loading_profile')}</p>;
 }
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       <Sidebar />
       <div className="flex-grow p-6 w-full max-w-3xl mx-auto">
-        <h1 className="text-3xl font-extrabold mb-6 border-b pb-2 border-gray-300">👤 Mi Perfil</h1>
+        <h1 className="text-3xl font-extrabold mb-6 border-b pb-2 border-gray-300">{t('my_profile')}</h1>
         {loadingMessage}
 
         {/* Mensaje para no autenticado */}
         {!authToken && (
           <p className="text-gray-700 mb-6">
-            Para ver y editar tu información personal, por favor inicia sesión.
+            {t('not_logged_in_message')}
           </p>
         )}
 
@@ -108,7 +110,7 @@ if (isLoading) {
           <>
             {/* Nombre */}
             <div className="mb-6 bg-white rounded-lg shadow p-4">
-              <p className="font-semibold text-gray-700 mb-1">Nombre:</p>
+              <p className="font-semibold text-gray-700 mb-1">{t('name')}</p>
               {editingField === "name" ? (
                 <>
                   <input
@@ -118,14 +120,14 @@ if (isLoading) {
                     className="border p-2 rounded w-full"
                   />
                   <button onClick={handleUpdate} className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-                    Guardar
+                    {t('save')}
                   </button>
                 </>
               ) : (
                 <div className="flex items-center justify-between">
                   <span>{profile?.name}</span>
                   <button onClick={() => handleEdit("name")} className="text-blue-600 hover:underline">
-                    Editar
+                    {t('edit')}
                   </button>
                 </div>
               )}
@@ -133,7 +135,7 @@ if (isLoading) {
 
             {/* Correo */}
             <div className="mb-6 bg-white rounded-lg shadow p-4">
-              <p className="font-semibold text-gray-700 mb-1">Correo:</p>
+              <p className="font-semibold text-gray-700 mb-1">{t('email')}</p>
               {editingField === "email" ? (
                 <>
                   <input
@@ -143,14 +145,14 @@ if (isLoading) {
                     className="border p-2 rounded w-full"
                   />
                   <button onClick={handleUpdate} className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-                    Guardar
+                    {t('save')}
                   </button>
                 </>
               ) : (
                 <div className="flex items-center justify-between">
                   <span>{profile?.email}</span>
                   <button onClick={() => handleEdit("email")} className="text-blue-600 hover:underline">
-                    Editar
+                    {t('edit')}
                   </button>
                 </div>
               )}
@@ -158,13 +160,13 @@ if (isLoading) {
 
             {/* Contraseña */}
             <div className="mb-6 bg-white rounded-lg shadow p-4">
-              <p className="font-semibold text-gray-700 mb-1">Contraseña:</p>
+              <p className="font-semibold text-gray-700 mb-1">{t('password')}</p>
               <button onClick={handlePasswordReset} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Generar enlace de restablecimiento
+                {t('generate_reset_link')}
               </button>
               {resetLink && (
                 <p className="mt-2 text-sm break-words text-green-600">
-                  Enlace: <a href={resetLink} className="underline" target="_blank" rel="noreferrer">{resetLink}</a>
+                  {t('link')}: <a href={resetLink} className="underline" target="_blank" rel="noreferrer">{resetLink}</a>
                 </p>
               )}
             </div>
@@ -179,14 +181,14 @@ if (isLoading) {
               }}
               className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
             >
-              Cerrar sesión
+              {t('logout')}
             </button>
           ) : (
             <button
               onClick={() => navigate("/login")}
               className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              Iniciar sesión
+              {t('login')}
             </button>
           )}
         </div>

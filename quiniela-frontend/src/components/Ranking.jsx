@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
 import Sidebar from "./Sidebar";
@@ -8,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Ranking = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const initialCompetenciaId = searchParams.get("competencia_id");
 
@@ -220,7 +222,7 @@ const Ranking = () => {
       <>
         <Sidebar />
         <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto text-center">
-          <p className="text-gray-500">Cargando usuario y competencias...</p>
+          <p className="text-gray-500">{t('loading_user_competitions')}</p>
         </div>
       </>
     );
@@ -231,7 +233,7 @@ const Ranking = () => {
       <>
         <Sidebar />
         <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto text-center">
-          <p className="text-red-500">Error cargando usuario o competencias.</p>
+          <p className="text-red-500">{t('error_user_competitions')}</p>
         </div>
       </>
     );
@@ -273,10 +275,10 @@ const Ranking = () => {
     </style>
       <Sidebar />
       <div className="pt-10 pb-24 px-4 w-full max-w-6xl mx-auto overflow-y-auto h-[calc(100dvh-5rem)]">
-        <h1 className="text-2xl font-bold mb-4 text-center">Ranking de Usuarios</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">{t('user_ranking_title')}</h1>
 
         <div className="mb-6 max-w-xs mx-auto">
-          <label className="block font-semibold mb-1 text-center">Selecciona una competencia:</label>
+          <label className="block font-semibold mb-1 text-center">{t('select_competition')}</label>
           <select
             value={competenciaSeleccionada || ""}
             onChange={(e) => setCompetenciaSeleccionada(parseInt(e.target.value))}
@@ -291,9 +293,9 @@ const Ranking = () => {
         </div>
 
         {loadingRanking ? (
-          <p className="text-center text-gray-500">Cargando...</p>
+          <p className="text-center text-gray-500">{t('loading')}</p>
         ) : rankingError ? (
-          <p className="text-center text-red-500">Error cargando ranking.</p>
+          <p className="text-center text-red-500">{t('error_loading_ranking')}</p>
         ) : (
           <div className="min-h-[300px] overflow-y-auto">
             <div
@@ -305,7 +307,7 @@ const Ranking = () => {
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-white text-center relative">#</th>
-                    <th className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-white relative">Nombre</th>
+                    <th className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-white relative">{t('user')}</th>
                     {(rankingInfo?.rounds || []).map((r) => (
                       <th key={r} className="border border-gray-300 px-2 py-2 text-center whitespace-nowrap w-16">
                         <button
@@ -375,7 +377,7 @@ const Ranking = () => {
         {rankingInfo?.rounds?.length > 0 && (
           <>
             <div className="mt-8 max-w-xs mx-auto">
-              <label className="block font-semibold mb-1 text-center">Selecciona una ronda:</label>
+              <label className="block font-semibold mb-1 text-center">{t('select_round')}</label>
               <select
                 value={selectedRonda}
                 onChange={(e) => setSelectedRonda(e.target.value)}
@@ -394,7 +396,7 @@ const Ranking = () => {
                   <table className="min-w-max table-fixed border border-gray-300 text-sm mx-auto">
                     <thead>
                       <tr>
-                        <th className="border px-2 py-1 bg-gray-100 text-left sticky-cell sticky left-0 z-30 bg-white">Usuario</th>
+                        <th className="border px-2 py-1 bg-gray-100 text-left sticky-cell sticky left-0 z-30 bg-white">{t('user')}</th>
                         {matchesSorted.map((match) => (
                           <th key={match.id} className="border px-2 py-1 text-center whitespace-nowrap align-bottom">
                             <div className="flex items-center justify-center gap-1">

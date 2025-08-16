@@ -4,10 +4,12 @@ import axios from "../utils/axiosConfig";
 import { useAuth } from "../context/AuthContext";
 import { useQuery } from '@tanstack/react-query';
 import Sidebar from "./Sidebar";
+import { useTranslation } from 'react-i18next';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const AvailableMatches = () => {
+  const { t } = useTranslation();
   const [competenciaSeleccionada, setCompetenciaSeleccionada] = useState(() => {
     return localStorage.getItem("availableMatchesCompetencia") || "todas";
   });
@@ -143,12 +145,12 @@ const AvailableMatches = () => {
           },
         }
       );
-      alert("Pronóstico enviado correctamente");
+      alert(t('prediction_success'));
       refetch();
       refetchUserPredictions();
     } catch (error) {
       console.error("Error al enviar el pronóstico:", error);
-      alert("Hubo un error al enviar el pronóstico");
+      alert(t('prediction_error'));
     }
   };
 
@@ -162,7 +164,7 @@ const AvailableMatches = () => {
       setEditPredictionId(null);
     } catch (error) {
       console.error("Error al editar el pronóstico:", error);
-      alert("Hubo un error al editar el pronóstico");
+      alert(t('edit_error'));
     }
   };
 
@@ -188,11 +190,11 @@ const AvailableMatches = () => {
   }, {});
 
   if (loadingCompetencias || loadingMatches || loadingUserPredictions) {
-    return <div className="text-center mt-10 text-gray-600">Cargando...</div>;
+    return <div className="text-center mt-10 text-gray-600">{t('loading')}</div>;
   }
 
   if (errorCompetencias || errorMatches || errorUserPredictions) {
-    return <div className="text-center mt-10 text-red-600">Error al cargar la información.</div>;
+    return <div className="text-center mt-10 text-red-600">{t('error_loading_data')}</div>;
   }
 
   return (
@@ -200,13 +202,13 @@ const AvailableMatches = () => {
       <div className="w-full px-4 sm:px-8">
         <div className="bg-white border rounded-md p-3 shadow-sm mb-6 max-w-md mx-auto">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">Competencia:</span>
+            <span className="font-semibold text-sm">{t('competition')}</span>
             <select
               value={competenciaSeleccionada}
               onChange={(e) => setCompetenciaSeleccionada(e.target.value)}
               className="border rounded px-2 py-1 text-sm"
             >
-              <option value="todas">Todas</option>
+              <option value="todas">{t('all')}</option>
               {competencias.map((comp) => (
                 <option key={comp.id} value={comp.id}>
                   {comp.name}
@@ -215,11 +217,11 @@ const AvailableMatches = () => {
             </select>
           </div>
         </div>
-        <h2 className="text-lg font-semibold mb-4 mt-6">Partidos sin pronóstico</h2>
+        <h2 className="text-lg font-semibold mb-4 mt-6">{t('matches_without_prediction')}</h2>
 
         {matches.length === 0 ? (
           <p className="text-sm text-center text-gray-500 mb-6">
-            No hay partidos disponibles para pronosticar en los próximos 8 días.
+            {t('no_available_matches')}
           </p>
         ) : null}
 
@@ -254,7 +256,7 @@ const AvailableMatches = () => {
                   <input
                     name={`home_${match.match_id}`}
                     type="number"
-                    placeholder="Local"
+                    placeholder={t('home_placeholder')}
                     className="border rounded px-2 py-1 w-16"
                     required
                     min="0"
@@ -263,13 +265,13 @@ const AvailableMatches = () => {
                   <input
                     name={`away_${match.match_id}`}
                     type="number"
-                    placeholder="Visita"
+                    placeholder={t('away_placeholder')}
                     className="border rounded px-2 py-1 w-16"
                     required
                     min="0"
                   />
                   <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">
-                    Enviar
+                    {t('submit')}
                   </button>
                 </form>
               </div>
@@ -277,10 +279,10 @@ const AvailableMatches = () => {
           </div>
         ))}
 
-        <h2 className="text-lg font-semibold mb-4 mt-10">Tus pronósticos enviados</h2>
+        <h2 className="text-lg font-semibold mb-4 mt-10">{t('your_submitted_predictions')}</h2>
         {userPredictions.length === 0 ? (
           <p className="text-sm text-center text-gray-500 mb-6">
-            No tienes pronósticos enviados para partidos próximos.
+            {t('no_submitted_predictions')}
           </p>
         ) : (
           (() => {
@@ -326,8 +328,8 @@ const AvailableMatches = () => {
                           min="0"
                           required
                         />
-                        <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">Guardar</button>
-                        <button type="button" onClick={() => setEditPredictionId(null)} className="text-sm text-gray-500 underline">Cancelar</button>
+                        <button type="submit" className="bg-green-500 text-white px-3 py-1 rounded">{t('save')}</button>
+                        <button type="button" onClick={() => setEditPredictionId(null)} className="text-sm text-gray-500 underline">{t('cancel')}</button>
                       </form>
                     ) : (
                       <div className="flex justify-center items-center gap-4 text-lg font-semibold text-gray-800 mb-2">
@@ -339,7 +341,7 @@ const AvailableMatches = () => {
                           }}
                           className="bg-yellow-500 text-white px-3 py-1 rounded text-sm shadow"
                         >
-                          Editar
+                          {t('edit')}
                         </button>
                       </div>
                     )}
