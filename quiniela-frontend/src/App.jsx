@@ -42,28 +42,30 @@ function App() {
   }, [authToken]);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HelpCenter />} />
-        <Route path="/instructions" element={<Instructions />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/ranking" element={<Ranking />} />
-        <Route path="/matches" element={<PredictionsCenter />} />
-        <Route path="/available-matches" element={<AvailableMatches />} />
-        <Route path="/my-predictions" element={<UserPredictions />} />
-        <Route path="/changelog" element={<Changelog />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/admin/generar-reset" element={<GenerateResetLink />} />
-        <Route path="/crear-grupo" element={<CrearGrupo />} />
-        <Route path="/unirse-a-grupo" element={<JoinGroupForm />} />
-        <Route path="/ranking-grupo/:group_id" element={<GroupRanking />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/crear-competencia" element={<CrearCompetencia />} />
-        <Route path="/unirse-a-competencia" element={<UnirseCompetencia />} />
-      </Routes>
-    </Router>
+    <div className="safe-area">
+      <Router>
+        <Routes>
+          <Route path="/" element={<HelpCenter />} />
+          <Route path="/instructions" element={<Instructions />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/ranking" element={<Ranking />} />
+          <Route path="/matches" element={<PredictionsCenter />} />
+          <Route path="/available-matches" element={<AvailableMatches />} />
+          <Route path="/my-predictions" element={<UserPredictions />} />
+          <Route path="/changelog" element={<Changelog />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/admin/generar-reset" element={<GenerateResetLink />} />
+          <Route path="/crear-grupo" element={<CrearGrupo />} />
+          <Route path="/unirse-a-grupo" element={<JoinGroupForm />} />
+          <Route path="/ranking-grupo/:group_id" element={<GroupRanking />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/crear-competencia" element={<CrearCompetencia />} />
+          <Route path="/unirse-a-competencia" element={<UnirseCompetencia />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 

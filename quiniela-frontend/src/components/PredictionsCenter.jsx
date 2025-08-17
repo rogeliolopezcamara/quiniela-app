@@ -16,7 +16,7 @@ const PredictionsCenter = () => {
   return (
     <>
       <Sidebar />
-      <div className="fixed top-0 left-0 w-full bg-white shadow z-10 flex justify-center py-4">
+      <div className="sticky top-[env(safe-area-inset-top)] bg-white z-30 shadow-md flex justify-center py-4">
         <div className="inline-flex border border-gray-300 rounded-lg overflow-hidden">
           <button
             className={`px-4 py-2 font-semibold transition-all duration-200 ${
@@ -36,7 +36,7 @@ const PredictionsCenter = () => {
           </button>
         </div>
       </div>
-      <div className="pt-28 px-4 pb-28 max-w-5xl mx-auto">
+      <div className="pt-[env(safe-area-inset-top)] px-4 pb-[env(safe-area-inset-bottom)] max-w-5xl mx-auto">
         {activeTab === "available" ? <AvailableMatches embedded /> : <UserPredictions embedded />}
       </div>
     </>
