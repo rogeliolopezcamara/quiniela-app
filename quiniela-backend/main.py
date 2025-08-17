@@ -21,7 +21,9 @@ FRONT_END_URL = os.getenv("FRONTEND_URL")
 # Configura los orígenes permitidos (tu frontend)
 origins = [
     "http://localhost:5173",
-    FRONT_END_URL  # <--- importante
+    "capacitor://localhost",      # ✅ para apps móviles
+    "http://localhost",           # (opcional, para Android)
+    FRONT_END_URL                 # tu frontend en producción
 ]
 
 app.add_middleware(
