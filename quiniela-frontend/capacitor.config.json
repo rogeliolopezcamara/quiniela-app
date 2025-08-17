@@ -1,0 +1,6 @@
+{
+  "appId": "com.rogelio.quiniela",
+  "appName": "Quiniela",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
