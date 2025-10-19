@@ -194,7 +194,7 @@ const Ranking = () => {
     return true; // cualquier otro status lo tratamos como en vivo
   };
 
-  // Helper para leer minutos transcurridos de forma robusta
+  // Helper para leer minutos transcurridos de forma robusta 
   const getElapsedMinutes = (match) => {
     const raw = match?.status_elapsed ?? match?.elapsed; // fallback por si algún backend envía 'elapsed'
     const num = Number.parseInt(raw, 10);
