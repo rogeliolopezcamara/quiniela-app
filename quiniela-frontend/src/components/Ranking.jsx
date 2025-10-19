@@ -139,11 +139,35 @@ const Ranking = () => {
     setSortedData(sorted);
   }, [rankingInfo, sortConfig]);
 
+  // Natural-sort the rounds like "Apertura - 2" < "Apertura - 15"
+  const sortedRounds = useMemo(() => {
+    const rounds = rankingInfo?.rounds;
+    if (!Array.isArray(rounds)) return [];
+
+    // Extract the *last* number in the string (more robust: handles extra spaces, prefixes, etc.)
+    const lastNumber = (s) => {
+      const m = String(s).match(/(\d+)(?!.*\d)/); // last numeric group
+      return m ? parseInt(m[1], 10) : null;
+    };
+
+    return [...rounds].sort((a, b) => {
+      const na = lastNumber(a);
+      const nb = lastNumber(b);
+      if (na != null && nb != null) return na - nb; // numeric order
+      if (na != null) return -1; // prefer numbered rounds first
+      if (nb != null) return 1;
+      return String(a).localeCompare(String(b)); // fallback alphabetical
+    });
+  }, [rankingInfo]);
+
   useEffect(() => {
-    if (!selectedRonda && rankingInfo?.rounds?.length > 0) {
-      setSelectedRonda(rankingInfo.rounds[rankingInfo.rounds.length - 1]);
+    if (!selectedRonda && sortedRounds.length > 0) {
+      setSelectedRonda(sortedRounds[sortedRounds.length - 1]);
+    } else if (selectedRonda && sortedRounds.length > 0 && !sortedRounds.includes(selectedRonda)) {
+      // If current selection no longer exists (e.g., competition changed), pick the latest
+      setSelectedRonda(sortedRounds[sortedRounds.length - 1]);
     }
-  }, [rankingInfo, selectedRonda]);
+  }, [sortedRounds, selectedRonda]);
 
   // Nuevo useQuery para round-matrix
   const {
@@ -308,7 +332,7 @@ const Ranking = () => {
                   <tr className="bg-gray-100 text-gray-700 text-sm uppercase">
                     <th className="border-r border-gray-300 sticky-cell px-2 py-2 min-w-[2.5rem] sticky left-0 z-30 bg-white text-center relative">#</th>
                     <th className="border-r border-gray-300 sticky-cell px-3 py-2 w-[200px] whitespace-nowrap overflow-hidden text-ellipsis sticky left-[2.5rem] z-30 bg-white relative">{t('user')}</th>
-                    {(rankingInfo?.rounds || []).map((r) => (
+                    {sortedRounds.map((r) => (
                       <th key={r} className="border border-gray-300 px-2 py-2 text-center whitespace-nowrap w-16">
                         <button
                           onClick={() => handleSort(r)}
@@ -357,7 +381,7 @@ const Ranking = () => {
                         }`}>
                           {user.name}
                         </td>
-                        {(rankingInfo?.rounds || []).map((r) => (
+                        {sortedRounds.map((r) => (
                           <td key={r} className="border border-gray-300 px-2 py-2 text-center w-16">
                             {user.rounds[r] ?? 0}
                           </td>
@@ -374,7 +398,7 @@ const Ranking = () => {
           </div>
         )}
 
-        {rankingInfo?.rounds?.length > 0 && (
+        {sortedRounds.length > 0 && (
           <>
             <div className="mt-8 max-w-xs mx-auto">
               <label className="block font-semibold mb-1 text-center">{t('select_round')}</label>
@@ -383,7 +407,7 @@ const Ranking = () => {
                 onChange={(e) => setSelectedRonda(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm"
               >
-                {rankingInfo.rounds.map((r) => (
+                {sortedRounds.map((r) => (
                   <option key={r} value={r}>{r}</option>
                 ))}
               </select>
