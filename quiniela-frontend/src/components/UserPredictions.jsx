@@ -118,8 +118,19 @@ const UserPredictions = () => {
         if (sortedLive.length > 0) {
           result["En vivo"] = sortedLive;
         }
-        // El resto de las rondas, ordenadas alfabéticamente en orden inverso
-        const sortedRounds = Object.keys(groupedRounds).sort().reverse();
+        // El resto de las rondas, ordenadas naturalmente por número
+        const extractLastNumber = (s) => {
+          const m = String(s).match(/(\d+)(?!.*\d)/);
+          return m ? parseInt(m[1], 10) : null;
+        };
+        const sortedRounds = Object.keys(groupedRounds).sort((a, b) => {
+          const na = extractLastNumber(a);
+          const nb = extractLastNumber(b);
+          if (na != null && nb != null) return nb - na; // reverse numeric order (latest first)
+          if (na != null) return -1;
+          if (nb != null) return 1;
+          return String(b).localeCompare(String(a)); // fallback reverse alphabetical
+        });
         for (const round of sortedRounds) {
           result[round] = groupedRounds[round];
         }
